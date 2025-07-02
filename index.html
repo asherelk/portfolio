@@ -44,7 +44,7 @@
 
     .explore-text {
       position: absolute;
-      top: calc(50% + 28vmin);
+      top: calc(50% + 30vmin);
       left: 50%;
       transform: translateX(-50%);
       font-size: 2vh;
@@ -86,40 +86,59 @@
     </div>
 
     <div class="svg-container">
-      <svg viewBox="90 110 85 55" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <clipPath id="clip-p"><rect x="90" y="120" width="8" height="30"/></clipPath>
-          <clipPath id="clip-o1"><rect x="99" y="120" width="8" height="30"/></clipPath>
-          <clipPath id="clip-r"><rect x="108" y="120" width="8" height="30"/></clipPath>
-          <clipPath id="clip-t"><rect x="117" y="120" width="8" height="30"/></clipPath>
-          <clipPath id="clip-f"><rect x="126" y="120" width="8" height="30"/></clipPath>
-          <clipPath id="clip-o2"><rect x="135" y="120" width="8" height="30"/></clipPath>
-          <clipPath id="clip-l"><rect x="144" y="120" width="8" height="30"/></clipPath>
-          <clipPath id="clip-i"><rect x="153" y="120" width="8" height="30"/></clipPath>
-          <clipPath id="clip-o3"><rect x="162" y="120" width="8" height="30"/></clipPath>
+          <!-- Example letter clip paths -->
+          <clipPath id="clip-p">
+            <path d="M20,40 h40 v40 h-40 z" />
+          </clipPath>
+          <clipPath id="clip-o1">
+            <circle cx="90" cy="60" r="20" />
+          </clipPath>
+          <clipPath id="clip-r">
+            <path d="M130,40 h40 v40 h-40 z" />
+          </clipPath>
+          <clipPath id="clip-t">
+            <path d="M190,40 h40 v10 h-15 v30 h-10 v-30 h-15 z" />
+          </clipPath>
+          <clipPath id="clip-f">
+            <path d="M250,40 h40 v10 h-30 v10 h25 v10 h-25 v20 h-10 z" />
+          </clipPath>
+          <clipPath id="clip-o2">
+            <circle cx="330" cy="60" r="20" />
+          </clipPath>
+          <clipPath id="clip-l">
+            <path d="M370,40 h10 v50 h30 v10 h-40 z" />
+          </clipPath>
+          <clipPath id="clip-i">
+            <rect x="430" y="40" width="10" height="50" />
+          </clipPath>
+          <clipPath id="clip-o3">
+            <circle cx="490" cy="60" r="20" />
+          </clipPath>
         </defs>
 
-        <!-- Image fills -->
-        <image href="https://via.placeholder.com/150?text=P" x="90" y="120" width="8" height="30" clip-path="url(#clip-p)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=O" x="99" y="120" width="8" height="30" clip-path="url(#clip-o1)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=R" x="108" y="120" width="8" height="30" clip-path="url(#clip-r)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=T" x="117" y="120" width="8" height="30" clip-path="url(#clip-t)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=F" x="126" y="120" width="8" height="30" clip-path="url(#clip-f)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=O" x="135" y="120" width="8" height="30" clip-path="url(#clip-o2)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=L" x="144" y="120" width="8" height="30" clip-path="url(#clip-l)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=I" x="153" y="120" width="8" height="30" clip-path="url(#clip-i)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=O" x="162" y="120" width="8" height="30" clip-path="url(#clip-o3)" preserveAspectRatio="xMidYMid slice" />
+        <!-- Images inside letters -->
+        <image href="https://via.placeholder.com/150/0000FF/FFFFFF?text=P" x="0" y="0" width="800" height="200" clip-path="url(#clip-p)" />
+        <image href="https://via.placeholder.com/150/FF0000/FFFFFF?text=O" x="0" y="0" width="800" height="200" clip-path="url(#clip-o1)" />
+        <image href="https://via.placeholder.com/150/00FF00/FFFFFF?text=R" x="0" y="0" width="800" height="200" clip-path="url(#clip-r)" />
+        <image href="https://via.placeholder.com/150/FFFF00/000000?text=T" x="0" y="0" width="800" height="200" clip-path="url(#clip-t)" />
+        <image href="https://via.placeholder.com/150/FF00FF/FFFFFF?text=F" x="0" y="0" width="800" height="200" clip-path="url(#clip-f)" />
+        <image href="https://via.placeholder.com/150/00FFFF/000000?text=O" x="0" y="0" width="800" height="200" clip-path="url(#clip-o2)" />
+        <image href="https://via.placeholder.com/150/FFA500/000000?text=L" x="0" y="0" width="800" height="200" clip-path="url(#clip-l)" />
+        <image href="https://via.placeholder.com/150/800080/FFFFFF?text=I" x="0" y="0" width="800" height="200" clip-path="url(#clip-i)" />
+        <image href="https://via.placeholder.com/150/008000/FFFFFF?text=O" x="0" y="0" width="800" height="200" clip-path="url(#clip-o3)" />
 
-        <!-- Black overlay shapes -->
-        <rect x="90" y="120" width="8" height="30" fill="black"/>
-        <rect x="99" y="120" width="8" height="30" fill="black"/>
-        <rect x="108" y="120" width="8" height="30" fill="black"/>
-        <rect x="117" y="120" width="8" height="30" fill="black"/>
-        <rect x="126" y="120" width="8" height="30" fill="black"/>
-        <rect x="135" y="120" width="8" height="30" fill="black"/>
-        <rect x="144" y="120" width="8" height="30" fill="black"/>
-        <rect x="153" y="120" width="8" height="30" fill="black"/>
-        <rect x="162" y="120" width="8" height="30" fill="black"/>
+        <!-- Letter shapes (black overlay outlines) -->
+        <use href="#clip-p" fill="black" />
+        <use href="#clip-o1" fill="black" />
+        <use href="#clip-r" fill="black" />
+        <use href="#clip-t" fill="black" />
+        <use href="#clip-f" fill="black" />
+        <use href="#clip-o2" fill="black" />
+        <use href="#clip-l" fill="black" />
+        <use href="#clip-i" fill="black" />
+        <use href="#clip-o3" fill="black" />
       </svg>
     </div>
 
