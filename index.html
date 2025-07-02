@@ -6,90 +6,41 @@
   <title>Portfolio</title>
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: white;
-      font-family: sans-serif;
-      overflow: hidden;
+      margin: 0; padding: 0; height: 100%; background: white; font-family: sans-serif; overflow: hidden;
     }
-
     .container {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
+      position: relative; width: 100vw; height: 100vh;
     }
-
     .intro {
-      position: absolute;
-      top: 2vh;
-      left: 2vw;
-      font-size: 1.2vw;
-      max-width: 30vw;
+      position: absolute; top: 2vh; left: 2vw; font-size: 1.2vw; max-width: 30vw;
     }
-
     .svg-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 90vw;
-      max-height: 90vh;
-      width: auto;
-      height: auto;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      max-width: 90vw; max-height: 90vh; width: auto; height: auto;
     }
-
     svg {
-      width: 100%;
-      height: 100%;
-      display: block;
+      width: 100%; height: 100%; display: block;
     }
-
     .explore {
-      position: absolute;
-      top: calc(50% + 20vh);
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 1.2vw;
-      font-weight: bold;
-      letter-spacing: 0.1em;
+      position: absolute; top: calc(50% + 20vh); left: 50%; transform: translateX(-50%);
+      font-size: 1.2vw; font-weight: bold; letter-spacing: 0.1em;
     }
-
     .contact {
-      position: absolute;
-      bottom: 2vh;
-      right: 2vw;
-      width: 20vw;
-      font-size: 0.9vw;
+      position: absolute; bottom: 2vh; right: 2vw; width: 20vw; font-size: 0.9vw;
     }
-
     .contact input, .contact textarea {
-      width: 100%;
-      margin-bottom: 0.5vh;
-      padding: 0.5vh;
-      font-size: 0.8vw;
-      box-sizing: border-box;
+      width: 100%; margin-bottom: 0.5vh; padding: 0.5vh; font-size: 0.8vw; box-sizing: border-box;
     }
-
     .contact button {
-      width: 100%;
-      padding: 0.5vh;
-      font-size: 0.9vw;
-      background: #000;
-      color: #fff;
-      border: none;
-      cursor: pointer;
+      width: 100%; padding: 0.5vh; font-size: 0.9vw; background: #000; color: #fff; border: none; cursor: pointer;
     }
-
     @media (max-width: 768px) {
       .intro, .explore, .contact {
         font-size: 2.5vw;
       }
-
       .contact input, .contact textarea, .contact button {
         font-size: 2.5vw;
       }
-
       .contact {
         width: 80vw;
       }
@@ -101,20 +52,17 @@
     <div class="intro">Introduction placeholder lorem ipsum dolor sit amet</div>
 
     <div class="svg-container">
-      <!-- Your original SVG with letter shapes, black-filled paths -->
       <svg viewBox="90 110 85 55" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
         <g fill="black" opacity="1">
-          <!-- Include your exact paths from the original "portfolio" SVG here -->
-          <!-- For example: -->
-          <path d="M 100.7339,131.99937 ... Z" />
-          <path d="M 110.71055,131.99937 ... Z" />
-          <path d="M 114.7594,131.98427 ... Z" />
-          <path d="M 131.01681,127.8791 ... Z" />
-          <path d="M 142.6037,115.09385 ... Z" />
-          <path d="M 146.35747,131.99937 ... Z" />
-          <path d="M 152.26202,119.507 ... Z" />
-          <path d="M 159.19958,126.8771 ... Z" />
-          <path d="M 169.93122,131.99937 ... Z" />
+          <path d="M 100.7339,131.99937 105.30899,131.99937 105.30899,141.32498 110.0112,141.32498 110.0112,131.99937 113.72081,131.99937 113.72081,127.43786 100.7339,127.43786 100.7339,131.99937 Z" />
+          <path d="M 110.71055,131.99937 114.17911,131.99937 114.17911,137.43954 117.71972,131.99937 121.22249,131.99937 115.97256,138.82843 121.46817,145.26521 117.70612,145.26521 114.17911,139.72837 110.71055,145.26521 107.1306,145.26521 112.70368,138.32025 107.1306,132.25495 110.71055,131.99937 Z" />
+          <path d="M 114.7594,131.98427 120.12355,131.98427 120.12355,127.43786 114.7594,127.43786 114.7594,131.98427 Z" />
+          <path d="M 131.01681,127.8791 130.98322,130.9255 130.98322,135.97333 130.92079,141.32498 134.39909,141.32498 134.39909,138.24548 134.01554,138.24548 134.01554,131.83194 134.39909,131.83194 134.39909,128.36762 130.98322,128.36762 131.01681,127.8791 Z" />
+          <path d="M 142.6037,115.09385 142.36618,125.72014 139.61579,125.72014 139.61579,127.67948 149.23201,127.67948 149.23201,125.72014 146.50512,125.72014 146.25206,115.09385 142.6037,115.09385 Z" />
+          <path d="M 146.35747,131.99937 150.95844,131.99937 150.95844,130.35612 146.35747,130.35612 146.35747,131.99937 Z" />
+          <path d="M 152.26202,119.507 152.26202,123.88625 154.39898,123.88625 154.39898,119.507 152.26202,119.507 Z" />
+          <path d="M 159.19958,126.8771 159.19958,128.72507 164.37549,128.72507 164.37549,126.8771 159.19958,126.8771 Z" />
+          <path d="M 169.93122,131.99937 169.93122,128.72507 170.9507,128.72507 170.9507,131.99937 169.93122,131.99937 Z" />
         </g>
       </svg>
     </div>
