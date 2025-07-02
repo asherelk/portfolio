@@ -1,45 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Portfolio</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: white;
-      height: 100%;
-      overflow: hidden;
-    }
-    .svg-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90vw;
-      height: 90vh;
-    }
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-    path {
-      fill: black;
-      opacity: 1;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Portfolio</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%; overflow: hidden; background: white;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .svg-container {
+    width: 90vmin;  /* 90% of smaller viewport dimension */
+    height: 90vmin;
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+  path {
+    fill: black;
+  }
+</style>
 </head>
 <body>
   <div class="svg-container">
-    <!-- Adjusted viewBox to increase vertical space -->
-    <svg viewBox="90 110 85 55" xmlns="http://www.w3.org/2000/svg">
-      <!-- Your letter groups go here. For example: -->
-      <g id="letter-p">
-        <path d="M 100.73,131.99 C 100.45,131.99 100.18,132.01 99.98,132.06 C 99.53,132.16 99.11,132.35 98.72,132.61 C 98.38,132.85 98.14,132.76 98.14,132.34 C 98.14,132.14 97.95,132.26 97.71,132.60 C 96.58,134.13 95.26,135.40 93.56,136.19 C 93.18,136.36 92.86,136.81 92.86,137.23 V 151.81 C 92.86,152.23 93.20,152.57 93.62,152.57 H 97.38 C 97.80,152.57 98.14,152.23 98.14,151.81 V 142.27 C 98.14,141.85 98.38,141.75 98.72,141.97 C 99.11,142.23 99.53,142.42 99.98,142.52 C 100.39,142.61 101.08,142.61 101.49,142.52 C 103.27,142.11 104.66,140.30 104.92,138.02 C 104.97,137.60 104.97,136.91 104.92,136.50 C 104.66,134.22 103.27,132.41 101.49,132.00 C 101.22,131.94 100.99,131.99 100.73,131.99 Z"/>
-      </g>
-      <!-- Repeat for the rest of your letters -->
-    </svg>
-  </div>
-</body>
-</html>
+    <svg
+      viewBox="90 110 85 55"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
+      >
+      <!-- letter-p -->
+      <g id="g11" inkscape:label="letter-p" transform="translate(6.4583334e-7)">
+        <path d="m 100.7339,131.99937 c -0.27395,0 -0.54769,0.023 -0.751374,0.0692 -0.445725,0.10094
