@@ -10,21 +10,21 @@
       padding: 0;
       height: 100%;
       background: white;
-      overflow: hidden;
       font-family: sans-serif;
+      overflow: hidden;
     }
 
     .container {
       position: relative;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
     }
 
     .intro {
       position: absolute;
       top: 2vh;
       left: 2vw;
-      font-size: 2.5vh;
+      font-size: 1.2vw;
       max-width: 30vw;
     }
 
@@ -32,108 +32,103 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 90vmin;
-      height: auto;
       transform: translate(-50%, -50%);
+      max-width: 90vw;
+      max-height: 90vh;
+      width: auto;
+      height: auto;
     }
 
-    .svg-container svg {
+    svg {
       width: 100%;
-      height: auto;
+      height: 100%;
       display: block;
     }
 
-    .explore-text {
+    .explore {
       position: absolute;
-      top: calc(50% + 30vmin);
+      top: calc(50% + 20vh);
       left: 50%;
       transform: translateX(-50%);
-      font-size: 2vh;
-      text-transform: uppercase;
+      font-size: 1.2vw;
+      font-weight: bold;
+      letter-spacing: 0.1em;
     }
 
-    .contact-form {
+    .contact {
       position: absolute;
       bottom: 2vh;
       right: 2vw;
-      font-size: 1.8vh;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5vh;
+      width: 20vw;
+      font-size: 0.9vw;
     }
 
-    .contact-form input,
-    .contact-form textarea,
-    .contact-form button {
-      font-size: 1.6vh;
+    .contact input, .contact textarea {
+      width: 100%;
+      margin-bottom: 0.5vh;
       padding: 0.5vh;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      width: 25vw;
-      max-width: 300px;
+      font-size: 0.8vw;
+      box-sizing: border-box;
     }
 
-    .contact-form button {
-      background: black;
-      color: white;
+    .contact button {
+      width: 100%;
+      padding: 0.5vh;
+      font-size: 0.9vw;
+      background: #000;
+      color: #fff;
+      border: none;
       cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .intro, .explore, .contact {
+        font-size: 2.5vw;
+      }
+
+      .contact input, .contact textarea, .contact button {
+        font-size: 2.5vw;
+      }
+
+      .contact {
+        width: 80vw;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="intro">
-      Introduction placeholder lorem ipsum dolor sit amet
-    </div>
+    <div class="intro">Introduction placeholder lorem ipsum dolor sit amet</div>
 
     <div class="svg-container">
-      <svg viewBox="0 0 250 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <clipPath id="clip-p"><path d="M5,10 h10 v40 h-10 z"/></clipPath>
-          <clipPath id="clip-o1"><path d="M20,10 a5,5 0 1,0 0.1,0 z"/></clipPath>
-          <clipPath id="clip-r"><path d="M35,10 h10 v40 h-10 z"/></clipPath>
-          <clipPath id="clip-t"><path d="M50,10 h10 v40 h-10 z"/></clipPath>
-          <clipPath id="clip-f"><path d="M65,10 h10 v40 h-10 z"/></clipPath>
-          <clipPath id="clip-o2"><path d="M80,10 a5,5 0 1,0 0.1,0 z"/></clipPath>
-          <clipPath id="clip-l"><path d="M95,10 h10 v40 h-10 z"/></clipPath>
-          <clipPath id="clip-i"><path d="M110,10 h5 v40 h-5 z"/></clipPath>
-          <clipPath id="clip-o3"><path d="M120,10 a5,5 0 1,0 0.1,0 z"/></clipPath>
-        </defs>
-
-        <!-- Images inside clipped letters -->
-        <image href="https://via.placeholder.com/150?text=P" x="0" y="0" width="250" height="60" clip-path="url(#clip-p)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=O" x="0" y="0" width="250" height="60" clip-path="url(#clip-o1)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=R" x="0" y="0" width="250" height="60" clip-path="url(#clip-r)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=T" x="0" y="0" width="250" height="60" clip-path="url(#clip-t)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=F" x="0" y="0" width="250" height="60" clip-path="url(#clip-f)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=O" x="0" y="0" width="250" height="60" clip-path="url(#clip-o2)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=L" x="0" y="0" width="250" height="60" clip-path="url(#clip-l)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=I" x="0" y="0" width="250" height="60" clip-path="url(#clip-i)" preserveAspectRatio="xMidYMid slice" />
-        <image href="https://via.placeholder.com/150?text=O" x="0" y="0" width="250" height="60" clip-path="url(#clip-o3)" preserveAspectRatio="xMidYMid slice" />
-
-        <!-- Actual letter outlines -->
-        <text x="5" y="45" font-size="40" font-family="sans-serif" fill="black">P</text>
-        <text x="20" y="45" font-size="40" font-family="sans-serif" fill="black">O</text>
-        <text x="35" y="45" font-size="40" font-family="sans-serif" fill="black">R</text>
-        <text x="50" y="45" font-size="40" font-family="sans-serif" fill="black">T</text>
-        <text x="65" y="45" font-size="40" font-family="sans-serif" fill="black">F</text>
-        <text x="80" y="45" font-size="40" font-family="sans-serif" fill="black">O</text>
-        <text x="95" y="45" font-size="40" font-family="sans-serif" fill="black">L</text>
-        <text x="110" y="45" font-size="40" font-family="sans-serif" fill="black">I</text>
-        <text x="120" y="45" font-size="40" font-family="sans-serif" fill="black">O</text>
+      <!-- Your original SVG with letter shapes, black-filled paths -->
+      <svg viewBox="90 110 85 55" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <g fill="black" opacity="1">
+          <!-- Include your exact paths from the original "portfolio" SVG here -->
+          <!-- For example: -->
+          <path d="M 100.7339,131.99937 ... Z" />
+          <path d="M 110.71055,131.99937 ... Z" />
+          <path d="M 114.7594,131.98427 ... Z" />
+          <path d="M 131.01681,127.8791 ... Z" />
+          <path d="M 142.6037,115.09385 ... Z" />
+          <path d="M 146.35747,131.99937 ... Z" />
+          <path d="M 152.26202,119.507 ... Z" />
+          <path d="M 159.19958,126.8771 ... Z" />
+          <path d="M 169.93122,131.99937 ... Z" />
+        </g>
       </svg>
     </div>
 
-    <div class="explore-text">
-      CLICK TO EXPLORE
-    </div>
+    <div class="explore">CLICK TO EXPLORE</div>
 
-    <form class="contact-form">
-      <input type="text" placeholder="Your Name" required />
-      <input type="email" placeholder="Your Email" required />
-      <textarea placeholder="Your Message" rows="3" required></textarea>
-      <button type="submit">Send</button>
-    </form>
+    <div class="contact">
+      <form>
+        <input type="text" name="name" placeholder="Your name" required />
+        <input type="email" name="email" placeholder="Your email" required />
+        <textarea name="message" rows="3" placeholder="Your message" required></textarea>
+        <button type="submit">Send</button>
+      </form>
+    </div>
   </div>
 </body>
 </html>
