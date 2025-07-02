@@ -8,8 +8,8 @@
     html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
       background: white;
-      height: 100vh;
       overflow: hidden;
       font-family: sans-serif;
     }
@@ -24,7 +24,7 @@
       position: absolute;
       top: 2vh;
       left: 2vw;
-      font-size: 2.2vh;
+      font-size: 2.5vh;
       max-width: 30vw;
     }
 
@@ -49,7 +49,6 @@
       left: 50%;
       transform: translateX(-50%);
       font-size: 2vh;
-      text-align: center;
       text-transform: uppercase;
     }
 
@@ -88,17 +87,40 @@
     </div>
 
     <div class="svg-container">
-      <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
-        <!-- Placeholder letter paths for PORTFOLIO (to be replaced with real ones from Illustrator) -->
-        <path d="M10,160 L10,40 L50,40 Q70,40 70,70 Q70,100 50,100 L30,100 L30,160 Z" fill="black" /> <!-- P -->
-        <path d="M90,100 A30,30 0 1,1 89.9,100 Z" fill="black" /> <!-- O -->
-        <path d="M140,160 L140,40 L170,40 Q190,40 190,70 Q190,90 170,100 L190,160 L160,160 L150,110 L150,160 Z" fill="black" /> <!-- R -->
-        <path d="M210,40 L260,40 L260,60 L240,60 L240,160 L230,160 L230,60 L210,60 Z" fill="black" /> <!-- T -->
-        <path d="M280,40 L320,40 L320,60 L300,60 L300,90 L320,90 L320,110 L300,110 L300,160 L280,160 Z" fill="black" /> <!-- F -->
-        <path d="M350,100 A30,30 0 1,1 349.9,100 Z" fill="black" /> <!-- O -->
-        <path d="M400,40 L420,40 L420,160 L400,160 Z" fill="black" /> <!-- L -->
-        <path d="M440,80 A10,10 0 1,1 439.9,80 Z M440,100 L460,100 L460,160 L440,160 Z" fill="black" /> <!-- I -->
-        <path d="M490,100 A30,30 0 1,1 489.9,100 Z" fill="black" /> <!-- O -->
+      <svg viewBox="0 0 250 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <clipPath id="clip-p"><path d="M5,10 h10 v40 h-10 z"/></clipPath>
+          <clipPath id="clip-o1"><path d="M20,10 a5,5 0 1,0 0.1,0 z"/></clipPath>
+          <clipPath id="clip-r"><path d="M35,10 h10 v40 h-10 z"/></clipPath>
+          <clipPath id="clip-t"><path d="M50,10 h10 v40 h-10 z"/></clipPath>
+          <clipPath id="clip-f"><path d="M65,10 h10 v40 h-10 z"/></clipPath>
+          <clipPath id="clip-o2"><path d="M80,10 a5,5 0 1,0 0.1,0 z"/></clipPath>
+          <clipPath id="clip-l"><path d="M95,10 h10 v40 h-10 z"/></clipPath>
+          <clipPath id="clip-i"><path d="M110,10 h5 v40 h-5 z"/></clipPath>
+          <clipPath id="clip-o3"><path d="M120,10 a5,5 0 1,0 0.1,0 z"/></clipPath>
+        </defs>
+
+        <!-- Images inside clipped letters -->
+        <image href="https://via.placeholder.com/150?text=P" x="0" y="0" width="250" height="60" clip-path="url(#clip-p)" preserveAspectRatio="xMidYMid slice" />
+        <image href="https://via.placeholder.com/150?text=O" x="0" y="0" width="250" height="60" clip-path="url(#clip-o1)" preserveAspectRatio="xMidYMid slice" />
+        <image href="https://via.placeholder.com/150?text=R" x="0" y="0" width="250" height="60" clip-path="url(#clip-r)" preserveAspectRatio="xMidYMid slice" />
+        <image href="https://via.placeholder.com/150?text=T" x="0" y="0" width="250" height="60" clip-path="url(#clip-t)" preserveAspectRatio="xMidYMid slice" />
+        <image href="https://via.placeholder.com/150?text=F" x="0" y="0" width="250" height="60" clip-path="url(#clip-f)" preserveAspectRatio="xMidYMid slice" />
+        <image href="https://via.placeholder.com/150?text=O" x="0" y="0" width="250" height="60" clip-path="url(#clip-o2)" preserveAspectRatio="xMidYMid slice" />
+        <image href="https://via.placeholder.com/150?text=L" x="0" y="0" width="250" height="60" clip-path="url(#clip-l)" preserveAspectRatio="xMidYMid slice" />
+        <image href="https://via.placeholder.com/150?text=I" x="0" y="0" width="250" height="60" clip-path="url(#clip-i)" preserveAspectRatio="xMidYMid slice" />
+        <image href="https://via.placeholder.com/150?text=O" x="0" y="0" width="250" height="60" clip-path="url(#clip-o3)" preserveAspectRatio="xMidYMid slice" />
+
+        <!-- Actual letter outlines -->
+        <text x="5" y="45" font-size="40" font-family="sans-serif" fill="black">P</text>
+        <text x="20" y="45" font-size="40" font-family="sans-serif" fill="black">O</text>
+        <text x="35" y="45" font-size="40" font-family="sans-serif" fill="black">R</text>
+        <text x="50" y="45" font-size="40" font-family="sans-serif" fill="black">T</text>
+        <text x="65" y="45" font-size="40" font-family="sans-serif" fill="black">F</text>
+        <text x="80" y="45" font-size="40" font-family="sans-serif" fill="black">O</text>
+        <text x="95" y="45" font-size="40" font-family="sans-serif" fill="black">L</text>
+        <text x="110" y="45" font-size="40" font-family="sans-serif" fill="black">I</text>
+        <text x="120" y="45" font-size="40" font-family="sans-serif" fill="black">O</text>
       </svg>
     </div>
 
