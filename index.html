@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Qahiri&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Barrio&family=Barriecito&family=Baumans&family=Bungee+Inline&family=Londrina+Solid&family=Chango&family=Denk+One&family=Jacques+Francois+Shadow&family=Jaini&family=Moirai+One&family=Palette+Mosaic&family=Phudu&family=Pixelify+Sans&family=Silkscreen&family=VT323&family=Plaster&family=Rubik+Vinyl&family=Rubik+Glitch&family=Sedgwick+Ave+Display&family=Syncopate&family=Tapestry&family=Tilt+Prism&family=Shizuru&family=Sixtyfour&family=Special+Elite&family=Workbench&family=Yomogi&display=swap" rel="stylesheet" />
 
-  <!-- FontFaceObserver -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fontfaceobserver/2.1.0/fontfaceobserver.standalone.js"></script>
 
   <style>
@@ -25,17 +24,14 @@
       position: fixed;
       top: 2%;
       left: 2%;
-      height: 33vh;
       font-size: 12vw;
-      line-height: 1;
       color: #3d00ae;
+      font-weight: 400;
+      white-space: nowrap;
       transition: font-family 0.25s ease, filter 0.15s ease;
       filter: none;
-      white-space: nowrap;
-      font-weight: 400;
-      writing-mode: vertical-rl;
-      transform: rotate(180deg);
       transform-origin: top left;
+      transform: rotate(90deg);
     }
 
     .random-font-text.blur {
@@ -65,7 +61,7 @@
       'Special Elite': 10.89, 'Workbench': 9.8, 'Yomogi': 9.504
     };
 
-    const combinedBaselineShifts = {
+    const baselineShifts = {
       'Barrio': 2, 'Barriecito': 0, 'Baumans': 0, 'Bungee Inline': 0, 'Londrina Solid': 0,
       'Chango': -1, 'Denk One': -2, 'Jacques Francois Shadow': -1, 'Jaini': -1, 'Moirai One': -3,
       'Palette Mosaic': -3, 'Phudu': -2, 'Pixelify Sans': 1, 'Silkscreen': 0, 'VT323': 2,
@@ -74,7 +70,7 @@
       'Special Elite': 6, 'Workbench': 0, 'Yomogi': -3
     };
 
-    const combinedHorizontalShifts = {
+    const horizontalShifts = {
       'Barrio': 0.7, 'Barriecito': -0.2, 'Baumans': -1.1, 'Bungee Inline': 2, 'Londrina Solid': -1.45,
       'Chango': 2.05, 'Denk One': -0.1, 'Jacques Francois Shadow': 0.1, 'Jaini': -2.6, 'Moirai One': 0.5,
       'Palette Mosaic': 0, 'Phudu': -0.1, 'Pixelify Sans': 0.1, 'Silkscreen': 1.2, 'VT323': -2,
@@ -85,8 +81,8 @@
 
     const targetWidth = 6.2;
     const baseTranslateY = 23;
-    const textElement = document.querySelector('.random-font-text');
 
+    const textElement = document.querySelector('.random-font-text');
     let isFontChanging = false;
     let autoSwitchTimeout;
     let lastChangeTime = 0;
@@ -122,10 +118,10 @@
 
           const measuredWidth = fontWidths[nextFont] || targetWidth;
           const scaleX = targetWidth / measuredWidth;
-          const shiftY = baseTranslateY + (combinedBaselineShifts[nextFont] || 0);
-          const shiftX = combinedHorizontalShifts[nextFont] || 0;
+          const shiftY = baseTranslateY + (baselineShifts[nextFont] || 0);
+          const shiftX = horizontalShifts[nextFont] || 0;
 
-          textElement.style.transform = `rotate(180deg) translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
+          textElement.style.transform = `rotate(90deg) translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
         }, 40);
 
         setTimeout(() => {
@@ -154,9 +150,9 @@
 
       const initialWidth = fontWidths[initialFont] || targetWidth;
       const scaleX = targetWidth / initialWidth;
-      const shiftY = baseTranslateY + (combinedBaselineShifts[initialFont] || 0);
-      const shiftX = combinedHorizontalShifts[initialFont] || 0;
-      textElement.style.transform = `rotate(180deg) translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
+      const shiftY = baseTranslateY + (baselineShifts[initialFont] || 0);
+      const shiftX = horizontalShifts[initialFont] || 0;
+      textElement.style.transform = `rotate(90deg) translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
 
       scheduleNextFontChange();
     });
