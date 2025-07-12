@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Portfolio</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Qahiri&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barrio&family=Barriecito&family=Baumans&family=Bungee+Inline&family=Londrina+Solid&family=Chango&family=Denk+One&family=Jacques+Francois+Shadow&family=Jaini&family=Moirai+One&family=Palette+Mosaic&family=Phudu&family=Pixelify+Sans&family=Silkscreen&family=VT323&family=Plaster&family=Rubik+Vinyl&family=Rubik+Glitch&family=Sedgwick+Ave+Display&family=Syncopate&family=Tapestry&family=Tilt+Prism&family=Shizuru&family=Sixtyfour&family=Special+Elite&family=Workbench&family=Yomogi&display=swap" rel="stylesheet" />
+
+  <!-- FontFaceObserver -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fontfaceobserver/2.1.0/fontfaceobserver.standalone.js"></script>
+
   <style>
     html, body {
       margin: 0;
@@ -24,12 +32,14 @@
       max-width: 30vw;
       font-size: 1rem;
       color: black;
+      z-index: 20;
     }
     .svg-container {
       width: 90vmin;
       height: 90vmin;
       margin: auto;
       position: relative;
+      z-index: 10;
     }
     svg {
       width: 100%;
@@ -54,8 +64,9 @@
       bottom: 10px;
       right: 10px;
       max-width: 30vw;
+      z-index: 20;
     }
-    /* Added orange bar */
+    /* Orange bar */
     #orange-bar {
       position: fixed;
       top: 0;
@@ -65,10 +76,10 @@
       background-color: #f36210;
       z-index: 0;
     }
-    /* Asherel's rotated text container */
+    /* Asherel's rotated dynamic text container */
     .font-switch-wrapper {
       position: fixed;
-      top: calc(50vh - 16.6667vh); /* vertically center 1/3 screen */
+      top: calc(50vh - 16.6667vh); /* vertical center 1/3 screen */
       left: 2vw; /* 2% from left */
       height: 33.3333vh; /* exactly 1/3 viewport height */
       display: flex;
@@ -77,13 +88,26 @@
       z-index: 15;
       user-select: none;
       pointer-events: auto;
+      overflow: visible;
     }
-    .font-switch-text {
-      font-weight: bold;
-      font-size: 1.6rem;
-      transform-origin: center center;
-      /* transform will be set by JS */
+    .random-font-text {
+      font-size: 12vw;
+      line-height: 1;
+      color: #f36210; /* same orange as bar */
+      transition: font-family 0.25s ease, filter 0.15s ease, transform 0.25s ease;
+      filter: none; /* removed glow */
       white-space: nowrap;
+      font-weight: 400 !important;
+      -webkit-text-stroke: 0 !important;
+      text-stroke: 0 !important;
+      text-align: left;
+      transform-origin: left center;
+      /* Will be rotated by JS */
+      user-select: none;
+      cursor: default;
+    }
+    .random-font-text.blur {
+      filter: blur(5px);
     }
   </style>
 </head>
@@ -100,6 +124,7 @@
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMid meet"
     >
+      <!-- All original <g> groups restored -->
       <g id="g11"><path d="m 100.7339,131.99937 c -0.27395,0 -0.54769,0.023 -0.751374,0.0692 -0.445725,0.10094 -0.867651,0.28996 -1.253154,0.55243 -0.345522,0.23524 -0.584459,0.14155 -0.584459,-0.27699 0,-0.19852 -0.187902,-0.0769 -0.435634,0.26045 -1.124553,1.53125 -2.446565,2.80596 -4.140832,3.59616 -0.379209,0.17685 -0.699699,0.62998 -0.699699,1.04852 v 14.58257 c 5e-6,0.41854 0.339545,0.75758 0.758095,0.75758 h 3.759975 c 0.41855,0 0.758089,-0.33904 0.758095,-0.75758 v -9.53638 c 0,-0.41852 0.238932,-0.51274 0.584459,-0.2775 0.385501,0.26247 0.807432,0.45149 1.253154,0.55243 0.407364,0.0923 1.095384,0.0923 1.502754,0 1.7826,-0.40373 3.17739,-2.2175 3.43338,-4.49429 0.0467,-0.41572 0.0467,-1.09686 0,-1.51257 -0.25598,-2.27682 -1.65078,-4.0911 -3.43338,-4.49483 -0.20369,-0.0461 -0.47742,-0.0692 -0.75138,-0.0692 z"/></g>
       <g id="g12"><path d="m 110.71055,131.99937 c -0.27395,0 -0.54769,0.023 -0.75137,0.0692 -1.78269,0.40371 -3.17785,2.21801 -3.4339,4.49483 -0.0467,0.41571 -0.0467,1.09685 0,1.51257 0.25605,2.27679 1.65121,4.09059 3.4339,4.49429 0.40737,0.0923 1.09538,0.0923 1.50275,0 1.7825,-0.40373 3.17694,-2.2175 3.43286,-4.49429 0.0467,-0.41572 0.0467,-1.09686 0,-1.51257 -0.25591,-2.2768 -1.65036,-4.0911 -3.43286,-4.49483 -0.20369,-0.0461 -0.47742,-0.0692 -0.75138,-0.0692 z"/></g>
       <g id="g13"><path d="m 114.7594,131.98427 c -0.41855,0 -0.47643,0.1928 -0.17001,0.47749 1.07926,1.0027 1.70208,2.3802 1.84071,4.10105 0.0336,0.41709 0.0295,1.09662 0.0295,1.51516 v 3.81939 c 0,0.41855 0.33954,0.75758 0.75809,0.75758 h 3.75998 c 0.41855,0 0.75809,-0.33903 0.75809,-0.75758 v -3.81992 c 0,-0.41854 -0.0105,-1.10577 0.10749,-1.50585 0.25242,-0.85598 0.92696,-1.53083 1.78283,-1.78334 0.40007,-0.11806 0.74776,-0.44651 0.74776,-0.86506 v -1.18081 c 0,-0.41854 -0.33954,-0.75811 -0.75809,-0.75811 h -1.1219 z"/></g>
@@ -107,14 +132,14 @@
       <g id="g10"><path d="m 142.6037,115.09385 -0.75551,0.0491 c -3.46405,0.45149 -6.20643,3.97243 -6.49108,8.37108 -0.027,0.41761 -0.0242,1.09659 -0.0243,1.51513 l -0.005,28.91505 c -7e-5,0.41854 0.0123,1.10984 -0.13384,1.49965 -0.21386,0.57023 -0.6674,1.02325 -1.23766,1.23712 -0.38979,0.14615 -1.0938,0.1461 -1.48363,0 -0.27221,-0.10205 -0.61916,0.0578 -0.80873,0.43098 l -1.91255,3.76412 c -0.18957,0.37317 -0.0815,0.89363 0.26975,1.12085 0.78082,0.50509 1.64371,0.83701 2.55644,0.95602 0.41474,0.0541 1.09627,0.054 1.51102,0 3.46403,-0.45148 6.20642,-3.9719 6.49107,-8.37054 0.027,-0.41762 0.0243,-1.09662 0.0243,-1.51517 v -0.617 -1.5162 l 0.004,-18.75337 c 8e-5,-0.41855 0.008,-1.1057 0.14832,-1.4986 0.28146,-0.79018 0.9289,-1.40666 1.73839,-1.6454 0.40008,-0.118 0.74776,-0.44704 0.74776,-0.86558 v -1.18081 c -1e-5,-0.41854 -0.33954,-0.75808 -0.75809,-0.75808 h -1.11828 c -0.41855,0 -0.75758,-0.33904 -0.75758,-0.75758 1e-5,-0.44099 -5.3e-4,-0.88197 -0.002,-1.32292 -0.001,-0.41855 -8e-4,-0.75809 10e-4,-0.75809 0.3479,-1.31206 0.80162,-1.76535 1.37201,-1.97921 0.38981,-0.14613 1.09338,-0.14632 1.48312,0 0.27224,0.10223 0.61972,-0.0573 0.80925,-0.43045 l 1.91203,-3.76412 c 0.18953,-0.37317 0.0815,-0.89411 -0.26975,-1.12139 -0.78029,-0.5049 -1.6428,-0.83661 -2.5554,-0.95549 -0.41475,-0.054 -0.75551,-0.0491 -0.75551,-0.0491 z"/></g>
       <g id="g15"><path d="m 146.35747,131.99937 c -0.27396,0 -0.54769,0.023 -0.75137,0.0692 -1.78252,0.40373 -3.17695,2.21801 -3.43287,4.49483 -0.0467,0.41571 -0.0467,1.09685 0,1.51257 0.25592,2.27679 1.65036,4.09056 3.43287,4.49429 0.40737,0.0923 1.09538,0.0923 1.50275,0 1.78259,-0.40373 3.17739,-2.2175 3.43338,-4.49429 0.0467,-0.41572 0.0467,-1.09686 0,-1.51257 -0.25599,-2.27682 -1.65079,-4.0911 -3.43338,-4.49483 -0.20368,-0.0461 -0.47742,-0.0692 -0.75138,-0.0692 z"/></g>
       <g id="g16"><path d="m 152.26202,119.507 c -0.095,-6e-5 -0.15503,0.12115 -0.15503,0.35658 v 22.03378 c 1e-5,0.41855 0.33954,0.75758 0.7581,0.75758 h 3.75997 c 0.41855,0 0.75809,-0.33903 0.7581,-0.75758 v -15.83468 c 0,-0.41854 -0.25446,-0.98268 -0.55863,-1.27021 -1.5793,-1.4928 -2.99012,-3.20431 -4.28862,-5.06222 -0.1049,-0.15009 -0.19998,-0.2232 -0.27389,-0.22325 z"/></g>
-      <g id="g9"><path d="m 159.19958,126.8771 c -0.1772,0.005 -0.29404,0.15735 -0.29404,0.43201 v 14.58825 c 1e-5,0.41855 0.33955,0.75758 0.7581,0.75758 h 3.75997 c 0.41855,0 0.75809,-0.33903 0.7581,-0.75758 v -11.70728 c 0,-0.41855 -0.31919,-0.87368 -0.70642,-1.03248 -1.42384,-0.58397 -2.7365,-1.31276 -3.95583,-2.16268 -0.11803,-0.0823 -0.22706,-0.12026 -0.31988,-0.11782 z"/><path d="m 161.53381,121.6764 c -0.27206,0 -0.54433,0.0494 -0.72657,0.14779 -0.47969,0.25908 -0.85441,0.76703 -1.0232,1.39526 -0.10828,0.40304 -0.10827,1.09556 0,1.49862 0.16879,0.62836 0.54348,1.13657 1.0232,1.39576 0.36444,0.1969 1.08869,0.1969 1.45314,0 0.47971,-0.25919 0.85441,-0.76743 1.02319,-1.39576 0.10827,-0.40306 0.1083,-1.09556 0,-1.49862 -0.16879,-0.62823 -0.54351,-1.13618 -1.02319,-1.39526 -0.18224,-0.0984 -0.45452,-0.14779 -0.72657,-0.14779 z"/></g>
+      <g id="g9"><path d="m 159.19958,126.8771 c -0.1772,0.005 -0.29443,0.131 -0.23838,0.28484 0.32247,0.92621 0.61569,1.99667 0.61569,3.28501 0,3.03584 -2.13172,5.50381 -4.81883,5.50381 -0.3219,0 -0.55786,0.20538 -0.51432,0.45825 0.20181,1.02786 0.51704,2.03552 0.51704,2.99107 0,2.10762 -1.70666,3.83608 -3.84031,3.83608 -0.28313,0 -0.5448,-0.0456 -0.75357,-0.13112 -0.22135,-0.0905 -0.4772,0.005 -0.57228,0.22414 -0.095,0.21902 -0.0295,0.5153 0.14361,0.69147 0.52501,0.50316 1.13104,0.87091 1.78055,1.09082 1.58201,0.59153 3.34966,0.37421 4.57069,-0.60818 1.0999,-0.85639 1.68567,-2.27312 1.68567,-3.89634 0-1.77743 -1.05915-3.30274 -2.57072-3.86125 -0.83004,-0.31231 -1.79062,-0.35002 -2.60567,-0.11061 0.71146,-0.0519 1.27624,-0.10142 1.6542,-0.13781 0.32271,-0.0293 0.60353,-0.056 0.83726,-0.081 1.6686,-0.22407 2.95472,-1.57448 2.95472,-3.25816 0-0.89648 -0.39572-1.73922 -1.05476-2.29932 -0.78598,-0.68503 -1.81994,-0.96021 -2.83021,-0.88313 z"/></g>
       <g id="g17"><path d="m 169.93122,131.99937 c -0.27395,0 -0.54769,0.023 -0.75136,0.0692 -1.78258,0.40373 -3.1774,2.21801 -3.43339,4.49483 -0.0467,0.41571 -0.0467,1.09685 0,1.51257 0.25599,2.27679 1.65081,4.09056 3.43339,4.49429 0.40738,0.0923 1.09537,0.0923 1.50275,0 1.78252,-0.40373 3.17693,-2.2175 3.43286,-4.49429 0.0467,-0.41572 0.0467,-1.09686 0,-1.51257 -0.2559,-2.27682 -1.65069,-4.0911 -3.43324,-4.49483 -0.20368,-0.0461 -0.47742,-0.0692 -0.75136,-0.0692 z"/></g>
     </svg>
     <div id="click-to-explore">CLICK TO EXPLORE</div>
   </div>
 
   <div class="font-switch-wrapper" aria-label="Asherel's branding">
-    <div class="font-switch-text" id="rotated-text">Asherel's</div>
+    <div class="random-font-text" id="rotated-text">asherel</div>
   </div>
 
   <div id="contact-form">
@@ -133,11 +158,149 @@
   </div>
 
   <script>
-    // Transform the rotated text properly
+    // Rotate the entire font-switch wrapper text by -90deg and center properly
+    const wrapper = document.querySelector('.font-switch-wrapper');
     const textElement = document.getElementById('rotated-text');
-    // Translate then rotate -90deg, scaleX to flip baseline right
-    // Translate by 50% horizontally, 50% vertically for center alignment within container
-    textElement.style.transform = `translate(50%, 50%) rotate(-90deg) scaleX(1)`;
+
+    // Apply rotation & scaleX(1) for baseline flip, translate for centering inside container
+    function applyRotationAndTransform() {
+      // The transform applied in font change script will be combined with this rotation
+      // We wrap the rotated text in a container, so just rotate here:
+      wrapper.style.transform = 'none'; // no transform on wrapper container
+
+      // Rotate text by -90deg and scaleX(1) to flip baseline direction right
+      // Translate(50%, 50%) centers the text inside container
+      textElement.style.transformOrigin = 'left center';
+      // Note: font change script will override transform, so we combine rotation with translation by prepending rotation
+      // We'll do this by modifying the font-change transform dynamically below
+
+      // Override the font-change script's transform to include rotation:
+      // We'll override changeFontSmoothly to prepend rotate(-90deg) scaleX(1) translate(50%, 50%)
+    }
+
+    applyRotationAndTransform();
+
+    // Font-switching logic adapted from provided snippet:
+
+    const fonts = [
+      'Barrio', 'Barriecito', 'Baumans', 'Bungee Inline', 'Londrina Solid',
+      'Chango', 'Denk One', 'Jacques Francois Shadow', 'Jaini', 'Moirai One',
+      'Palette Mosaic', 'Phudu', 'Pixelify Sans', 'Silkscreen', 'VT323',
+      'Plaster', 'Qahiri', 'Rubik Vinyl', 'Rubik Glitch', 'Sedgwick Ave Display',
+      'Syncopate', 'Tapestry', 'Tilt Prism', 'Shizuru', 'Sixtyfour', 'Special Elite',
+      'Workbench', 'Yomogi'
+    ];
+
+    const fontWidths = {
+      'Barrio': 11, 'Barriecito': 9.3, 'Baumans': 8.75, 'Bungee Inline': 14, 'Londrina Solid': 8.3,
+      'Chango': 14, 'Denk One': 9.75, 'Jacques Francois Shadow': 10.5, 'Jaini': 7.4, 'Moirai One': 11.385,
+      'Palette Mosaic': 10.584, 'Phudu': 9.8, 'Pixelify Sans': 10.75, 'Silkscreen': 13.25, 'VT323': 7.75,
+      'Plaster': 14, 'Qahiri': 6.138, 'Rubik Vinyl': 11.8, 'Rubik Glitch': 11.8, 'Sedgwick Ave Display': 9.25,
+      'Syncopate': 16.25, 'Tapestry': 8.8, 'Tilt Prism': 10.908, 'Shizuru': 9.207, 'Sixtyfour': 19.15,
+      'Special Elite': 10.89, 'Workbench': 9.8, 'Yomogi': 9.504
+    };
+
+    const combinedBaselineShifts = {
+      'Barrio': 2, 'Barriecito': 0, 'Baumans': 0, 'Bungee Inline': 0, 'Londrina Solid': 0,
+      'Chango': -1, 'Denk One': -2, 'Jacques Francois Shadow': -1, 'Jaini': -1, 'Moirai One': -3,
+      'Palette Mosaic': -3, 'Phudu': -2, 'Pixelify Sans': 1, 'Silkscreen': 0, 'VT323': 2,
+      'Plaster': 0, 'Qahiri': 5.25, 'Rubik Vinyl': -1, 'Rubik Glitch': 0, 'Sedgwick Ave Display': 4,
+      'Syncopate': 1, 'Tapestry': 1, 'Tilt Prism': 0, 'Shizuru': -7, 'Sixtyfour': 0,
+      'Special Elite': 6, 'Workbench': 0, 'Yomogi': -3
+    };
+
+    const combinedHorizontalShifts = {
+      'Barrio': 0.7, 'Barriecito': -0.2, 'Baumans': -1.1, 'Bungee Inline': 2, 'Londrina Solid': -1.45,
+      'Chango': 2.05, 'Denk One': -0.1, 'Jacques Francois Shadow': 0.1, 'Jaini': -2.6, 'Moirai One': 0.5,
+      'Palette Mosaic': 0, 'Phudu': -0.1, 'Pixelify Sans': 0.1, 'Silkscreen': 1.2, 'VT323': -2,
+      'Plaster': 1.6, 'Qahiri': -4.25, 'Rubik Vinyl': 1.1, 'Rubik Glitch': 1.1, 'Sedgwick Ave Display': 0.2,
+      'Syncopate': 2.6, 'Tapestry': -0.7, 'Tilt Prism': 1, 'Shizuru': -0.5, 'Sixtyfour': 3.15,
+      'Special Elite': 0.35, 'Workbench': -0.15, 'Yomogi': -0.2
+    };
+
+    const targetWidth = 6.2;
+    const baseTranslateY = 23;
+
+    let isFontChanging = false;
+    let autoSwitchTimeout;
+    let lastChangeTime = 0;
+    let lastFont = null;
+
+    fonts.forEach(font => {
+      new FontFaceObserver(font).load().catch(() => {
+        console.warn(`Failed to load ${font}`);
+      });
+    });
+
+    function getRandomFont() {
+      let font;
+      do {
+        font = fonts[Math.floor(Math.random() * fonts.length)];
+      } while (font === lastFont);
+      lastFont = font;
+      return font;
+    }
+
+    function changeFontSmoothly() {
+      const now = Date.now();
+      if (isFontChanging || now - lastChangeTime < 300) return;
+
+      isFontChanging = true;
+      textElement.classList.add('blur');
+
+      const nextFont = getRandomFont();
+
+      new FontFaceObserver(nextFont).load().then(() => {
+        setTimeout(() => {
+          textElement.style.fontFamily = `"${nextFont}", sans-serif`;
+
+          const measuredWidth = fontWidths[nextFont] || targetWidth;
+          const scaleX = targetWidth / measuredWidth;
+          const shiftY = baseTranslateY + (combinedBaselineShifts[nextFont] || 0);
+          const shiftX = combinedHorizontalShifts[nextFont] || 0;
+
+          // Prepend rotation and translate to center the rotated text, then apply font transforms:
+          textElement.style.transform = 
+            `rotate(-90deg) scaleX(1) translate(50%, 50%) ` +
+            `translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
+        }, 40);
+
+        setTimeout(() => {
+          textElement.classList.remove('blur');
+          isFontChanging = false;
+          lastChangeTime = Date.now();
+          scheduleNextFontChange();
+        }, 100);
+      }).catch(() => {
+        console.warn(`Failed to load ${nextFont}`);
+        textElement.classList.remove('blur');
+        isFontChanging = false;
+        lastChangeTime = Date.now();
+        scheduleNextFontChange();
+      });
+    }
+
+    function scheduleNextFontChange() {
+      clearTimeout(autoSwitchTimeout);
+      autoSwitchTimeout = setTimeout(changeFontSmoothly, 5000);
+    }
+
+    window.addEventListener('load', () => {
+      const initialFont = getRandomFont();
+      textElement.style.fontFamily = `"${initialFont}", sans-serif`;
+      const initialWidth = fontWidths[initialFont] || targetWidth;
+      const scaleX = targetWidth / initialWidth;
+      const shiftY = baseTranslateY + (combinedBaselineShifts[initialFont] || 0);
+      const shiftX = combinedHorizontalShifts[initialFont] || 0;
+
+      textElement.style.transform = 
+        `rotate(-90deg) scaleX(1) translate(50%, 50%) ` +
+        `translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
+
+      scheduleNextFontChange();
+    });
+
+    textElement.addEventListener('mouseover', changeFontSmoothly);
   </script>
 </body>
 </html>
