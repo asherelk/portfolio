@@ -18,7 +18,7 @@
       height: 100vh;
     }
 
-    /* Orange bar just above the background */
+    /* Orange bar at bottom layer */
     #orange-bar {
       position: absolute;
       top: 0;
@@ -36,7 +36,7 @@
       max-width: 30vw;
       font-size: 1rem;
       color: black;
-      z-index: 1;
+      z-index: 2;
     }
 
     .svg-container {
@@ -44,12 +44,13 @@
       height: 90vmin;
       margin: auto;
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
 
     svg {
       width: 100%;
       height: 100%;
+      display: block;
     }
 
     path {
@@ -73,41 +74,47 @@
       bottom: 10px;
       right: 10px;
       max-width: 30vw;
-      z-index: 1;
+      z-index: 2;
     }
   </style>
 </head>
 <body>
-  <!-- Orange bar just above the background -->
+  <!-- Orange background bar -->
   <div id="orange-bar"></div>
 
+  <!-- Intro text -->
   <div id="intro">
     Introduction placeholder lorem ipsum dolor sit amet
   </div>
 
+  <!-- SVG container with portfolio text -->
   <div class="svg-container">
     <svg
       viewBox="90 110 85 55"
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMid meet"
     >
-      <!-- (SVG paths here unchanged for brevity) -->
-      <!-- You can paste your full SVG code here exactly as you had it -->
+      <!-- All your <g> and <path> elements go here -->
+      <!-- Ensure that nothing is hidden via CSS -->
+      <!-- Example placeholder path for demonstration: -->
+      <text x="90" y="140" font-size="10" fill="black">Portfolio</text>
+      <!-- Replace with your real paths from before -->
     </svg>
     <div id="click-to-explore">CLICK TO EXPLORE</div>
   </div>
 
+  <!-- Contact form -->
   <div id="contact-form">
     <form action="mailto:your.email@example.com" method="post" enctype="text/plain" style="display:flex; flex-direction: column; gap: 8px;">
       <label for="name">Name:</label>
       <input type="text" id="name" name="name" required style="padding: 6px; font-size: 1rem;" />
-
+      
       <label for="email">Email:</label>
       <input type="email" id="email" name="email" required style="padding: 6px; font-size: 1rem;" />
-
+      
       <label for="message">Message:</label>
       <textarea id="message" name="message" rows="4" required style="padding: 6px; font-size: 1rem;"></textarea>
-
+      
       <button type="submit" style="padding: 8px; font-size: 1rem; font-weight: bold; background-color: black; color: white; border: none; cursor: pointer;">Send</button>
     </form>
   </div>
