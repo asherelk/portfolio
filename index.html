@@ -57,26 +57,12 @@
     .random-font-text.blur {
       filter: blur(5px);
     }
-
-    #font-name-display {
-      position: fixed;
-      bottom: 2%;
-      right: 2%;
-      color: #f36210;
-      font-family: 'Qahiri', sans-serif;
-      font-size: 3vw;
-      user-select: none;
-      z-index: 20;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
   <div class="wrapper">
     <div class="random-font-text">Asherel's</div>
   </div>
-
-  <div id="font-name-display">Loading font...</div>
 
   <script>
     const fonts = [
@@ -119,7 +105,6 @@
     const baseTranslateY = 23;
 
     const textElement = document.querySelector('.random-font-text');
-    const fontNameDisplay = document.getElementById('font-name-display');
     let isFontChanging = false;
     let autoSwitchTimeout;
     let lastChangeTime = 0;
@@ -140,10 +125,6 @@
       return font;
     }
 
-    function updateFontName(name) {
-      fontNameDisplay.textContent = `Font: ${name}`;
-    }
-
     function changeFontSmoothly() {
       const now = Date.now();
       if (isFontChanging || now - lastChangeTime < 300) return;
@@ -162,10 +143,7 @@
           const shiftY = baseTranslateY + (combinedBaselineShifts[nextFont] || 0);
           const shiftX = combinedHorizontalShifts[nextFont] || 0;
 
-          // We keep rotation -90deg and reset translate for simplicity
           textElement.style.transform = `rotate(-90deg) translate(0, 0) scaleX(${scaleX.toFixed(3)})`;
-
-          updateFontName(nextFont);
         }, 40);
 
         setTimeout(() => {
@@ -196,8 +174,6 @@
       const shiftY = baseTranslateY + (combinedBaselineShifts[initialFont] || 0);
       const shiftX = combinedHorizontalShifts[initialFont] || 0;
       textElement.style.transform = `rotate(-90deg) translate(0, 0) scaleX(${scaleX.toFixed(3)})`;
-
-      updateFontName(initialFont);
 
       scheduleNextFontChange();
     });
