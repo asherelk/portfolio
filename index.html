@@ -24,16 +24,16 @@
     .random-font-text {
       position: absolute;
       top: 2%;
-      left: 2%;
+      left: 0;
       transform-origin: top left;
-      transform: rotate(90deg);
-      font-size: 33.333vh; /* 1/3 of screen height */
+      transform: rotate(90deg) translateY(-2%);
+      font-size: 33.33vh;
       color: #3d00ae;
       font-family: 'Qahiri', sans-serif;
       white-space: nowrap;
       transition: font-family 0.25s ease, filter 0.15s ease;
-      filter: none;
       font-weight: 400;
+      filter: none;
     }
 
     .random-font-text.blur {
@@ -54,25 +54,10 @@
       'Workbench', 'Yomogi'
     ];
 
-    const fontWidths = {
-      'Barrio': 11, 'Barriecito': 9.3, 'Baumans': 8.75, 'Bungee Inline': 14, 'Londrina Solid': 8.3,
-      'Chango': 14, 'Denk One': 9.75, 'Jacques Francois Shadow': 10.5, 'Jaini': 7.4, 'Moirai One': 11.385,
-      'Palette Mosaic': 10.584, 'Phudu': 9.8, 'Pixelify Sans': 10.75, 'Silkscreen': 13.25, 'VT323': 7.75,
-      'Plaster': 14, 'Qahiri': 6.138, 'Rubik Vinyl': 11.8, 'Rubik Glitch': 11.8, 'Sedgwick Ave Display': 9.25,
-      'Syncopate': 16.25, 'Tapestry': 8.8, 'Tilt Prism': 10.908, 'Shizuru': 9.207, 'Sixtyfour': 19.15,
-      'Special Elite': 10.89, 'Workbench': 9.8, 'Yomogi': 9.504
-    };
-
     const textElement = document.querySelector('.random-font-text');
-    let isFontChanging = false;
-    let autoSwitchTimeout;
     let lastFont = null;
-
-    fonts.forEach(font => {
-      new FontFaceObserver(font).load().catch(() => {
-        console.warn(`Failed to load ${font}`);
-      });
-    });
+    let isChanging = false;
+    let autoSwitchTimeout;
 
     function getRandomFont() {
       let font;
@@ -84,25 +69,24 @@
     }
 
     function changeFontSmoothly() {
-      if (isFontChanging) return;
-      isFontChanging = true;
+      if (isChanging) return;
+      isChanging = true;
       textElement.classList.add('blur');
 
       const nextFont = getRandomFont();
       new FontFaceObserver(nextFont).load().then(() => {
         setTimeout(() => {
           textElement.style.fontFamily = `"${nextFont}", sans-serif`;
-        }, 40);
-
+        }, 50);
         setTimeout(() => {
           textElement.classList.remove('blur');
-          isFontChanging = false;
+          isChanging = false;
           scheduleNextFontChange();
-        }, 100);
+        }, 150);
       }).catch(() => {
         console.warn(`Failed to load ${nextFont}`);
         textElement.classList.remove('blur');
-        isFontChanging = false;
+        isChanging = false;
         scheduleNextFontChange();
       });
     }
@@ -113,7 +97,8 @@
     }
 
     window.addEventListener('load', () => {
-      textElement.style.fontFamily = `"${getRandomFont()}", sans-serif`;
+      const initialFont = getRandomFont();
+      textElement.style.fontFamily = `"${initialFont}", sans-serif`;
       scheduleNextFontChange();
     });
 
