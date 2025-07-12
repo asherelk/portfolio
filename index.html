@@ -40,6 +40,8 @@
       white-space: nowrap;
       font-weight: 400;
       transform-origin: left center;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
     }
 
     .random-font-text.blur {
@@ -131,7 +133,8 @@
           const shiftY = baseTranslateY + (combinedBaselineShifts[nextFont] || 0);
           const shiftX = combinedHorizontalShifts[nextFont] || 0;
 
-          textElement.style.transform = `translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
+          // Even though it's vertical, keep transform logic consistent
+          textElement.style.transform = `rotate(180deg) translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
         }, 40);
 
         setTimeout(() => {
@@ -162,7 +165,7 @@
       const scaleX = targetWidth / initialWidth;
       const shiftY = baseTranslateY + (combinedBaselineShifts[initialFont] || 0);
       const shiftX = combinedHorizontalShifts[initialFont] || 0;
-      textElement.style.transform = `translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
+      textElement.style.transform = `rotate(180deg) translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
 
       scheduleNextFontChange();
     });
