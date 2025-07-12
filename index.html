@@ -21,17 +21,11 @@
       overflow: hidden;
     }
 
-    .wrapper {
-      position: fixed;
-      top: 50%;
-      left: 2%;
-      transform: translateY(-50%);
-      height: 33vh;
-      display: flex;
-      align-items: center;
-    }
-
     .random-font-text {
+      position: fixed;
+      top: 2%;
+      left: 2%;
+      height: 33vh;
       font-size: 12vw;
       line-height: 1;
       color: #3d00ae;
@@ -39,9 +33,9 @@
       filter: none;
       white-space: nowrap;
       font-weight: 400;
-      transform-origin: left center;
       writing-mode: vertical-rl;
       transform: rotate(180deg);
+      transform-origin: top left;
     }
 
     .random-font-text.blur {
@@ -50,9 +44,7 @@
   </style>
 </head>
 <body>
-  <div class="wrapper">
-    <div class="random-font-text">asherel</div>
-  </div>
+  <div class="random-font-text">asherel</div>
 
   <script>
     const fonts = [
@@ -133,7 +125,6 @@
           const shiftY = baseTranslateY + (combinedBaselineShifts[nextFont] || 0);
           const shiftX = combinedHorizontalShifts[nextFont] || 0;
 
-          // Even though it's vertical, keep transform logic consistent
           textElement.style.transform = `rotate(180deg) translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
         }, 40);
 
