@@ -37,7 +37,7 @@
     .random-font-text {
       font-size: 12vw;
       line-height: 1;
-      color: #ff6600;
+      color: #f36210;
       transition: font-family 0.25s ease, filter 0.15s ease;
       filter: none;
       width: 100%;
@@ -46,7 +46,8 @@
       -webkit-text-stroke: 0 !important;
       text-stroke: 0 !important;
       text-align: left;
-      transform-origin: left center;
+      transform-origin: left top;
+      transform: rotate(-90deg) translate(-100%, 0);
     }
 
     .random-font-text.blur {
@@ -138,7 +139,7 @@
           const shiftY = baseTranslateY + (combinedBaselineShifts[nextFont] || 0);
           const shiftX = combinedHorizontalShifts[nextFont] || 0;
 
-          textElement.style.transform = `translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
+          textElement.style.transform = `rotate(-90deg) translate(-100%, 0) translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
         }, 40);
 
         setTimeout(() => {
@@ -168,7 +169,7 @@
       const scaleX = targetWidth / initialWidth;
       const shiftY = baseTranslateY + (combinedBaselineShifts[initialFont] || 0);
       const shiftX = combinedHorizontalShifts[initialFont] || 0;
-      textElement.style.transform = `translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
+      textElement.style.transform = `rotate(-90deg) translate(-100%, 0) translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)})`;
 
       scheduleNextFontChange();
     });
