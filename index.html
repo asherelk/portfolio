@@ -27,7 +27,7 @@
     .wrapper {
       position: fixed;
       top: 50%;
-      left: 4%;          /* shifted right */
+      left: 0;           /* flush left edge */
       transform: translateY(-50%);
       height: 33vh;
       display: flex;
@@ -48,10 +48,11 @@
       -webkit-text-stroke: 0 !important;
       text-stroke: 0 !important;
       text-align: left;
-      transform-origin: left center;
-      transform: rotate(-90deg);
+      /* Change origin to center for proper centering */
+      transform-origin: center center;
       pointer-events: auto;
       user-select: text;
+      /* Start with no transform, will be set in JS */
     }
 
     .random-font-text.blur {
@@ -83,28 +84,7 @@
       'Special Elite': 10.89, 'Workbench': 9.8, 'Yomogi': 9.504
     };
 
-    const combinedBaselineShifts = {
-      'Barrio': 2, 'Barriecito': 0, 'Baumans': 0, 'Bungee Inline': 0, 'Londrina Solid': 0,
-      'Chango': -1, 'Denk One': -2, 'Jacques Francois Shadow': -1, 'Jaini': -1, 'Moirai One': -3,
-      'Palette Mosaic': -3, 'Phudu': -2, 'Pixelify Sans': 1, 'Silkscreen': 0, 'VT323': 2,
-      'Plaster': 0, 'Qahiri': 5.25, 'Rubik Vinyl': -1, 'Rubik Glitch': 0, 'Sedgwick Ave Display': 4,
-      'Syncopate': 1, 'Tapestry': 1, 'Tilt Prism': 0, 'Shizuru': -7, 'Sixtyfour': 0,
-      'Special Elite': 6, 'Workbench': 0, 'Yomogi': -3
-    };
-
-    const combinedHorizontalShifts = {
-      'Barrio': 0.7, 'Barriecito': -0.2, 'Baumans': -1.1, 'Bungee Inline': 2, 'Londrina Solid': -1.45,
-      'Chango': 2.05, 'Denk One': -0.1, 'Jacques Francois Shadow': 0.1, 'Jaini': -2.6, 'Moirai One': 0.5,
-      'Palette Mosaic': 0, 'Phudu': -0.1, 'Pixelify Sans': 0.1, 'Silkscreen': 1.2, 'VT323': -2,
-      'Plaster': 1.6, 'Qahiri': -4.25, 'Rubik Vinyl': 1.1, 'Rubik Glitch': 1.1, 'Sedgwick Ave Display': 0.2,
-      'Syncopate': 2.6, 'Tapestry': -0.7, 'Tilt Prism': 1, 'Shizuru': -0.5, 'Sixtyfour': 3.15,
-      'Special Elite': 0.35, 'Workbench': -0.15, 'Yomogi': -0.2
-    };
-
-    const targetWidth = 6.2;
-    const baseTranslateY = 23;
-
-    const textElement = document.querySelector('.random-font-text');
+    let textElement = document.querySelector('.random-font-text');
     let isFontChanging = false;
     let autoSwitchTimeout;
     let lastChangeTime = 0;
@@ -138,12 +118,11 @@
         setTimeout(() => {
           textElement.style.fontFamily = `"${nextFont}", sans-serif`;
 
-          const measuredWidth = fontWidths[nextFont] || targetWidth;
-          const scaleX = targetWidth / measuredWidth;
-          const shiftY = baseTranslateY + (combinedBaselineShifts[nextFont] || 0);
-          const shiftX = combinedHorizontalShifts[nextFont] || 0;
+          const measuredWidth = fontWidths[nextFont] || 6.2;
+          const scaleX = 6.2 / measuredWidth;
 
-          textElement.style.transform = `rotate(-90deg) translate(0, 0) scaleX(${scaleX.toFixed(3)})`;
+          // TranslateX 50% moves center of rotated text to the left edge of screen
+          textElement.style.transform = `rotate(-90deg) translateX(50%) scaleX(${scaleX.toFixed(3)})`;
         }, 40);
 
         setTimeout(() => {
@@ -169,12 +148,9 @@
     window.addEventListener('load', () => {
       const initialFont = getRandomFont();
       textElement.style.fontFamily = `"${initialFont}", sans-serif`;
-      const initialWidth = fontWidths[initialFont] || targetWidth;
-      const scaleX = targetWidth / initialWidth;
-      const shiftY = baseTranslateY + (combinedBaselineShifts[initialFont] || 0);
-      const shiftX = combinedHorizontalShifts[initialFont] || 0;
-      textElement.style.transform = `rotate(-90deg) translate(0, 0) scaleX(${scaleX.toFixed(3)})`;
-
+      const initialWidth = fontWidths[initialFont] || 6.2;
+      const scaleX = 6.2 / initialWidth;
+      textElement.style.transform = `rotate(-90deg) translateX(50%) scaleX(${scaleX.toFixed(3)})`;
       scheduleNextFontChange();
     });
 
