@@ -24,19 +24,18 @@
       height: 100%;
     }
 
-    .wrapper {
-      position: fixed;
-top: 50%;
-left: 4%;
-transform: translateY(-50%);
-
-      height: 33vh;
-      display: flex;
-      align-items: center;
-      pointer-events: none;
-      user-select: none;
-      z-index: 10;
-    }
+.wrapper {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: auto;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  user-select: none;
+  z-index: 10;
+}
 
 .random-font-text {
   font-size: 12vw;
@@ -50,7 +49,6 @@ transform: translateY(-50%);
   text-stroke: 0 !important;
   text-align: left;
   transform-origin: left center;
-  /* rotate and translate so center aligns with viewport center vertically */
   transform: rotate(-90deg) translateY(-50%);
   pointer-events: auto;
   user-select: text;
