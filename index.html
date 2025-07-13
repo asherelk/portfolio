@@ -36,22 +36,26 @@
       z-index: 10;
     }
 
-    .random-font-text {
-      font-size: 12vw;
-      line-height: 1;
-      color: #3d00ae;
-      transition: font-family 0.25s ease, filter 0.15s ease;
-      filter: none;
-      white-space: nowrap;
-      font-weight: 400 !important;
-      -webkit-text-stroke: 0 !important;
-      text-stroke: 0 !important;
-      text-align: left;
-      transform-origin: top left;
-      transform: translateY(-50%) rotate(-90deg);
-      pointer-events: auto;
-      user-select: text;
-    }
+.random-font-text {
+  font-size: 12vw;
+  line-height: 1;
+  color: #3d00ae;
+  transition: font-family 0.25s ease, filter 0.15s ease;
+  filter: none;
+  white-space: nowrap;
+  font-weight: 400 !important;
+  -webkit-text-stroke: 0 !important;
+  text-stroke: 0 !important;
+  text-align: left;
+  transform-origin: top left;
+  transform: rotate(-90deg) translateY(-100%);
+  position: absolute;
+  top: 50%;
+  left: 0;
+  pointer-events: auto;
+  user-select: text;
+}
+
 
     .random-font-text.blur {
       filter: blur(5px);
