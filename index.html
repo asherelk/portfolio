@@ -27,7 +27,7 @@
     .wrapper {
       position: fixed;
       top: 50%;
-      left: 4%;          /* shifted right */
+      left: 4%; /* 2% more to the right */
       transform: translateY(-50%);
       height: 33vh;
       display: flex;
@@ -40,7 +40,7 @@
     .random-font-text {
       font-size: 12vw;
       line-height: 1;
-      color: #f36210;
+      color: #f36210; /* orange */
       transition: font-family 0.25s ease, filter 0.15s ease;
       filter: none;
       white-space: nowrap;
@@ -50,8 +50,6 @@
       text-align: left;
       transform-origin: left center;
       transform: rotate(-90deg);
-      pointer-events: auto;
-      user-select: text;
     }
 
     .random-font-text.blur {
@@ -143,7 +141,7 @@
           const shiftY = baseTranslateY + (combinedBaselineShifts[nextFont] || 0);
           const shiftX = combinedHorizontalShifts[nextFont] || 0;
 
-          textElement.style.transform = `rotate(-90deg) translate(0, 0) scaleX(${scaleX.toFixed(3)})`;
+          textElement.style.transform = `translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)}) rotate(-90deg)`;
         }, 40);
 
         setTimeout(() => {
@@ -173,7 +171,7 @@
       const scaleX = targetWidth / initialWidth;
       const shiftY = baseTranslateY + (combinedBaselineShifts[initialFont] || 0);
       const shiftX = combinedHorizontalShifts[initialFont] || 0;
-      textElement.style.transform = `rotate(-90deg) translate(0, 0) scaleX(${scaleX.toFixed(3)})`;
+      textElement.style.transform = `translate(${shiftX}%, ${shiftY}%) scaleX(${scaleX.toFixed(3)}) rotate(-90deg)`;
 
       scheduleNextFontChange();
     });
