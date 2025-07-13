@@ -24,36 +24,34 @@
       height: 100%;
     }
 
-.wrapper {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  height: auto;
-  display: flex;
-  align-items: center;
-  pointer-events: none;
-  user-select: none;
-  z-index: 10;
-}
+    .wrapper {
+      position: fixed;
+      top: 50%;
+      left: 0;
+      transform: none;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+      user-select: none;
+      z-index: 10;
+    }
 
-.random-font-text {
-  font-size: 12vw;
-  line-height: 1;
-  color: #3d00ae;
-  transition: font-family 0.25s ease, filter 0.15s ease;
-  filter: none;
-  white-space: nowrap;
-  font-weight: 400 !important;
-  -webkit-text-stroke: 0 !important;
-  text-stroke: 0 !important;
-  text-align: left;
-  transform-origin: left center;
-  transform: rotate(-90deg) translateY(-50%);
-  pointer-events: auto;
-  user-select: text;
-}
-
+    .random-font-text {
+      font-size: 12vw;
+      line-height: 1;
+      color: #3d00ae;
+      transition: font-family 0.25s ease, filter 0.15s ease;
+      filter: none;
+      white-space: nowrap;
+      font-weight: 400 !important;
+      -webkit-text-stroke: 0 !important;
+      text-stroke: 0 !important;
+      text-align: left;
+      transform-origin: top left;
+      transform: translateY(-50%) rotate(-90deg);
+      pointer-events: auto;
+      user-select: text;
+    }
 
     .random-font-text.blur {
       filter: blur(5px);
@@ -144,7 +142,7 @@
           const shiftY = baseTranslateY + (combinedBaselineShifts[nextFont] || 0);
           const shiftX = combinedHorizontalShifts[nextFont] || 0;
 
-          textElement.style.transform = `rotate(-90deg) translate(0, 0) scaleX(${scaleX.toFixed(3)})`;
+          textElement.style.transform = `translateY(-50%) rotate(-90deg) scaleX(${scaleX.toFixed(3)})`;
         }, 40);
 
         setTimeout(() => {
@@ -174,7 +172,7 @@
       const scaleX = targetWidth / initialWidth;
       const shiftY = baseTranslateY + (combinedBaselineShifts[initialFont] || 0);
       const shiftX = combinedHorizontalShifts[initialFont] || 0;
-      textElement.style.transform = `rotate(-90deg) translate(0, 0) scaleX(${scaleX.toFixed(3)})`;
+      textElement.style.transform = `translateY(-50%) rotate(-90deg) scaleX(${scaleX.toFixed(3)})`;
 
       scheduleNextFontChange();
     });
