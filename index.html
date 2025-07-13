@@ -28,11 +28,15 @@
   position: fixed;
   top: 50%;
   left: 0;
-  transform: translateY(-50%);
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: top left;
+  display: flex;
+  align-items: center;
   pointer-events: none;
   user-select: none;
   z-index: 10;
 }
+
 
 .random-font-text {
   font-size: 12vw;
@@ -45,17 +49,11 @@
   -webkit-text-stroke: 0 !important;
   text-stroke: 0 !important;
   text-align: left;
-
-  /* Key changes */
-  transform-origin: top left;
-  transform: rotate(-90deg) translateY(-50%);
-  position: relative;
-  left: 0;
-  top: 0;
-
+  transform: none;
   pointer-events: auto;
   user-select: text;
 }
+
 
 
 
