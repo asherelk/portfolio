@@ -171,6 +171,22 @@
     #text.blur {
       filter: blur(10px);
     }
+
+/* Fullscreen background image with lighten blend mode */
+#bg-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('lightbulb.webp'); /* update this path */
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: lighten;
+  pointer-events: none; /* allows interaction with elements on top */
+  z-index: -1;
+}
+
   </style>
 </head>
 <body>
