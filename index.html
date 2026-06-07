@@ -1764,5 +1764,64 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.querySelector('.contact-send');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    var overlay = document.getElementById('contactFormOverlay');
+    if (!overlay) return;
+    var nameEl    = overlay.querySelector('input[type="text"]');
+    var emailEl   = overlay.querySelector('input[type="email"]');
+    var messageEl = overlay.querySelector('textarea');
+    if (!nameEl || !emailEl || !messageEl) return;
+
+    var nameVal  = nameEl.value.trim();
+    var emailVal = emailEl.value.trim();
+    var msgVal   = messageEl.value.trim();
+
+    if (!nameVal || !emailVal || !msgVal) {
+      btn.textContent = 'Please fill all fields';
+      setTimeout(function(){ btn.textContent = 'Send message'; }, 2500);
+      return;
+    }
+
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    fetch('https://submit-form.com/eT1HwI8XG', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        name:    nameVal,
+        email:   emailVal,
+        message: msgVal,
+        website: ''
+      })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(res) {
+      if (res.success) {
+        btn.textContent = 'Sent!';
+        nameEl.value = ''; emailEl.value = ''; messageEl.value = '';
+        window._attachedFiles = [];
+        if (typeof _renderAttached === 'function') _renderAttached();
+        setTimeout(function(){ btn.textContent = 'Send message'; btn.disabled = false; }, 3000);
+      } else {
+        btn.textContent = 'Error — try again';
+        btn.disabled = false;
+        setTimeout(function(){ btn.textContent = 'Send message'; }, 3000);
+      }
+    })
+    .catch(function() {
+      btn.textContent = 'Error — try again';
+      btn.disabled = false;
+      setTimeout(function(){ btn.textContent = 'Send message'; }, 3000);
+    });
+  });
+});
+</script>
+
 </body>
 </html>
