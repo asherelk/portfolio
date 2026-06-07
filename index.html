@@ -1619,57 +1619,11 @@ document.addEventListener('wheel', function(e) {
 
 
 (function() {
-  const modes = ['normal','multiply','screen','overlay','darken','lighten',
-    'color-dodge','color-burn','hard-light','soft-light','difference',
-    'exclusion','hue','saturation','color','luminosity'];
-  let idx = 0;
-
-  const label = document.createElement('div');
-  label.style.cssText = [
-    'position:fixed','bottom:4vh','left:50%','transform:translateX(-50%)',
-    'background:#082d4b','color:#d9f2fc','font-family:Quicksand,sans-serif',
-    'font-size:1.4rem','font-weight:800','padding:0.5em 1.8em',
-    'border-radius:999px','z-index:99999','pointer-events:none',
-    'opacity:0','transition:opacity 0.3s ease'
-  ].join(';');
-  document.body.appendChild(label);
-
-  function applyMode() {
-    const btn = document.querySelector('.contact-send');
-    const mode = modes[idx % modes.length];
-    if (btn) btn.style.mixBlendMode = mode;
-    label.textContent = mode;
-    label.style.opacity = '1';
-    setTimeout(() => { label.style.opacity = '0'; }, 2500);
-    console.log('blend mode:', mode, 'btn:', !!btn);
-    idx++;
-  }
-
-  setTimeout(applyMode, 500);
-  setInterval(applyMode, 3000);
-})();
+  
 
 
 
 
-
-function logGCapHeight() {
-  const nav = document.getElementById('persistNav');
-  const link = nav ? (nav.querySelector('.nav-selected') || nav.querySelector('a')) : null;
-  if (!link) return;
-  const rect = link.getBoundingClientRect();
-  const fs = parseFloat(getComputedStyle(link).fontSize);
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  ctx.font = fs + 'px Boldonse, serif';
-  const mH = ctx.measureText('H');
-  const mG = ctx.measureText('G');
-  const ascent = mH.fontBoundingBoxAscent;
-  const capH  = mH.actualBoundingBoxAscent;
-  const capG  = mG.actualBoundingBoxAscent;
-  const gTopOnScreen = rect.top + (ascent - capG);
-  console.log('H top:', (rect.top + ascent - capH).toFixed(1), 'G top:', gTopOnScreen.toFixed(1), 'diff:', (capG - capH).toFixed(1), 'px overshoot');
-}
 </script>
 
 
