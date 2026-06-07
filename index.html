@@ -666,6 +666,9 @@ body {
   transform-origin: right center;
 }
 
+
+#attachFileCount { position: relative; display: inline-block; padding-right: 0.5em; }
+
 </style>
 </head>
 <body>
@@ -799,10 +802,16 @@ body {
                 <label>Message</label>
                 <textarea placeholder="" style="box-sizing:border-box;resize:none;"></textarea>
               <div style="position:relative;height:0;">
-              <span onclick="document.getElementById('contactFile').click();" style="position:absolute;bottom:-2.6em;left:0;display:inline-flex;align-items:flex-start;gap:0.35em;cursor:pointer;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.8;margin-top:0.1em;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                <span style="font-family:'Dosis',sans-serif;font-size:0.75em;opacity:0.8;line-height:1.3;">Attach file<br><span style="opacity:0.7;font-style:italic;font-size:0.8em;">5MB limit</span></span>
+              <span onclick="document.getElementById('contactFile').click();" style="position:absolute;bottom:-2.2em;left:0;display:inline-flex;align-items:flex-start;gap:0.35em;cursor:pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:0.8;margin-top:0.15em;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                <span style="font-family:'Dosis',sans-serif;font-size:1em;line-height:1.5;">Attach file <span style="font-style:italic;font-size:0.8em;opacity:0.6;">5MB limit</span></span>
               </span>
+              <span id="attachedFileName" style="position:absolute;bottom:-4.0em;left:1.45em;display:none;font-family:'Dosis',sans-serif;font-size:1em;line-height:1.5;opacity:0.6;">
+              <span id="attachFileCount" style="cursor:default;">
+                <span id="attachCountText"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="0.9em" height="0.9em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.15em;vertical-align:middle;"><polyline points="9 18 15 12 9 6"/></svg>
+                <span id="attachDropdown" style="position:absolute;left:100%;bottom:0;padding:0.8em 1.1em 0.8em 1.1em;margin-left:0em;background:white;border:1px solid rgba(8,45,75,0.2);border-radius:4px;min-width:12em;z-index:99999;display:none;box-shadow:0 2px 8px rgba(0,0,0,0.1);opacity:1 !important;"></span>
+              </span></span>
               </div></div>
               <button class="contact-send" style="align-self:center;margin-top:1vh;padding:0.6em 3em;">Send message</button>
             </div>
@@ -1525,123 +1534,8 @@ document.addEventListener('wheel', function(e) {
   <div id="contactHeadingSub" style="font-family:'Dosis', sans-serif;font-weight:500;font-size:1rem;white-space:nowrap;line-height:1.4;margin-top:0.3em;">Tell me about your project, and I'll be in touch.</div>
 </div>
 
-
-
-// ── CONTACT FORM SUBMIT ──
-(function() {
-  var btn = document.querySelector('.contact-send');
-  if (!btn) return;
-  btn.addEventListener('click', function() {
-    var overlay = document.getElementById('contactFormOverlay');
-    if (!overlay) return;
-    var name    = overlay.querySelector('input[type="text"]');
-    var email   = overlay.querySelector('input[type="email"]');
-    var message = overlay.querySelector('textarea');
-    if (!name || !email || !message) return;
-
-    var nameVal = name.value.trim();
-    var emailVal = email.value.trim();
-    var msgVal  = message.value.trim();
-
-    if (!nameVal || !emailVal || !msgVal) {
-      btn.textContent = 'Please fill all fields';
-      setTimeout(function(){ btn.textContent = 'Send message'; }, 2500);
-      return;
-    }
-
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
-
-    var body = new URLSearchParams();
-    body.append('name', nameVal);
-    body.append('email', emailVal);
-    body.append('message', msgVal);
-
-    fetch('contact.php', { method: 'POST', body: body })
-      .then(function(r){ return r.json(); })
-      .then(function(data) {
-        if (data.success) {
-          btn.textContent = 'Sent!';
-          name.value = ''; email.value = ''; message.value = '';
-          setTimeout(function(){ btn.textContent = 'Send message'; btn.disabled = false; }, 3000);
-        } else {
-          btn.textContent = data.message || 'Error — try again';
-          btn.disabled = false;
-          setTimeout(function(){ btn.textContent = 'Send message'; }, 3000);
-        }
-      })
-      .catch(function() {
-        btn.textContent = 'Error — try again';
-        btn.disabled = false;
-        setTimeout(function(){ btn.textContent = 'Send message'; }, 3000);
-      });
-  });
-})();
-
-
-<script>
-(function() {
-  var btn = document.querySelector('.contact-send');
-  if (!btn) return;
-  btn.addEventListener('click', function() {
-    var overlay = document.getElementById('contactFormOverlay');
-    if (!overlay) return;
-    var nameEl    = overlay.querySelector('input[type="text"]');
-    var emailEl   = overlay.querySelector('input[type="email"]');
-    var messageEl = overlay.querySelector('textarea');
-    if (!nameEl || !emailEl || !messageEl) return;
-
-    var nameVal  = nameEl.value.trim();
-    var emailVal = emailEl.value.trim();
-    var msgVal   = messageEl.value.trim();
-    var fileEl   = document.getElementById('contactFile');
-    var file     = fileEl && fileEl.files[0] ? fileEl.files[0] : null;
-
-    if (!nameVal || !emailVal || !msgVal) {
-      btn.textContent = 'Please fill all fields';
-      setTimeout(function(){ btn.textContent = 'Send message'; }, 2500);
-      return;
-    }
-
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
-
-    var formData = new FormData();
-    formData.append('access_key', '2afef07c-aad5-44f4-b9f1-fd7fd5366328');
-    formData.append('name',    nameVal);
-    formData.append('email',   emailVal);
-    formData.append('message', msgVal);
-    formData.append('subject', 'New portfolio message from ' + nameVal);
-    if (file) formData.append('attachment', file);
-
-    fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      body: formData
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(res) {
-      if (res.success) {
-        btn.textContent = 'Sent!';
-        nameEl.value = ''; emailEl.value = ''; messageEl.value = ''; if(fileEl) fileEl.value = '';
-        setTimeout(function(){ btn.textContent = 'Send message'; btn.disabled = false; }, 3000);
-      } else {
-        btn.textContent = 'Error — try again';
-        btn.disabled = false;
-        setTimeout(function(){ btn.textContent = 'Send message'; }, 3000);
-      }
-    })
-    .catch(function() {
-      btn.textContent = 'Error — try again';
-      btn.disabled = false;
-      setTimeout(function(){ btn.textContent = 'Send message'; }, 3000);
-    });
-  });
-})();
-</script>
-
-<input type="file" id="contactFile" style="display:none;">
-</body>
-</html>
+<input type="file" id="contactFile" style="display:none;" multiple>
+ml>
 }) translate(${-cx},${-cy})`);
   if (contactRect) {
     const distToHome = r.left + 2 * W + currentBottomX;
@@ -1782,6 +1676,15 @@ function logGCapHeight() {
 
 // ── CONTACT FORM SUBMIT ──
 (function() {
+  var fileInput = document.getElementById('contactFile');
+  if (fileInput) {
+    fileInput.addEventListener('change', function() {
+      Array.from(this.files).forEach(function(f) { window._attachedFiles.push(f); });
+      this.value = '';
+      _renderAttached();
+    });
+  }
+
   var btn = document.querySelector('.contact-send');
   if (!btn) return;
   btn.addEventListener('click', function() {
@@ -1832,66 +1735,74 @@ function logGCapHeight() {
 })();
 
 
+
+
+<input type="file" id="contactFile" style="display:none;" multiplehttp://www.w3.org/2000/svg\" width=\"0.85em\" height=\"0.85em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#082d4b\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:middle;margin-right:0.2em;\"><polyline points=\"20 6 9 17 4 12\"/></svg>'+files.map(function(f){return f.name;}).join(', ');disp.style.display='inline';}else{disp.style.display='none';}">
+
 <script>
-(function() {
-  var btn = document.querySelector('.contact-send');
-  if (!btn) return;
-  btn.addEventListener('click', function() {
-    var overlay = document.getElementById('contactFormOverlay');
-    if (!overlay) return;
-    var nameEl    = overlay.querySelector('input[type="text"]');
-    var emailEl   = overlay.querySelector('input[type="email"]');
-    var messageEl = overlay.querySelector('textarea');
-    if (!nameEl || !emailEl || !messageEl) return;
+window._attachedFiles = [];
+var _dropTimer = null;
 
-    var nameVal  = nameEl.value.trim();
-    var emailVal = emailEl.value.trim();
-    var msgVal   = messageEl.value.trim();
-    var fileEl   = document.getElementById('contactFile');
-    var file     = fileEl && fileEl.files[0] ? fileEl.files[0] : null;
+function _openDrop() {
+  clearTimeout(_dropTimer);
+  var d = document.getElementById('attachDropdown');
+  if (d) d.style.display = 'block';
+}
+function _closeDrop() {
+  clearTimeout(_dropTimer);
+  _dropTimer = setTimeout(function() {
+    var d = document.getElementById('attachDropdown');
+    if (d) d.style.display = 'none';
+  }, 400);
+}
 
-    if (!nameVal || !emailVal || !msgVal) {
-      btn.textContent = 'Please fill all fields';
-      setTimeout(function(){ btn.textContent = 'Send message'; }, 2500);
-      return;
-    }
+function _initDropHover() {
+  var trigger = document.getElementById('attachFileCount');
+  var drop    = document.getElementById('attachDropdown');
+  if (!trigger || !drop) return;
+  trigger.addEventListener('mouseenter', _openDrop);
+  trigger.addEventListener('mouseleave', _closeDrop);
+  drop.addEventListener('mouseenter', _openDrop);
+  drop.addEventListener('mouseleave', _closeDrop);
+}
 
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
+document.addEventListener('DOMContentLoaded', _initDropHover);
 
-    var formData = new FormData();
-    formData.append('access_key', '2afef07c-aad5-44f4-b9f1-fd7fd5366328');
-    formData.append('name',    nameVal);
-    formData.append('email',   emailVal);
-    formData.append('message', msgVal);
-    formData.append('subject', 'New portfolio message from ' + nameVal);
-    if (file) formData.append('attachment', file);
+function _renderAttached() {
+  setTimeout(_initDropHover, 0);
+  var disp = document.getElementById('attachedFileName');
+  var countText = document.getElementById('attachCountText');
+  var dropdown = document.getElementById('attachDropdown');
+  if (!disp || !countText || !dropdown) return;
+  var n = window._attachedFiles.length;
+  if (!n) { disp.style.display='none'; return; }
+  disp.style.display = 'inline';
+  countText.textContent = n + ' file' + (n>1?'s':'') + ' attached';
+  dropdown.innerHTML = window._attachedFiles.map(function(f, i) {
+    return '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5em;padding:0.1em 0;white-space:nowrap;">'
+      + '<span style="overflow:hidden;text-overflow:ellipsis;max-width:14em;">' + f.name + '</span>'
+      + '<button onclick="event.stopPropagation();_removeFile(' + i + ')" style="background:none;border:none;cursor:pointer;padding:0;font-size:1em;opacity:0.6;color:inherit;line-height:1;flex-shrink:0;" title="Remove">&times;</button>'
+      + '</div>';
+  }).join('');
+}
 
-    fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      body: formData
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(res) {
-      if (res.success) {
-        btn.textContent = 'Sent!';
-        nameEl.value = ''; emailEl.value = ''; messageEl.value = ''; if(fileEl) fileEl.value = '';
-        setTimeout(function(){ btn.textContent = 'Send message'; btn.disabled = false; }, 3000);
-      } else {
-        btn.textContent = 'Error — try again';
-        btn.disabled = false;
-        setTimeout(function(){ btn.textContent = 'Send message'; }, 3000);
-      }
-    })
-    .catch(function() {
-      btn.textContent = 'Error — try again';
-      btn.disabled = false;
-      setTimeout(function(){ btn.textContent = 'Send message'; }, 3000);
+function _removeFile(i) {
+  window._attachedFiles.splice(i, 1);
+  _renderAttached();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var inp = document.getElementById('contactFile');
+  if (!inp) return;
+  inp.addEventListener('change', function() {
+    Array.from(this.files).forEach(function(f) {
+      window._attachedFiles.push(f);
     });
+    this.value = '';
+    _renderAttached();
   });
-})();
+});
 </script>
 
-<input type="file" id="contactFile" style="display:none;">
 </body>
 </html>
