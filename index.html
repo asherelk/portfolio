@@ -810,9 +810,10 @@ body {
               <span id="attachFileCount" style="cursor:default;">
                 <span id="attachCountText"></span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="0.9em" height="0.9em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.15em;vertical-align:middle;"><polyline points="9 18 15 12 9 6"/></svg>
-                <span id="attachDropdown" style="position:absolute;left:100%;bottom:0;padding:0.8em 1.1em 0.8em 1.1em;margin-left:0em;background:white;border:1px solid rgba(8,45,75,0.2);border-radius:4px;min-width:12em;z-index:99999;display:none;box-shadow:0 2px 8px rgba(0,0,0,0.1);opacity:1 !important;"></span>
+                <span id="attachDropdown" style="position:absolute;left:100%;bottom:0;padding:0.8em 1.1em 0.8em 1.1em;margin-left:0em;background:rgba(255,255,255,0.9);border:1px solid rgba(8,45,75,0.2);border-radius:4px;min-width:12em;z-index:99999;display:none;box-shadow:0 2px 8px rgba(0,0,0,0.1);"></span>
               </span></span>
               </div></div>
+              <input type="text" name="website" style="display:none;" tabindex="-1" autocomplete="off">
               <button class="contact-send" style="align-self:center;margin-top:1vh;padding:0.6em 3em;">Send message</button>
             </div>
           </div></div>
@@ -1708,20 +1709,25 @@ function logGCapHeight() {
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
-    var body = new URLSearchParams();
-    body.append('name', nameVal);
-    body.append('email', emailVal);
-    body.append('message', msgVal);
-
-    fetch('contact.php', { method: 'POST', body: body })
+    fetch('https://submit-form.com/eT1HwI8XG', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        name:    nameVal,
+        email:   emailVal,
+        message: msgVal,
+        website: ''
+      })
+    })
       .then(function(r){ return r.json(); })
-      .then(function(data) {
-        if (data.success) {
+      .then(function(res) {
+        if (res.success) {
           btn.textContent = 'Sent!';
           name.value = ''; email.value = ''; message.value = '';
+          window._attachedFiles = []; _renderAttached();
           setTimeout(function(){ btn.textContent = 'Send message'; btn.disabled = false; }, 3000);
         } else {
-          btn.textContent = data.message || 'Error — try again';
+          btn.textContent = 'Error — try again';
           btn.disabled = false;
           setTimeout(function(){ btn.textContent = 'Send message'; }, 3000);
         }
