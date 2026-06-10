@@ -1495,7 +1495,7 @@ function applyNameEmailWidths() {
   // _nameRightPx = navGraphic.offsetLeft + offsetWidth (layout x from nav container left)
   // Both nav and overlay share the same x-coordinate space within their 100vw column
   // nameField.offsetLeft is relative to offsetParent (may not be overlay)
-  // Use getBoundingClientRect at load time — stable since fields don't scroll
+  // Use getBoundingClientRect at load time — stable since fields do not scroll
   const ovR2 = overlay.getBoundingClientRect();
   if (nameField) {
     const nfR = nameField.getBoundingClientRect();
