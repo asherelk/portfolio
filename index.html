@@ -331,6 +331,129 @@ body {
 }
 .card-link:hover { opacity: 1; }
 
+/* ── PROJECT MODAL ── */
+#projectModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(4,20,35,0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, background 0.4s ease;
+}
+#projectModalOverlay.open {
+  opacity: 1;
+  pointer-events: all;
+  background: rgba(4,20,35,0.55);
+}
+#projectModalPanel {
+  position: fixed;
+  top: 50vh; left: 50vw; width: 0; height: 0;
+  background: #f6f3f2;
+  overflow: hidden;
+  box-shadow: 0 10px 50px rgba(0,0,0,0.4);
+  box-sizing: border-box;
+}
+#projectModalClose {
+  position: absolute;
+  top: 2.2vh; right: 2vw;
+  width: 3em; height: 3em;
+  border: none;
+  background: rgba(8,45,75,0.12);
+  color: #082d4b;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.2s ease, opacity 0.3s ease;
+  opacity: 0;
+  z-index: 2;
+}
+#projectModalClose svg {
+  width: 1.15em;
+  height: 1.15em;
+  display: block;
+}
+#projectModalPanel.expanded #projectModalClose { opacity: 1; }
+#projectModalClose:hover { background: rgba(8,45,75,0.28); transform: scale(1.08); }
+
+#projectModalNav {
+  position: absolute;
+  bottom: 3vh; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2.5em;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+#projectModalPanel.expanded #projectModalNav { opacity: 1; }
+.project-modal-arrow {
+  background: none;
+  border: none;
+  color: #082d4b;
+  cursor: pointer;
+  opacity: 0.65;
+  padding: 0.3em 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.project-modal-arrow svg {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: block;
+}
+.project-modal-arrow:hover { opacity: 1; transform: scale(1.15); }
+
+#projectModalContent {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 7vh 6vw 9vh;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+#projectModalPanel.expanded #projectModalContent { opacity: 1; }
+
+.project-modal-title {
+  font-family: 'Dosis', sans-serif;
+  font-weight: 800;
+  font-style: italic;
+  font-size: clamp(1.4rem, 2.8vw, 2.8rem);
+  color: #082d4b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.3em;
+}
+.project-modal-text {
+  font-family: 'Dosis', sans-serif;
+  font-weight: 500;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  color: #082d4b;
+  max-width: 46em;
+  line-height: 1.5;
+  margin-bottom: 4vh;
+}
+.project-modal-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2vw;
+}
+.project-modal-image {
+  width: 22vw;
+  height: 22vw;
+  max-width: 320px;
+  max-height: 320px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(8,45,75,0.30) 0%, rgba(23,173,224,0.18) 100%);
+}
+
 /* ── ABOUT ── */
 #about {
   background: transparent;
@@ -1467,6 +1590,8 @@ function alignNameEmailBoxes() {
   if (navContactEl) {
     window._headingOffsetLeft = navAbout.offsetLeft;
     window._headingWidth = navContactEl.offsetLeft + navContactEl.offsetWidth - navAbout.offsetLeft;
+    const cr = navContactEl.getBoundingClientRect();
+    window._messageRightPx = cr.right - navR.left;
   }
   // Restore exactly
   navGraphic.className    = _pgc;
@@ -1507,6 +1632,12 @@ function applyNameEmailWidths() {
     const efLeft = efR.left - ovR2.left;
     emailField.style.width = Math.max(0, (window._navContainerLeft || 0) + window._emailRightPx - efLeft) + 'px';
   }
+  const msgCol = document.getElementById('messageCol');
+  if (msgCol && window._messageRightPx) {
+    const mcR = msgCol.getBoundingClientRect();
+    const mcLeft = mcR.left - ovR2.left;
+    msgCol.style.width = Math.max(0, (window._navContainerLeft || 0) + window._messageRightPx - mcLeft) + 'px';
+  }
 }
 window.addEventListener('load', alignNameEmailBoxes);
 window.addEventListener('resize', alignNameEmailBoxes);
@@ -1544,99 +1675,8 @@ document.addEventListener('wheel', function(e) {
 </div>
 
 <input type="file" id="contactFile" style="display:none;" multiple>
-ml>
-}) translate(${-cx},${-cy})`);
-  if (contactRect) {
-    const distToHome = r.left + 2 * W + currentBottomX;
-    contactRect.setAttribute("width", Math.max(0, distToHome / ppu + 100).toFixed(1));
-  }
-}
 
-function alignBlurStrip() {
-  const grid = document.querySelector('.cards-grid');
-  const strip = document.getElementById('blurStrip');
-  const overlay = document.getElementById('contactFormOverlay');
-  const heading = document.getElementById('contactHeading');
-  const navAbout = document.getElementById('navAbout');
-  const navContact = document.getElementById('navContact');
-  if (!grid) return;
-  const left = window.innerWidth + grid.offsetLeft;
-  const width = grid.offsetWidth;
-  // Position heading from navAbout.right to navContact.left (in nav coords)
-  if (heading && navAbout && navContact) {
-    const aLeft  = navAbout.offsetLeft;
-    const cRight = navContact.offsetLeft + navContact.offsetWidth;
-    heading.style.marginLeft  = aLeft + 'px';
-    heading.style.width       = (cRight - aLeft) + 'px';
-    heading.style.textAlign   = 'right';
-    heading.style.paddingRight = '0';
-    heading.style.whiteSpace     = 'nowrap';
-    heading.style.overflow       = 'hidden';
-    heading.style.display        = 'flex';
-    heading.style.alignItems     = 'center';
-    heading.style.justifyContent = 'center';
-    // Scale to fill width
-    heading.style.fontSize = '10px';
-    const targetW = cRight - aLeft;
-    const ratio = targetW / heading.scrollWidth;
-    heading.style.fontSize = (10 * ratio * 0.95) + 'px';
-  }
-  const extendedWidth = window.innerWidth - grid.offsetLeft;
-  if (strip)   { strip.style.left = left + 'px'; strip.style.width = extendedWidth + 'px'; }
-}
-window.addEventListener('load', alignBlurStrip);
-window.addEventListener('resize', alignBlurStrip);
-
-
-function alignNameEmailBoxes() {
-  const navGraphic = document.getElementById('navGraphic');
-  const navAbout   = document.getElementById('navAbout');
-  const overlay    = document.getElementById('contactFormOverlay');
-  const nameInput  = overlay ? overlay.querySelector('input[type="text"]') : null;
-  const emailInput = overlay ? overlay.querySelector('input[type="email"]') : null;
-  if (!navGraphic || !navAbout || !overlay || !nameInput || !emailInput) return;
-
-  const or = overlay.getBoundingClientRect();
-  const gr = navGraphic.getBoundingClientRect();
-  const ar = navAbout.getBoundingClientRect();
-
-  // Right edge of nav link relative to overlay left
-  const nameRight  = gr.right - or.left;
-  const emailRight = ar.right - or.left;
-
-  // Set max-width on name and email fields
-  const nameField  = nameInput.closest('.contact-field');
-  const emailField = emailInput.closest('.contact-field');
-  if (nameField)  nameField.style.width  = nameRight  + 'px';
-  if (emailField) emailField.style.width = emailRight + 'px';
-}
-window.addEventListener('load', alignNameEmailBoxes);
-window.addEventListener('resize', alignNameEmailBoxes);
-
-document.addEventListener('wheel', function(e) {
-  const textarea = document.querySelector('#messageCol textarea');
-  if (!textarea) return;
-  const rect = textarea.getBoundingClientRect();
-  const over = e.clientX >= rect.left && e.clientX <= rect.right &&
-                e.clientY >= rect.top  && e.clientY <= rect.bottom;
-  if (over && textarea.scrollHeight > textarea.clientHeight) {
-    e.stopPropagation();
-  }
-}, { capture: true });
-
-
-
-(function() {
-  
-
-
-
-
-</script>
-
-
-
-
+<script>
 // ── CONTACT FORM SUBMIT ──
 (function() {
   var fileInput = document.getElementById('contactFile');
@@ -1701,11 +1741,7 @@ document.addEventListener('wheel', function(e) {
       });
   });
 })();
-
-
-
-
-<input type="file" id="contactFile" style="display:none;" multiplehttp://www.w3.org/2000/svg\" width=\"0.85em\" height=\"0.85em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#082d4b\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align:middle;margin-right:0.2em;\"><polyline points=\"20 6 9 17 4 12\"/></svg>'+files.map(function(f){return f.name;}).join(', ');disp.style.display='inline';}else{disp.style.display='none';}">
+</script>
 
 <script>
 window._attachedFiles = [];
@@ -1829,6 +1865,145 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+</script>
+
+<!-- Project detail modal -->
+<div id="projectModalOverlay">
+  <div id="projectModalPanel">
+    <button id="projectModalClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <line x1="5" y1="5" x2="19" y2="19"/>
+        <line x1="19" y1="5" x2="5" y2="19"/>
+      </svg>
+    </button>
+    <div id="projectModalContent">
+      <div class="project-modal-title" id="projectModalTitle">Lorem Ipsum</div>
+      <div class="project-modal-text" id="projectModalText">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.</div>
+      <div class="project-modal-images">
+        <div class="project-modal-image"></div>
+        <div class="project-modal-image"></div>
+        <div class="project-modal-image"></div>
+      </div>
+    </div>
+    <div id="projectModalNav">
+      <button class="project-modal-arrow" id="projectModalPrev" aria-label="Previous project">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 6 9 12 15 18"/>
+        </svg>
+      </button>
+      <button class="project-modal-arrow" id="projectModalNext" aria-label="Next project">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 6 15 12 9 18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var projectData = [
+    { title: 'Lorem Ipsum One',   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
+    { title: 'Lorem Ipsum Two',   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
+    { title: 'Lorem Ipsum Three', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
+    { title: 'Lorem Ipsum Four',  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
+    { title: 'Lorem Ipsum Five',  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
+    { title: 'Lorem Ipsum Six',   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
+    { title: 'Lorem Ipsum Seven', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
+    { title: 'Lorem Ipsum Eight', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' }
+  ];
+
+  var overlay = document.getElementById('projectModalOverlay');
+  var panel   = document.getElementById('projectModalPanel');
+  var titleEl = document.getElementById('projectModalTitle');
+  var textEl  = document.getElementById('projectModalText');
+  var thumbs  = Array.prototype.slice.call(document.querySelectorAll('.cards-grid .card-thumb'));
+
+  var currentIndex = 0;
+  var originThumb  = null;
+  var isOpen       = false;
+  var animEndHandler = null;
+
+  function fillContent(i) {
+    var d = projectData[i % projectData.length];
+    titleEl.textContent = d.title;
+    textEl.textContent  = d.text;
+  }
+
+  function setPanelRect(rect) {
+    panel.style.top    = rect.top + 'px';
+    panel.style.left   = rect.left + 'px';
+    panel.style.width  = rect.width + 'px';
+    panel.style.height = rect.height + 'px';
+  }
+
+  function openModal(index, thumbEl) {
+    currentIndex = index;
+    originThumb  = thumbEl;
+    fillContent(currentIndex);
+
+    if (animEndHandler) { panel.removeEventListener('transitionend', animEndHandler); animEndHandler = null; }
+    panel.classList.remove('expanded');
+    panel.style.transition = 'none';
+    setPanelRect(thumbEl.getBoundingClientRect());
+    void panel.offsetHeight; // force reflow so the collapsed rect is committed before animating
+
+    overlay.classList.add('open');
+    panel.style.transition = 'top 0.5s ease, left 0.5s ease, width 0.5s ease, height 0.5s ease';
+    panel.style.top    = '5vh';
+    panel.style.left   = '0';
+    panel.style.width  = '100vw';
+    panel.style.height = '95vh';
+
+    isOpen = true;
+
+    animEndHandler = function(e) {
+      if (e.target !== panel) return;
+      panel.classList.add('expanded');
+      panel.removeEventListener('transitionend', animEndHandler);
+      animEndHandler = null;
+    };
+    panel.addEventListener('transitionend', animEndHandler);
+  }
+
+  function closeModal() {
+    if (!isOpen) return;
+    isOpen = false;
+
+    if (animEndHandler) { panel.removeEventListener('transitionend', animEndHandler); animEndHandler = null; }
+    panel.classList.remove('expanded');
+    overlay.classList.remove('open');
+
+    panel.style.transition = 'top 0.45s ease, left 0.45s ease, width 0.45s ease, height 0.45s ease';
+    if (originThumb) {
+      setPanelRect(originThumb.getBoundingClientRect());
+    } else {
+      panel.style.top = '50vh'; panel.style.left = '50vw'; panel.style.width = '0'; panel.style.height = '0';
+    }
+  }
+
+  function showRelative(delta) {
+    if (!isOpen) return;
+    currentIndex = (currentIndex + delta + projectData.length) % projectData.length;
+    fillContent(currentIndex);
+  }
+
+  thumbs.forEach(function(t, i) {
+    t.addEventListener('click', function() { openModal(i, t); });
+  });
+
+  document.getElementById('projectModalClose').addEventListener('click', closeModal);
+  document.getElementById('projectModalPrev').addEventListener('click', function() { showRelative(-1); });
+  document.getElementById('projectModalNext').addEventListener('click', function() { showRelative(1); });
+
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function(e) {
+    if (!isOpen) return;
+    if (e.key === 'Escape')     closeModal();
+    if (e.key === 'ArrowLeft')  showRelative(-1);
+    if (e.key === 'ArrowRight') showRelative(1);
+  });
+})();
 </script>
 
 </body>
