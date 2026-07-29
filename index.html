@@ -5,7 +5,7 @@
 <title>Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Dosis:wght@600;700&family=Besley:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Boldonse:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Boogaloo&family=Bungee&family=Boldonse&family=Lilita+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;500;600;700;800&family=Boldonse:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -1078,7 +1078,7 @@ function animate() {
       const wasGS = navGraphic.classList.contains('nav-selected');
       const isGS  = !atAbout && !atContact;
       if (wasGS && !isGS) {
-        // Losing selected: shrink in Playfair, then swap to Quicksand
+        // Losing selected: shrink in Boldonse, then swap to Dosis
         navGraphic.style.transition = 'none';
         navGraphic.classList.remove('nav-selected');
         navGraphic.style.fontFamily = "'Dosis', sans-serif";
