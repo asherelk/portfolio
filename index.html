@@ -354,11 +354,9 @@ body {
   overflow: hidden;
   box-shadow: 0 10px 50px rgba(0,0,0,0.4);
   box-sizing: border-box;
-  border-top-right-radius: 2.37vh;
 }
 #projectModalClose {
   position: absolute;
-  top: 2.2vh; right: 2vw;
   width: 3em; height: 3em;
   border: none;
   background: rgba(246,243,242,0.4);
@@ -447,6 +445,11 @@ body {
   flex-wrap: wrap;
   gap: 2vw;
 }
+.project-modal-images.has-photos {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 4vh;
+}
 .project-modal-image {
   width: 22vw;
   height: 22vw;
@@ -454,6 +457,41 @@ body {
   max-height: 320px;
   border-radius: 4px;
   background: linear-gradient(135deg, rgba(8,45,75,0.30) 0%, rgba(23,173,224,0.18) 100%);
+}
+.project-modal-photo-wrap {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #d9d9d9;
+}
+.project-modal-photo-wrap.img-missing {
+  min-height: 340px;
+}
+.project-modal-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+#projectModalContent::-webkit-scrollbar {
+  display: block !important;
+  width: 270px;
+}
+#projectModalContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+#projectModalContent::-webkit-scrollbar-thumb,
+#projectModalContent::-webkit-scrollbar-thumb:hover,
+#projectModalContent::-webkit-scrollbar-thumb:active {
+  background: #082d4b !important;
+  border-radius: 15px;
+  min-height: 40px;
+}
+#projectModalContent {
+  scrollbar-width: auto;
+  scrollbar-color: #082d4b transparent;
 }
 
 /* ── ABOUT ── */
@@ -1881,11 +1919,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div id="projectModalContent">
       <div class="project-modal-title" id="projectModalTitle">Lorem Ipsum</div>
       <div class="project-modal-text" id="projectModalText">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.</div>
-      <div class="project-modal-images">
-        <div class="project-modal-image"></div>
-        <div class="project-modal-image"></div>
-        <div class="project-modal-image"></div>
-      </div>
+      <div class="project-modal-images" id="projectModalImages"></div>
     </div>
     <div id="projectModalNav">
       <button class="project-modal-arrow" id="projectModalPrev" aria-label="Previous project">
@@ -1905,15 +1939,22 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 (function() {
   var projectData = [
-    { title: 'FIX-IT & WHATNOT',          text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
-    { title: 'THE FISH EDISH',            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
-    { title: 'HEART & HERITAGE',          text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
-    { title: 'SCHOPIX',                   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
-    { title: 'A TOAST TO US ALL',         text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
-    { title: 'TALES OF FINCH',            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
-    { title: 'POETRY BOOK COVERS',        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' },
-    { title: 'GREENHOUSES & GALLERIES',   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.' }
+    { title: 'FIX-IT & WHATNOT',          text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.',
+      images: [
+        'images/fix-it-whatnot/cardsketch.jpeg',
+        'images/fix-it-whatnot/caleb_bizcard_v3.webp',
+        'images/fix-it-whatnot/cardsprinted.jpeg'
+      ] },
+    { title: 'THE FISH EDISH',            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.', images: [] },
+    { title: 'HEART & HERITAGE',          text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.', images: [] },
+    { title: 'SCHOPIX',                   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.', images: [] },
+    { title: 'A TOAST TO US ALL',         text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.', images: [] },
+    { title: 'TALES OF FINCH',            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.', images: [] },
+    { title: 'POETRY BOOK COVERS',        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.', images: [] },
+    { title: 'GREENHOUSES & GALLERIES',   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.', images: [] }
   ];
+
+  var imagesEl = document.getElementById('projectModalImages');
 
   var overlay = document.getElementById('projectModalOverlay');
   var panel   = document.getElementById('projectModalPanel');
@@ -1930,6 +1971,32 @@ document.addEventListener('DOMContentLoaded', function() {
     var d = projectData[i % projectData.length];
     titleEl.textContent = d.title;
     textEl.textContent  = d.text;
+
+    imagesEl.innerHTML = '';
+    if (d.images && d.images.length) {
+      imagesEl.classList.add('has-photos');
+      d.images.forEach(function(src) {
+        var wrap = document.createElement('div');
+        wrap.className = 'project-modal-photo-wrap';
+        var img = document.createElement('img');
+        img.src = src;
+        img.alt = d.title;
+        img.className = 'project-modal-photo';
+        img.onerror = function() {
+          wrap.classList.add('img-missing');
+          img.style.display = 'none';
+        };
+        wrap.appendChild(img);
+        imagesEl.appendChild(wrap);
+      });
+    } else {
+      imagesEl.classList.remove('has-photos');
+      for (var n = 0; n < 3; n++) {
+        var ph = document.createElement('div');
+        ph.className = 'project-modal-image';
+        imagesEl.appendChild(ph);
+      }
+    }
   }
 
   function setPanelRect(rect) {
@@ -1937,6 +2004,20 @@ document.addEventListener('DOMContentLoaded', function() {
     panel.style.left   = rect.left + 'px';
     panel.style.width  = rect.width + 'px';
     panel.style.height = rect.height + 'px';
+  }
+
+  var closeBtn = document.getElementById('projectModalClose');
+
+  function syncModalCorner() {
+    var stripEl = document.getElementById('blurStrip');
+    if (!stripEl) return;
+    var radiusPx = parseFloat(getComputedStyle(stripEl).borderTopLeftRadius) || 0;
+    panel.style.borderTopRightRadius = radiusPx + 'px';
+
+    var btnRadius = closeBtn.offsetWidth / 2;
+    var offset = Math.max(0, radiusPx - btnRadius);
+    closeBtn.style.top   = offset + 'px';
+    closeBtn.style.right = offset + 'px';
   }
 
   function openModal(index, thumbEl) {
@@ -1956,6 +2037,7 @@ document.addEventListener('DOMContentLoaded', function() {
     panel.style.left   = '5vh';
     panel.style.width  = 'calc(100vw - 10vh)';
     panel.style.height = '90vh';
+    syncModalCorner();
 
     isOpen = true;
 
@@ -2012,6 +2094,10 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('wheel', function(e) {
     if (isOpen) e.stopPropagation();
   }, { capture: true });
+
+  window.addEventListener('resize', function() {
+    if (isOpen) syncModalCorner();
+  });
 })();
 </script>
 
