@@ -422,6 +422,9 @@ body {
 #projectModalPanel.expanded #projectModalContent { opacity: 1; }
 
 .project-modal-title {
+  position: absolute;
+  left: 6vw;
+  right: 6vw;
   font-family: 'Boldonse', serif;
   font-weight: 600;
   font-style: italic;
@@ -429,8 +432,11 @@ body {
   color: #082d4b;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 0.3em;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 1;
 }
+#projectModalPanel.expanded .project-modal-title { opacity: 1; }
 .project-modal-text {
   font-family: 'Dosis', sans-serif;
   font-weight: 500;
@@ -478,6 +484,7 @@ body {
 #projectModalContent::-webkit-scrollbar {
   display: block !important;
   width: 270px;
+  -webkit-appearance: none;
 }
 #projectModalContent::-webkit-scrollbar-track {
   background: transparent;
@@ -594,7 +601,8 @@ body {
   font-family: 'Dosis', sans-serif;
   font-size: clamp(0.75rem, 0.9vw, 0.9rem);
   color: #082d4b;
-  padding: 0.4em 0.6em;
+  padding: 0.4em 2em 0.4em 0.6em;
+  box-sizing: border-box;
   width: 100%;
   resize: none;
   height: 25vh;
@@ -795,9 +803,11 @@ body {
 #messageCol textarea::-webkit-scrollbar {
   display: block !important;
   width: 270px;
+  -webkit-appearance: none;
 }
 #messageCol textarea::-webkit-scrollbar-track {
   background: transparent;
+  margin-top: 2.37vh;
 }
 #messageCol textarea::-webkit-scrollbar-thumb,
 #messageCol textarea::-webkit-scrollbar-thumb:hover,
@@ -1916,8 +1926,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <line x1="19" y1="5" x2="5" y2="19"/>
       </svg>
     </button>
+    <div class="project-modal-title" id="projectModalTitle">Lorem Ipsum</div>
     <div id="projectModalContent">
-      <div class="project-modal-title" id="projectModalTitle">Lorem Ipsum</div>
       <div class="project-modal-text" id="projectModalText">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder project description goes here.</div>
       <div class="project-modal-images" id="projectModalImages"></div>
     </div>
@@ -2010,6 +2020,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function syncModalCorner() {
     var stripEl = document.getElementById('blurStrip');
+    var contentEl = document.getElementById('projectModalContent');
     if (!stripEl) return;
     var radiusPx = parseFloat(getComputedStyle(stripEl).borderTopLeftRadius) || 0;
     panel.style.borderTopRightRadius = radiusPx + 'px';
@@ -2018,6 +2029,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var offset = Math.max(0, radiusPx - btnRadius);
     closeBtn.style.top   = offset + 'px';
     closeBtn.style.right = offset + 'px';
+
+    // Scrollbar top stays aligned with the corner radius / circle center
+    if (contentEl) contentEl.style.top = radiusPx + 'px';
+
+    // Headline's top independently aligns with the top of the close-button circle
+    if (titleEl) titleEl.style.top = offset + 'px';
   }
 
   function openModal(index, thumbEl) {
