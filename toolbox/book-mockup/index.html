@@ -1,0 +1,3375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Book Mockup Creator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Lexend+Zetta:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#082d4b; --ink-2:#0b3961; --paper:#f6f3f2;
+    --oxblood:#082d4b; --oxblood-light:#8adbf8; --muted:rgba(217,242,252,.6); --line:rgba(217,242,252,.16); --text:#d9f2fc;
+    --orange:#fc5a18;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{ background:var(--ink); color:var(--text); font-family:'Lexend',sans-serif; display:flex; overflow:hidden; min-height:100vh; }
+
+  #sidebar{ position:fixed; left:0; top:0; bottom:0; z-index:30; transform:translateX(0); transition:transform .55s cubic-bezier(.22,.7,.25,1); will-change:transform;
+    width:560px; min-width:560px; background:var(--ink-2); border-right:1px solid var(--line);
+    padding:24px; overflow-y:auto; display:flex; flex-direction:column; gap:18px;
+    background-image:linear-gradient(to right,
+      transparent 46%,
+      color-mix(in srgb, var(--bgfade,#99d7e8) 1%, transparent) 73%,
+      color-mix(in srgb, var(--bgfade,#99d7e8) 5%, transparent) 86.6%,
+      color-mix(in srgb, var(--bgfade,#99d7e8) 14%, transparent) 94.6%,
+      color-mix(in srgb, var(--bgfade,#99d7e8) 35%, transparent) 100%);
+    background-repeat:no-repeat; background-origin:border-box; background-clip:border-box;
+  }
+  body.side-collapsed #sidebar{ transform:translateX(-100%); transition:transform .3s ease; }
+  #stage{ margin-left:560px; }
+  body.side-collapsed #stage{ margin-left:0; }
+  #sideToggle{
+    position:fixed; top:322px; left:560px; transform:translate(-50%,-50%); z-index:50; width:26px; height:56px; padding:0;
+    border-radius:999px; background:var(--ink); border:1px solid var(--line); color:var(--text); box-shadow:0 0 10px rgba(138,219,248,.14);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; transition:left .25s ease, border-color .3s ease, background-color .3s ease, box-shadow .3s ease;
+  }
+  #sideToggle:hover{ background:var(--ink-2); box-shadow:0 0 12px rgba(138,219,248,.38); }
+  #sideToggle{ color:var(--oxblood-light); background:var(--ink); }
+  #sideToggle:hover svg{ filter:drop-shadow(0 0 5px rgba(138,219,248,1)); }
+  #sideToggle svg{ filter:drop-shadow(0 0 4px rgba(138,219,248,.7)); width:12px; height:12px; transition:transform .25s ease; }
+  #sideFade{ position:fixed; top:0; bottom:0; left:260px; width:300px; opacity:.35;
+    background:linear-gradient(to right,
+      color-mix(in srgb, var(--bgfade,#99d7e8) 0%, transparent) 0%,
+      color-mix(in srgb, var(--bgfade,#99d7e8) 3%, transparent) 50%,
+      color-mix(in srgb, var(--bgfade,#99d7e8) 14%, transparent) 75%,
+      color-mix(in srgb, var(--bgfade,#99d7e8) 40%, transparent) 90%,
+      var(--bgfade,#99d7e8) 100%); pointer-events:none; z-index:40; transition:opacity .25s ease; }
+  body.side-collapsed #sideFade{ opacity:0; }
+  #sideFade{ display:none !important; }
+  body #sideToggle{ transition:transform .55s cubic-bezier(.22,.7,.25,1), border-color .3s ease, background-color .3s ease, box-shadow .3s ease; }
+  body.side-collapsed #sideToggle{ transform:translate(calc(-50% - 547px), -50%); transition:transform .3s ease, border-color .3s ease, background-color .3s ease, box-shadow .3s ease; }
+  body.side-collapsed #sideToggle svg{ transform:rotate(180deg); }
+  #sidebar{ scrollbar-width:none; }
+  #sidebar::-webkit-scrollbar{ display:none; width:0; height:0; }
+  #sbThumb{ position:fixed; left:548px; top:0; width:9px; height:40px; border-radius:999px; background:rgba(138,219,248,.5); z-index:45; cursor:default;
+    transition:background-color .3s ease, transform .55s cubic-bezier(.22,.7,.25,1); touch-action:none; }
+  #sbThumb:hover, #sbThumb.drag{ background:rgba(205,243,255,.95); }
+  body.side-collapsed #sbThumb{ transform:translateX(-570px); transition:background-color .3s ease, transform .3s ease; }
+  @media (max-width:800px){ #sbThumb{ display:none; } }
+  .brand{ display:flex; flex-direction:column; gap:2px; padding-bottom:14px; position:relative; }
+  #tabLine{ position:absolute; left:-24px; top:0; pointer-events:none; z-index:3; overflow:visible; }
+  .brand .home-link{ align-self:flex-start; display:inline-flex; align-items:center; gap:7px; font-weight:700; font-style:italic; text-transform:uppercase; letter-spacing:.04em; font-size:14px; color:var(--oxblood-light); text-decoration:none; transition:color .3s; }
+  .brand .home-link:hover{ color:#d9f2fc; }
+  .brand .home-link:focus-visible{ outline:2px solid var(--oxblood-light); outline-offset:3px; border-radius:3px; }
+  .brand h1{ font-family:'Lexend Zetta',sans-serif; font-weight:700; font-size:21.25px; margin:18px 0 0; line-height:1.3; text-transform:uppercase; font-style:italic; }
+  .brand p{ margin:6px 0 0; font-size:14.5px; white-space:nowrap; color:var(--muted); line-height:1.5; }
+
+  .field-group{ display:flex; flex-direction:column; gap:10px; }
+  .section-hint{ font-family:'Lexend',sans-serif; font-size:15px; color:var(--muted); margin:2px 0 -6px; }
+  .field-label{
+    font-family:'Lexend',sans-serif; font-size:11.42px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--muted); display:flex; justify-content:space-between;
+  }
+  .val-wrap{ display:flex; align-items:center; justify-content:center; width:72px; box-sizing:border-box; padding:2px 0; background:var(--ink); border:1px solid var(--line); border-radius:999px; color:var(--oxblood-light); font-family:'Lexend',sans-serif; font-size:13.12px; }
+  .val-wrap:focus-within{ border-color:var(--oxblood-light); }
+  .val-input{
+    width:2ch; field-sizing:content; background:transparent; border:0; color:inherit;
+    font-family:'Lexend',sans-serif; font-size:13.12px; text-align:center; padding:0; min-width:1ch;
+    border-radius:0; outline:none; -moz-appearance:textfield;
+  }
+  .val-input::-webkit-outer-spin-button, .val-input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .val-input:focus{ color:var(--text); }
+
+  .measure-row{ display:flex; gap:8px; }
+  .measure-input{
+    flex:1; min-width:0; background:var(--ink); border:1px solid var(--line); color:var(--text);
+    font-family:'Lexend',sans-serif; font-size:17.5px; padding:9px 10px;
+    border-radius:4px; outline:none; -moz-appearance:textfield;
+  }
+  .measure-input::-webkit-outer-spin-button, .measure-input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .measure-input:focus{ border-color:var(--oxblood-light); }
+  .unit-select{
+    width:64px; background:var(--ink); border:1px solid var(--line); color:var(--oxblood-light);
+    font-family:'Lexend',sans-serif; font-size:15px; letter-spacing:.04em; text-transform:uppercase;
+    padding:9px 6px; border-radius:4px; outline:none; cursor:pointer;
+  }
+  .unit-select:focus{ border-color:var(--oxblood-light); }
+  .unit-select option{ background:var(--ink); color:var(--text); }
+
+  .section-title{
+    font-family:'Lexend',sans-serif; font-size:13.12px; font-style:italic; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--text); display:flex; align-items:center; gap:8px; margin:26px 0 -4px;
+  }
+  .section-title::after{ content:''; flex:1; height:2px; background:var(--ink); }
+  .section-dot{ width:6px; height:6px; border-radius:50%; background:var(--oxblood-light); flex-shrink:0; }
+
+  .editor-wrap{ overflow:hidden; position:relative; background:var(--ink); border:1px solid var(--line); border-radius:12px; padding:10px; }
+  .editor-wrap svg{ display:block; width:100%; touch-action:none; overflow:visible; }
+  .editor-legend{ position:absolute; top:18px; left:20px; right:20px; pointer-events:none; display:flex; justify-content:space-between; font-family:'Lexend',sans-serif; font-size:13.12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .editor-btn-row{ position:absolute; left:18px; right:18px; bottom:18px; display:flex; justify-content:space-between; pointer-events:none; }
+  .editor-btn-group{ display:flex; gap:6px; }
+  .editor-btn-row .editor-btn{ height:32px; flex:0 0 auto; pointer-events:auto; padding:0 12px; font-size:13.75px; color:var(--oxblood-light); border-color:rgba(138,219,248,.55); background:rgba(8,45,75,.85); }
+  .editor-btn-row .editor-btn:hover{ background:var(--ink-2); }
+  .editor-btn{
+    height:32px; padding-top:0; padding-bottom:0; display:inline-flex; align-items:center; justify-content:center;
+    flex:1; background:var(--ink); border:1px solid var(--line); color:var(--oxblood-light);
+    font-family:'Lexend',sans-serif; font-size:13.75px; padding:9px 8px; border-radius:4px; cursor:pointer; transition:border-color .15s;
+  }
+
+  .bg-row{ display:flex; gap:8px; align-items:stretch; }
+  .image-upload-list{ display:grid; grid-template-columns:1fr 1fr; gap:12px 14px; }
+  .image-upload-row[data-key=spine]{ grid-column:1 / -1; width:calc(50% - 7px); justify-self:center; }
+  .image-upload-row{ display:flex; align-items:center; gap:6px; min-width:0; }
+  .image-upload-label-btn{ flex:1; min-width:0; font-size:15px; text-align:center; padding:6px 8px; }
+  .image-remove-btn{ flex:0 0 auto; width:28px; padding:6px 0; font-size:16.25px; color:var(--oxblood-light); }
+  .bg-row input[type=color]{
+    width:44px; height:auto; padding:2px; background:var(--ink); border:1px solid var(--line);
+    border-radius:4px; cursor:pointer;
+  }
+  .bg-row .editor-btn{ flex:1; }
+
+  input[type=range]{ -webkit-appearance:none; appearance:none; width:100%; height:26px; background:transparent; border-radius:2px; outline:none; margin:0; cursor:pointer; }
+  input[type=range]::-moz-range-track{ height:2px; background:rgba(217,242,252,.3); border-radius:2px; }
+  input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:var(--oxblood-light); border:2px solid var(--oxblood); cursor:pointer; margin-top:-6px; transition:background-color .3s ease, border-color .3s ease; }
+  input[type=range]::-webkit-slider-runnable-track{ height:2px; background:rgba(217,242,252,.3); border-radius:2px; transition:background .25s ease; }
+
+  #stage{
+    flex:1; position:relative; display:flex; align-items:center; justify-content:center;
+    cursor:grab; overflow:hidden;
+    /* checkerboard shows through wherever the background is transparent */
+    background-color:#f4f4f4;
+    background-image:conic-gradient(#cfcfcf 25%, #f4f4f4 0 50%, #cfcfcf 0 75%, #f4f4f4 0);
+    background-size:24px 24px;
+  }
+.ch{ position:absolute; width:12px; height:12px; margin:-6px 0 0 -6px; box-sizing:border-box; border-radius:3px; background:var(--orange); border:0;
+    box-shadow:0 0 8px rgba(252,90,24,.85); pointer-events:none; touch-action:none; transition:background .2s ease, box-shadow .2s ease; }
+  #cropFrame.on .ch{ pointer-events:auto; z-index:2; }
+  .ce{ position:absolute; display:block; pointer-events:none; cursor:move; }
+  #cropFrame.on .ce{ pointer-events:auto; }
+  .ce[data-e=n]{ left:0; right:0; top:-6px; height:12px; } .ce[data-e=s]{ left:0; right:0; bottom:-6px; height:12px; }
+  .ce[data-e=w]{ top:0; bottom:0; left:-6px; width:12px; } .ce[data-e=e]{ top:0; bottom:0; right:-6px; width:12px; }
+  .ch:hover, .ch.drag{ background:#ff8a52; box-shadow:0 0 12px rgba(255,150,90,1); }
+  .ch[data-d=nw]{left:0;top:0;cursor:nwse-resize;} .ch[data-d=n]{left:50%;top:0;cursor:ns-resize;} .ch[data-d=ne]{left:100%;top:0;cursor:nesw-resize;}
+  .ch[data-d=e]{left:100%;top:50%;cursor:ew-resize;} .ch[data-d=se]{left:100%;top:100%;cursor:nwse-resize;} .ch[data-d=s]{left:50%;top:100%;cursor:ns-resize;}
+  .ch[data-d=sw]{left:0;top:100%;cursor:nesw-resize;} .ch[data-d=w]{left:0;top:50%;cursor:ew-resize;}
+  #cropFrame{ opacity:0; transition:opacity .4s ease;
+    position:absolute; display:none; z-index:5; pointer-events:none; box-sizing:border-box;
+    border:1.5px solid var(--orange); box-shadow:0 0 0 9999px rgba(8,45,75,.38);
+  }
+  #stageBg{
+    position:absolute; inset:0; z-index:0;
+    background:#99d7e8; background-size:cover; background-position:center; transition:background-color .2s;
+  }
+  #stage.dragging{ cursor:grabbing; }
+  #stage::before{
+    content:''; position:absolute; inset:0;
+    background-image:linear-gradient(rgba(0,0,0,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.5) 1px, transparent 1px);
+    background-size:64px 64px; opacity:.05; pointer-events:none;
+  }
+  .hint{
+    position:absolute; bottom:26px; left:50%; transform:translateX(-50%);
+    font-family:'Lexend',sans-serif; font-size:13.75px; letter-spacing:.1em; text-transform:uppercase; color:#d9f2fc;
+    padding:6px 14px; user-select:none; transition:color .3s ease; max-width:calc(100% - 520px); text-align:center;
+  }
+
+  .scene{ perspective:1600px; }
+  #world{ position:relative; transform-style:preserve-3d; z-index:2; }
+  .book-group{ position:absolute; top:0; left:0; transform-style:preserve-3d; }
+
+  /* Selection outline: drawn on a 2D canvas straight from the book's
+     projected faces (see drawOutline) — a hard orange rim that follows
+     the on-screen silhouette, sitting behind the real book. */
+  #outlineCanvas{
+    position:absolute; inset:0; width:100%; height:100%; z-index:0;
+    display:none; pointer-events:none;
+  }
+
+  /* Gizmo overlay: the same rings/arrows drawn again in their own scene
+     ON TOP of everything, dimmed, so any part that passes behind the
+     book stays visible and grabbable. */
+  #gizmoLayer{
+    position:absolute; inset:0; z-index:6; display:flex;
+    align-items:center; justify-content:center; pointer-events:none;
+  }
+  #gizmoWorld{ position:relative; transform-style:preserve-3d; }
+
+  /* ---- book pages ---- */
+  .cube{ position:relative; transform-style:preserve-3d; }
+  .page-right, .page-left-wrap, .cube2, .spine-group{ position:absolute; top:0; left:0; transform-style:preserve-3d; }
+  .face-strip{
+    position:absolute; top:0; left:0;
+    background-repeat:no-repeat;
+    backface-visibility:visible;
+  }
+  .shade, .glint{ position:absolute; inset:0; pointer-events:none; }
+  .shade{ mix-blend-mode:multiply; }
+
+  /* ---- book gizmo (rotate rings / move arrows) ---- */
+  .book-gizmo{ position:absolute; top:0; left:0; transform-style:preserve-3d; pointer-events:none; }
+  .gizmo-axis{ position:absolute; top:0; left:0; transform-style:preserve-3d; }
+  .gizmo-ring svg, .gizmo-arrow svg{ position:absolute; overflow:visible; }
+  #gizmo, #gizmo *{ pointer-events:none !important; }
+  #gizmoGhost .gizmo-hit{ pointer-events:stroke; cursor:grab; }
+  #gizmoGhost .gizmo-ring .gizmo-hit:hover ~ .gizmo-visible{ stroke-width:5; }
+  #gizmoGhost .gizmo-arrow .gizmo-visible{ pointer-events:auto; cursor:grab; }
+  #gizmoGhost .gizmo-arrow:hover .gizmo-visible{ filter:brightness(1.35); }
+  .gizmo-grabbing{ cursor:grabbing !important; }
+  /* while orbiting the camera, skip drawing the (large) gizmo layers */
+  #stage.dragging #gizmo, #stage.dragging #gizmoLayer{ visibility:hidden; }
+
+  /* ---- book tabs ---- */
+  .book-tabs{
+    display:flex; flex-wrap:wrap; gap:6px; align-items:flex-start;
+    position:relative; margin:-4px 0 -4px;
+  }
+  .book-tab{
+    background:var(--ink); border:1px solid var(--line); border-bottom:1px solid rgba(138,219,248,.35); color:var(--muted);
+    font-family:'Lexend',sans-serif; font-size:16.25px; padding:8px 14px 9px; border-radius:6px 6px 0 0;
+    cursor:pointer; user-select:none; position:relative; z-index:1; top:1px; box-sizing:border-box; height:35px;
+    transition:color .15s, background .15s, border-color .15s;
+  }
+  .book-tab:hover{ color:var(--text); background:rgba(138,219,248,.12); }
+  .book-tab.active{
+    background:var(--ink-2); color:var(--text); border-color:transparent; border-bottom:0; border-radius:8px 8px 0 0;
+    box-shadow:inset 0 2px 0 var(--orange);
+  }
+  .book-tab.add-tab{ background:transparent; border-color:transparent; color:var(--muted); }
+  .book-tab.add-tab::first-letter{ color:var(--orange); font-weight:700; }
+  .book-tab.add-tab:hover{ background:var(--ink); color:var(--text); border-color:var(--line); }
+  .book-tab-input{
+    width:96px; background:transparent; border:none; border-bottom:1px solid var(--oxblood-light);
+    color:var(--text); font:inherit; outline:none; padding:0;
+  }
+  #bookPanel{ display:flex; flex-direction:column; gap:18px; }
+
+  /* ---- inline color picker ---- */
+  .cp{ display:flex; flex-direction:column; gap:8px; }
+  .cp-head{ display:flex; gap:16px; align-items:center; }
+  .cp-swatch{
+    width:66px; height:32px; flex:0 0 auto; border:1px solid var(--line); border-radius:4px; cursor:pointer; padding:0;
+  }
+  .cp.open .cp-swatch{ border-color:var(--oxblood-light); }
+  #bgCp .cp-head, #pageEdgeCp .cp-head{ gap:30px; }
+  #gildToggleBtn, #bgUploadBtn{ width:144px; }
+  #gildToggleBtn{
+    color:#3a2503; font-weight:600; letter-spacing:.02em; border:1px solid #8a5f12; position:relative; overflow:hidden;
+    background:
+      radial-gradient(ellipse 40% 70% at 50% 50%, rgba(255,243,176,.55) 0%, rgba(255,243,176,0) 100%),
+      repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,.42) 0 .7px, rgba(110,66,4,.30) .7px 1.4px, rgba(255,255,255,0) 1.4px 2.1px, rgba(110,66,4,.18) 2.1px 2.8px),
+      conic-gradient(from 27deg at 50% 50%, #f9de7e 0deg, #fff6c4 11deg, #dfae38 30deg, #a8761a 47deg, #e9c04d 70deg, #fff3b8 88deg, #f0cc5c 108deg, #b98622 131deg, #f6d96c 150deg, #fff0a8 171deg, #e6b83f 196deg, #9c6b14 219deg, #ecc552 244deg, #fff6c4 266deg, #f2cf62 288deg, #b88420 312deg, #e8bb45 334deg, #fff3b8 350deg, #f9de7e 360deg);
+    text-shadow:0 0 5px rgba(255,243,176,.9), 0 1px 0 rgba(255,248,215,.75);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(255,238,160,.7), inset 0 0 0 1px rgba(255,226,130,.35), inset 0 -3px 4px rgba(94,58,6,.28), 0 1px 4px rgba(0,0,0,.35), 0 0 10px rgba(246,216,110,.28);
+    transition:filter .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  #gildToggleBtn:hover, #gildToggleBtn:focus-visible{
+    filter:brightness(1.1) saturate(1.08); border-color:#b17d1e; background-color:transparent;
+    text-shadow:0 0 5px rgba(255,248,200,.95), 0 1px 0 rgba(255,250,225,.9);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(255,238,160,.8), inset 0 0 0 1px rgba(255,226,130,.45), inset 0 -3px 4px rgba(94,58,6,.25), 0 1px 4px rgba(0,0,0,.35), 0 0 16px rgba(250,224,120,.6);
+  }
+  .up-status{ display:flex; align-items:center; gap:8px; font-family:'Lexend',sans-serif; font-size:13.12px; letter-spacing:.06em; color:var(--muted); text-shadow:0 0 8px rgba(138,219,248,.35); min-width:0; }
+  .up-status .up-check{ width:13px; height:13px; flex:none; color:var(--oxblood-light); filter:drop-shadow(0 0 4px rgba(138,219,248,.7)); }
+  .up-status .up-name{ color:var(--oxblood-light); min-width:0; max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .up-status .up-word{ flex:none; }
+  .round-minus{ width:22px; height:22px; flex:none; padding:0; margin-left:4px; border-radius:50%; background:var(--ink); border:1px solid var(--line); color:var(--oxblood-light); cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; box-shadow:0 0 10px rgba(138,219,248,.14); transition:border-color .3s ease, background-color .3s ease, box-shadow .3s ease; }
+  .round-minus svg{ width:10px; height:10px; filter:drop-shadow(0 0 3px rgba(138,219,248,.7)); }
+  .round-minus:hover{ background:var(--ink-2); box-shadow:0 0 12px rgba(138,219,248,.38); }
+  .cp-extra{ display:flex; gap:30px; align-items:center; flex:1; min-width:0; }
+  .cp-extra .editor-btn{ flex:0 0 auto; padding:7px 10px; font-size:14.38px; white-space:nowrap; }
+  .cp-body{
+    display:none; flex-direction:column; gap:12px; background:var(--ink);
+    border:1px solid var(--line); border-radius:6px; padding:12px;
+  }
+  .cp.open .cp-body{ display:flex; scroll-margin-bottom:20px; }
+  .cp-sv-wrap{ position:relative; width:100%; height:150px; border-radius:4px; overflow:hidden; cursor:crosshair; touch-action:none; }
+  .cp-sv{ width:100%; height:100%; display:block; }
+  .cp-dot{
+    position:absolute; width:14px; height:14px; border-radius:50%; border:2px solid #8adbf8;
+    box-shadow:0 0 0 1px rgba(8,45,75,.8), 0 0 8px rgba(138,219,248,.7); transform:translate(-50%,-50%); pointer-events:none;
+  }
+  /* Rainbow lives on the input itself so it shows in every browser; the
+     native track is made transparent over it. */
+  input[type=range].cp-hue{
+    height:10px; border-radius:5px;
+    background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);
+  }
+  input[type=range].cp-hue::-webkit-slider-runnable-track{ height:10px; background:transparent; }
+  input[type=range].cp-hue::-webkit-slider-thumb{ margin-top:-2px; }
+  input[type=range].cp-hue::-moz-range-track{ height:10px; background:transparent; }
+  input[type=range].cp-hue::-moz-range-thumb{ width:10px; height:10px; border-radius:50%; background:var(--oxblood-light); border:2px solid var(--oxblood); }
+  .cp-rgb{ display:flex; gap:8px; }
+  .cp-rgb label.cp-hexlab{ flex:2.1; }
+  .cp-rgb label{
+    flex:1; display:flex; align-items:center; gap:6px; font-size:11.42px; letter-spacing:.14em; color:var(--muted);
+  }
+  .cp-num, .cp-hex{
+    width:100%; min-width:0; background:var(--ink-2); border:1px solid var(--line); color:var(--text);
+    font-family:'Lexend',sans-serif; font-size:16.25px; padding:5px 6px; border-radius:4px; outline:none;
+    -moz-appearance:textfield;
+  }
+  .cp-num::-webkit-outer-spin-button, .cp-num::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .cp-num:focus, .cp-hex:focus{ border-color:var(--oxblood-light); }
+  .cp-hex{ text-transform:uppercase; }
+
+  .dim-warn{ color:var(--orange); font-family:'Lexend',sans-serif; font-size:15px; letter-spacing:.12em; text-shadow:0 0 8px rgba(252,90,24,.7); margin-top:-4px; }
+  .dim-row{ display:grid; grid-template-columns:1fr 1fr 1fr 64px; gap:8px 14px; align-items:end; }
+  .dim-cell{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .dim-cell .field-label{ white-space:nowrap; justify-content:flex-start; align-items:center; gap:7px; color:var(--text); }
+  .dim-cell .field-label::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--oxblood-light); flex-shrink:0; }
+  .dim-row .measure-input{ padding:9px 8px; width:100%; text-align:center; }
+  .field-label.hint-line{ text-transform:none; letter-spacing:.03em; font-size:14px; }
+  .light-row{ display:grid; grid-template-columns:162px 1fr; grid-template-rows:auto auto; column-gap:0; row-gap:8px; align-items:stretch; }
+  /* the shadow-colour picker's panel opens full width underneath */
+  #shadowCp{ display:contents; }
+  #shadowCp .cp-head{ display:contents; }
+  #shadowCp .cp-body{ grid-column:1 / -1; grid-row:3; margin-top:6px; }
+  .light-row > .field-group{ display:contents; }
+  .light-row > .field-group > .field-label{ grid-column:1; grid-row:1; justify-content:flex-start; }
+  .light-row .light-pad{ grid-column:1; grid-row:2; margin:0; justify-self:start; align-self:start; }
+  .light-row > .light-sliders{ grid-column:2; grid-row:1 / 3; }
+  .lg-top{ display:flex; gap:28px; align-items:flex-start; width:100%; }
+  .lg-top .lg-b{ margin-left:auto; }
+  .light-sliders > .lg-top{ margin-right:0; width:auto; gap:12px; }
+  .lg-a, .lg-b{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .lg-a .cp-label, #lightToggle > span:first-child{ width:auto; white-space:nowrap; text-align:left; line-height:1.25; }
+  .cp-label{ font-size:11.42px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+  .light-row .light-pad{ flex:0 0 auto; align-self:start; justify-self:start; }
+  .light-sliders{ display:flex; flex-direction:column; justify-content:flex-start; gap:18px; min-width:0; }
+  .light-sliders{ display:grid !important; grid-template-columns:max-content 1fr auto; column-gap:8px; row-gap:18px; align-content:start; }
+  .light-sliders > .lg-top{ grid-column:1 / -1; }
+  .view-sliders{ display:grid; grid-template-columns:max-content 1fr auto; column-gap:8px; row-gap:18px; }
+  .view-sliders > .field-group{ grid-column:1 / -1; display:grid !important; grid-template-columns:subgrid !important; }
+  .light-sliders > .field-group{ grid-column:1 / -1; display:grid !important; grid-template-columns:subgrid !important; }
+  .light-row > .light-sliders{ margin-left:14px; grid-template-rows:auto 1fr auto auto; align-self:stretch; }
+  .light-sliders > .lg-top{ grid-row:1; }
+  .light-sliders > .field-group:has(> #lightIntensityAmt){ grid-row:3; }
+  .light-sliders > .field-group:has(> #lightAmbientAmt){ grid-row:4; margin-bottom:6px; }
+  .light-row > .field-group > .field-label{ justify-self:start; width:auto; justify-content:flex-start !important; text-align:left; white-space:nowrap; }
+
+  /* ---- export dock (bottom-left of the stage) ---- */
+  #lightToggle{
+    display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;
+    font-family:'Lexend',sans-serif; font-size:11.42px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); position:relative;
+  }
+  #lightToggle{ align-items:center; cursor:default; text-shadow:0 0 8px rgba(138,219,248,.35); font-size:11.42px; letter-spacing:.14em; color:var(--muted); }
+  #lightToggle > span:first-child{ pointer-events:none; }
+  .lg-b{ margin-right:-.14em; }
+  #lightToggle .xm-switch{ cursor:pointer; width:66px; height:32px; border-radius:16px; }
+  #lightToggle .xm-switch::after{ top:4px; left:4px; width:24px; height:24px; }
+  #lightToggle input{ position:absolute; opacity:0; pointer-events:none; }
+  #lightToggle input:checked + .xm-switch::after{ transform:translateX(34px); }
+  #lightToggle input:focus-visible + .xm-switch{ outline:2px solid var(--oxblood-light); outline-offset:2px; }
+  #exportDock{ position:absolute; left:20px; bottom:20px; z-index:8; cursor:default; }
+  #exportDock{ display:flex; align-items:center; gap:18px; }
+  #exportToggle{
+    font-family:'Lexend',sans-serif; font-size:13.75px; flex:none;
+    color:var(--oxblood-light); background:var(--ink); border:1px solid var(--line); border-radius:999px;
+    height:32px; padding:0 18px; cursor:pointer; box-shadow:0 0 10px rgba(138,219,248,.14);
+  }
+  #exportToggle:hover, #exportDock.open #exportToggle{ background:var(--ink-2); box-shadow:0 0 12px rgba(138,219,248,.38); }
+  #exportDock .hint{ position:static; transform:none; max-width:none; padding:0; text-align:left; white-space:nowrap; pointer-events:none; }
+  #exportMenu{
+    display:flex; position:absolute; left:0; bottom:calc(100% + 12px); width:350px;
+    background:var(--ink-2); border:1px solid var(--line); border-radius:16px; padding:18px;
+    flex-direction:column; gap:16px; box-shadow:0 0 18px rgba(138,219,248,.16);
+    display:none;
+  }
+  #exportDock.open #exportMenu{ display:flex; }
+  #exportMenu label{ display:flex; flex-direction:column; gap:5px; font-size:11.42px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); min-width:0; flex:1; }
+  #exportMenu .xm-row{ display:flex; gap:10px; }
+  #exportMenu .xm-row label.xm-unit{ flex:0 0 74px; }
+  #exportMenu .xm-row2{ align-items:flex-end; justify-content:space-between; }
+  #exportMenu .xm-row2 label.xm-type{ flex:0 0 96px; }
+  #exportMenu .xm-row2 label.xm-check{ height:38px; }
+  #exportMenu .xm-row .xm-input{ padding-left:10px; padding-right:10px; text-align:center; }
+  #exportMenu .xm-input{
+    width:100%; background:var(--ink); border:1px solid var(--line); color:var(--text); font-family:'Lexend',sans-serif;
+    font-size:17.5px; padding:8px 9px; border-radius:4px; outline:none; letter-spacing:0; text-transform:none; box-sizing:border-box;
+    -moz-appearance:textfield;
+  }
+  #exportMenu .xm-input::-webkit-outer-spin-button, #exportMenu .xm-input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  #exportMenu .xm-input:focus{ border-color:var(--oxblood-light); }
+  #exportMenu .xm-input{ box-shadow:0 0 10px rgba(138,219,248,.14); text-shadow:0 0 8px rgba(138,219,248,.7); }
+  #exportMenu .xm-input{ transition:border-color .3s ease, background-color .3s ease, box-shadow .3s ease, text-shadow .3s ease; }
+  #exportMenu .xm-input:hover{ background-color:var(--ink-2); box-shadow:0 0 12px rgba(138,219,248,.38); }
+  #exportMenu label{ text-shadow:0 0 8px rgba(138,219,248,.35); }
+  #exportMenu .xm-input option{ background:var(--ink); }
+  #exportMenu label.xm-check{ flex-direction:row; align-items:center; justify-content:flex-end; gap:10px; cursor:pointer; flex:none; }
+  #exportMenu .xm-check input{ position:absolute; opacity:0; pointer-events:none; }
+  .xm-switch{ position:relative; width:36px; height:20px; border-radius:10px; background:rgba(217,242,252,.2); transition:background .15s; flex:0 0 auto; }
+  .xm-switch::after{ content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#d0f1ff; transition:transform .15s; }
+  .xm-switch{ box-shadow:0 0 12px rgba(138,219,248,.4); transition:background .3s ease, box-shadow .3s ease; }
+  .xm-switch:hover, label:hover > .xm-switch{ box-shadow:0 0 16px rgba(138,219,248,.75); }
+  .xm-check input:checked + .xm-switch, #lightToggle input:checked + .xm-switch{ background:#5ec3ee; box-shadow:0 0 12px rgba(138,219,248,.4); }
+  .xm-check input:checked + .xm-switch:hover, #lightToggle input:checked + .xm-switch:hover, label:hover > input:checked + .xm-switch{ box-shadow:0 0 16px rgba(138,219,248,.75); }
+  .xm-check input:checked + .xm-switch::after{ transform:translateX(16px); }
+  .xm-check input:focus-visible + .xm-switch{ outline:2px solid var(--oxblood-light); outline-offset:2px; }
+  #exportBtn{ flex:none; }
+  .editor-btn, #exportToggle, #exportBtn{ padding-top:0 !important; padding-bottom:1.2px !important; }
+  #exportMenu{ width:356px; gap:18px; background:var(--ink-2) !important; border-color:var(--line); }
+  #exportMenu .xm-input{ height:32px; padding:0 14px; font-size:13.12px; color:var(--oxblood-light); border-radius:999px; text-align:center; text-align-last:center; }
+  #exportMenu .xm-row .xm-input{ padding:0 10px; }
+  #exportMenu select.xm-input{ appearance:none; -webkit-appearance:none; cursor:pointer; }
+  #exportMenu label{ font-size:11.42px; gap:8px; }
+  #exportMenu .xm-row2 label.xm-type{ flex:0 0 96px; }
+  #exportMenu label{ text-align:center; align-items:center; }
+  #exportMenu .xm-row label.xm-dim, #exportMenu .xm-row label.xm-unit, #exportMenu .xm-row2 label.xm-type{ align-items:stretch; }
+  #exportMenu .xm-row2 label.xm-check{ flex-direction:column; align-items:center; gap:8px; height:auto; font-size:11.42px; flex:0 0 auto; justify-content:flex-start; }
+  #exportMenu .xm-check .xm-switch{ width:66px; height:32px; border-radius:16px; }
+  #exportMenu .xm-check .xm-switch::after{ top:4px; left:4px; width:24px; height:24px; }
+  #exportMenu .xm-check input:checked + .xm-switch::after{ transform:translateX(34px); }
+  #exportMenu .xm-row:not(.xm-row2){ align-items:flex-end; justify-content:flex-start; gap:8px; }
+  #exportMenu .xm-row label.xm-unit{ margin-left:auto; flex:0 0 68px; }
+  #exportStatus:empty{ display:none; }
+  #exportMenu .xm-row label.xm-dim{ flex:0 0 96px; }
+  #exportMenu .xm-x{ height:32px; line-height:30px; color:var(--oxblood-light); text-shadow:0 0 8px rgba(138,219,248,.7); font-size:16px; flex:none; }
+  #exportMenu select.xm-input{ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%238adbf8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat:no-repeat; background-position:right 10px center; background-size:12px; padding:0 26px 0 14px; }
+  #exportMenu .xm-row2 label.xm-type{ flex:0 0 96px; }
+  #exportMenu #exportBtn{ height:32px; font-size:13.75px; padding:0 12px; }
+  #exportStatus{ font-size:13.75px; color:var(--muted); min-height:14px; letter-spacing:.03em; }
+
+  .light-pad{
+    position:relative; width:128px; height:128px; border-radius:50%; box-shadow:0 0 12px rgba(138,219,248,.28), inset 0 0 10px rgba(138,219,248,.12) !important;
+    border:1.5px solid rgba(217,242,252,.3); cursor:crosshair; margin:4px auto 0;
+  }
+  .light-pad::after{
+    content:''; position:absolute; inset:0; border-radius:50%;
+    border:1px dashed rgba(217,242,252,.18); pointer-events:none;
+  }
+  .light-dot{
+    position:absolute; border-radius:50%;
+    width:14px; height:14px; background:var(--oxblood-light); border:none;
+    box-shadow:0 0 8px rgba(138,219,248,.6);
+    transform:translate(-50%,-50%); pointer-events:none;
+    transition:background-color .25s ease, border-color .25s ease;
+  }
+
+  button{ text-align:center; justify-content:center; }
+  .image-upload-label-btn{ padding-left:14px; padding-right:14px; }
+  /* label, slider and value share one line */
+  .field-group:has(> input[type=range]){ display:grid; grid-template-columns:var(--lw,75px) 1fr auto; align-items:center; column-gap:8px; row-gap:0; }
+  .field-group:has(> input[type=range]) > .field-label{ display:contents; white-space:nowrap; }
+  .field-group:has(> input[type=range]) > .field-label .val-wrap{ grid-column:3; grid-row:1; }
+  .field-group:has(> input[type=range]) > input[type=range]{ grid-column:2; grid-row:1; margin:0; width:100%; }
+  .cp-extra .opacity-group{ flex:1; min-width:0; grid-template-columns:auto 1fr auto !important; column-gap:8px !important; }
+  .field-group:has(> #closeBookAmt),.field-group:has(> #bookRotXAmt),.field-group:has(> #bookRotYAmt),.field-group:has(> #bookRotZAmt){ --lw:auto; }
+  .field-group:has(> #zoomAmt),.field-group:has(> #rotXAmt),.field-group:has(> #rotYAmt),.field-group:has(> #rotZAmt){ --lw:auto; }
+  /* pill-shaped fields and buttons */
+  .measure-input, .unit-select, .cp-num, .cp-hex, #exportMenu .xm-input, .editor-btn, .cp-swatch{ border-radius:999px; }
+  .measure-input, .unit-select, #exportMenu .xm-input, .cp-num, .cp-hex{ padding-left:14px; padding-right:14px; }
+  .unit-select{ padding-left:12px; padding-right:4px; }
+  .editor-btn{ padding-left:14px; padding-right:14px; }
+  .image-upload-label-btn{ padding-left:14px; }
+  .book-tab-input{ border:1px solid var(--oxblood-light); border-radius:999px; padding:2px 10px; }
+  /* ---- hover fades, picker icon, glow ---- */
+  .light-pad:hover .light-dot, .light-pad:active .light-dot{ background:#dff6ff; }
+  button, .cp-swatch, .val-wrap, .measure-input, .unit-select, .editor-btn, .book-tab, #sideToggle, .cp-hex, .cp-num, .light-pad, input[type=range]{
+    transition:border-color .3s ease, background-color .3s ease, color .3s ease, box-shadow .3s ease;
+  }
+  .cp-swatch{ position:relative; }
+  .cp-swatch::after{ content:''; position:absolute; inset:0; background-color:#8adbf8; opacity:0; transition:opacity .3s ease, background-color .3s ease; pointer-events:none;
+    -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 22l1-1h3l9-9'/><path d='M3 21v-3l9-9'/><path d='m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z'/></svg>") center/16px 16px no-repeat;
+    mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 22l1-1h3l9-9'/><path d='M3 21v-3l9-9'/><path d='m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z'/></svg>") center/16px 16px no-repeat; }
+  .cp-swatch[data-tone=light]::after{ background-color:#0b3961; }
+  .cp-swatch:hover::after{ opacity:1; }
+  .val-wrap, .val-input, .measure-input, .unit-select, .editor-btn, .cp-hex, .cp-num, .book-tab, #exportBtn{ text-shadow:0 0 8px rgba(138,219,248,.7); transition:border-color .3s ease, background-color .3s ease, color .3s ease, box-shadow .3s ease, text-shadow .3s ease; }
+  .val-wrap:hover, .measure-input:hover, .unit-select:hover, .editor-btn:hover, .cp-hex:hover, .cp-num:hover, .book-tab:hover{ text-shadow:0 0 10px rgba(138,219,248,1); }
+  .field-group:has(> input[type=range]) .field-label{ transition:color .3s ease, text-shadow .3s ease; }
+  .field-group:has(> input[type=range]:hover) .field-label{ color:var(--text); text-shadow:0 0 10px rgba(138,219,248,.9); transition:color .3s ease, text-shadow .3s ease; }
+  .field-label, .section-title, .section-hint{ text-shadow:0 0 8px rgba(138,219,248,.35); }
+  .section-dot{ box-shadow:0 0 7px var(--oxblood-light); }
+  .dim-cell .field-label::before{ box-shadow:0 0 7px var(--oxblood-light); }
+  .val-wrap, .measure-input, .unit-select, .editor-btn, .cp-swatch, .light-pad, .editor-wrap{ box-shadow:0 0 10px rgba(138,219,248,.14); }
+  .book-tab{ box-shadow:inset 0 0 10px rgba(138,219,248,.14); }
+  .book-tab:hover{ box-shadow:inset 0 0 12px rgba(138,219,248,.38); }
+  .val-wrap:hover, .measure-input:hover, .unit-select:hover, .editor-btn:hover, .cp-swatch:hover, .light-pad:hover, .cp-hex:hover, .cp-num:hover{ box-shadow:0 0 12px rgba(138,219,248,.38); }
+  .cp-swatch{ box-shadow:0 0 12px rgba(138,219,248,.4); }
+  .cp-swatch:hover, .cp.open .cp-swatch{ box-shadow:0 0 16px rgba(138,219,248,.75); }
+  .val-wrap:hover, .measure-input:hover, .unit-select:hover, .editor-btn:hover, .cp-hex:hover, .cp-num:hover{ background-color:var(--ink-2); }
+  /* slider hover fades through a registered number, since Chromium won't transition the thumb/track pseudo-elements directly */
+  /* The line is the input's own background (coloured by `color`), so the hover fade is an ordinary transition on the input itself. */
+  input[type=range]:not(.cp-hue){
+    color:rgba(217,242,252,.3);
+    background:linear-gradient(currentColor,currentColor) center/100% 2px no-repeat;
+    filter:drop-shadow(0 0 3px rgba(138,219,248,.5)); will-change:filter, color; transform:translateZ(0);
+    transition:color .3s ease, filter .3s ease;
+  }
+  input[type=range]:not(.cp-hue):hover{
+    color:rgba(217,242,252,.85);
+    filter:drop-shadow(0 0 7px rgba(138,219,248,.9));
+    transition:color .3s ease, filter .3s ease;
+  }
+  input[type=range]:not(.cp-hue)::-webkit-slider-runnable-track{ background:transparent; }
+  input[type=range]:not(.cp-hue)::-moz-range-track{ background:transparent; }
+  input[type=range].cp-hue::-webkit-slider-thumb{ background:#8adbf8; }
+  #editorSvg path[stroke='#c24a34']{ filter:drop-shadow(0 0 4px rgba(252,90,24,.9)); }
+  #editorSvg circle[data-type]{ transition:fill .25s ease, filter .25s ease, stroke .25s ease; }
+  #editorSvg circle[data-type]:hover{ fill:#e3f8ff; stroke:#e3f8ff; filter:drop-shadow(0 0 9px rgba(138,219,248,1)); }
+  #editorSvg circle, #editorSvg line{ filter:drop-shadow(0 0 4px rgba(138,219,248,.85)); }
+  #lightRings{ filter:drop-shadow(0 0 3px rgba(150,225,255,1)) drop-shadow(0 0 8px rgba(138,219,248,.85)); transition:filter .3s ease; }
+  #lightRings path{ stroke:rgba(217,242,252,.21); transition:stroke .3s ease; }
+  .light-pad:hover #lightRings path{ stroke:rgba(190,235,255,.34); }
+  .light-pad:hover #lightRings{ filter:drop-shadow(0 0 4px rgba(150,225,255,1)) drop-shadow(0 0 10px rgba(138,219,248,.95)); }
+  #sidebar .brand, #sidebar .section-title::after{ }
+
+  @media (max-width: 800px){
+    body{ flex-direction:column; overflow:auto; }
+    #sidebar{ position:static; transform:none !important; width:100%; min-width:0; border-right:none; border-bottom:1px solid var(--line); max-height:40vh; }
+    #stage{ min-height:52vh; margin-left:0 !important; }
+    #sideToggle, #sideFade{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sideFade"></div>
+<button id="sideToggle" type="button" title="Collapse / expand panel" aria-label="Collapse or expand panel"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2L4 6l4 4"/></svg></button>
+<aside id="sidebar">
+  <div class="brand">
+    <a class="home-link" href="../../#toolbox"><svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2L4 6l4 4"/></svg>Back to toolbox</a>
+    <h1>Book Mockup Creator</h1>
+    <p>A tool for arranging fully customizable models of books and magazines.</p>
+  </div>
+
+  <div class="book-tabs" id="bookTabs"></div>
+
+  <div id="bookPanel">
+  <div class="section-title"><span class="section-dot"></span>Upload custom images</div>
+  <div class="image-upload-list" id="imageUploadList">
+    <div class="image-upload-row" data-key="front">
+      <button class="editor-btn image-upload-label-btn">+ Add front cover</button>
+      <button class="editor-btn image-remove-btn" style="display:none">×</button>
+      <input type="file" accept="image/*" style="display:none">
+    </div>
+    <div class="image-upload-row" data-key="back">
+      <button class="editor-btn image-upload-label-btn">+ Add back cover</button>
+      <button class="editor-btn image-remove-btn" style="display:none">×</button>
+      <input type="file" accept="image/*" style="display:none">
+    </div>
+    <div class="image-upload-row" data-key="spine">
+      <button class="editor-btn image-upload-label-btn">+ Add spine</button>
+      <button class="editor-btn image-remove-btn" style="display:none">×</button>
+      <input type="file" accept="image/*" style="display:none">
+    </div>
+    <div class="image-upload-row" data-key="left">
+      <button class="editor-btn image-upload-label-btn">+ Add inside left page</button>
+      <button class="editor-btn image-remove-btn" style="display:none">×</button>
+      <input type="file" accept="image/*" style="display:none">
+    </div>
+    <div class="image-upload-row" data-key="right">
+      <button class="editor-btn image-upload-label-btn">+ Add inside right page</button>
+      <button class="editor-btn image-remove-btn" style="display:none">×</button>
+      <input type="file" accept="image/*" style="display:none">
+    </div>
+  </div>
+
+  <div class="dim-warn" id="dimWarn" style="display:none">!WARNING: Page dimensions vary.</div>
+
+  <div class="section-title"><span class="section-dot"></span>Book shape &amp; placement</div>
+  <div class="editor-wrap">
+    <svg id="editorSvg" viewBox="0 0 380 600"></svg>
+    <div class="editor-legend"><span>Outer edge</span><span>Spine</span></div>
+    <div class="editor-btn-row">
+      <span class="editor-btn-group"><button class="editor-btn" id="addAnchorBtn">+ Add anchor point</button><button class="editor-btn" id="delAnchorBtn">− Delete anchor point</button></span>
+      <button class="editor-btn" id="resetCurveBtn">Reset curve</button>
+    </div>
+  </div>
+
+  <div class="field-group">
+    <label class="field-label">Close book <span class="val-wrap"><input type="number" class="val-input" id="closeBookVal" aria-label="Close book value" value="0">%</span></label>
+    <input type="range" id="closeBookAmt" aria-label="Close book" min="0" max="100" step="1" value="0">
+  </div>
+
+  <div class="field-label hint-line">Click on a book to move and rotate it.</div>
+
+  <div class="section-title"><span class="section-dot"></span>Page edge color</div>
+  <div class="cp" id="pageEdgeCp" data-hex="#f0e6d2">
+    <div class="cp-extra"><button class="editor-btn" id="gildToggleBtn">Gild</button></div>
+  </div>
+  </div><!-- /bookPanel -->
+
+  <div class="section-title"><span class="section-dot"></span>Background</div>
+  <div class="cp" id="bgCp" data-hex="#99d7e8">
+    <div class="cp-extra">
+      <button class="editor-btn" id="bgUploadBtn">Upload image</button>
+      <div class="field-group opacity-group">
+        <label class="field-label">Opacity <span class="val-wrap"><input type="number" class="val-input" id="bgOpacityVal" aria-label="Background opacity value" value="100">%</span></label>
+        <input type="range" id="bgOpacityAmt" aria-label="Background opacity" min="0" max="100" step="1" value="100">
+      </div>
+      <input type="file" id="bgImageInput" accept="image/*" style="display:none">
+    </div>
+  </div>
+  <div class="up-status" id="bgStatus" style="display:none">
+    <svg class="up-check" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5l2.7 2.7L10 3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="up-name" id="bgFileName"></span><span class="up-word">uploaded</span>
+    <button type="button" class="round-minus" id="bgResetBtn" title="Remove image, use color" aria-label="Remove image, use color"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  </div>
+
+  <div class="section-title"><span class="section-dot"></span>Adjust view</div>
+  <div class="view-sliders">
+  <div class="field-group">
+    <label class="field-label">Rotate X <span class="val-wrap"><input type="number" class="val-input" id="rotXVal" aria-label="Rotate X value" value="340">°</span></label>
+    <input type="range" id="rotXAmt" aria-label="Rotate X" min="0" max="360" step="1" value="340">
+  </div>
+  <div class="field-group">
+    <label class="field-label">Rotate Y <span class="val-wrap"><input type="number" class="val-input" id="rotYVal" aria-label="Rotate Y value" value="325">°</span></label>
+    <input type="range" id="rotYAmt" aria-label="Rotate Y" min="0" max="360" step="1" value="325">
+  </div>
+  <div class="field-group">
+    <label class="field-label">Rotate Z <span class="val-wrap"><input type="number" class="val-input" id="rotZVal" aria-label="Rotate Z value" value="0">°</span></label>
+    <input type="range" id="rotZAmt" aria-label="Rotate Z" min="0" max="360" step="1" value="0">
+  </div>
+  <div class="field-group">
+    <label class="field-label">Zoom <span class="val-wrap"><input type="number" class="val-input" id="zoomVal" aria-label="Zoom value" value="100">%</span></label>
+    <input type="range" id="zoomAmt" aria-label="Zoom" min="0" max="1000" step="1" value="500">
+  </div>
+  </div>
+
+  <div class="section-title"><span class="section-dot"></span>Adjust lighting</div>
+  <div class="light-row">
+    <div class="cp" id="shadowCp" data-hex="#5b4a9e" data-label="Shadow color"></div>
+    <div class="field-group">
+      <label class="field-label">Light direction</label>
+      <div class="light-pad" id="lightPad"><svg id="lightRings" viewBox="-1 -1 2 2" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;clip-path:circle(50%)"></svg><div class="light-dot" id="lightDot"></div></div>
+    </div>
+    <div class="light-sliders">
+      <div class="field-group">
+        <label class="field-label">Intensity <span class="val-wrap"><input type="number" class="val-input" id="lightIntensityVal" aria-label="Light intensity value" value="55">%</span></label>
+        <input type="range" id="lightIntensityAmt" aria-label="Light intensity" min="0" max="100" step="1" value="55">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Ambient <span class="val-wrap"><input type="number" class="val-input" id="lightAmbientVal" aria-label="Ambient light value" value="40">%</span></label>
+        <input type="range" id="lightAmbientAmt" aria-label="Ambient light" min="0" max="100" step="1" value="40">
+      </div>
+    </div>
+  </div>
+
+
+</aside>
+
+<main id="stage">
+  <div id="stageBg"></div>
+  <canvas id="outlineCanvas"></canvas>
+  <div class="scene">
+    <div id="world">
+      <div class="book-gizmo" id="gizmo"></div>
+    </div>
+  </div>
+  <div id="gizmoLayer"><div class="scene"><div id="gizmoWorld"><div class="book-gizmo" id="gizmoGhost"></div></div></div></div>
+  <div id="sbThumb" aria-hidden="true"></div>
+  <div id="cropFrame"><b class="ce" data-e="n"></b><b class="ce" data-e="s"></b><b class="ce" data-e="w"></b><b class="ce" data-e="e"></b><i class="ch" data-d="nw"></i><i class="ch" data-d="n"></i><i class="ch" data-d="ne"></i><i class="ch" data-d="e"></i><i class="ch" data-d="se"></i><i class="ch" data-d="s"></i><i class="ch" data-d="sw"></i><i class="ch" data-d="w"></i></div>
+  <label id="lightToggle"><span>Toggle lighting</span><input type="checkbox" id="lightingOn" role="switch" checked><span class="xm-switch" aria-hidden="true"></span></label>
+  <div id="exportDock">
+    <div id="exportMenu">
+      <div class="xm-row">
+        <label class="xm-dim">Width<input type="number" class="xm-input" id="exportW" value="1600" min="0" step="any"></label>
+        <span class="xm-x">x</span>
+        <label class="xm-dim">Height<input type="number" class="xm-input" id="exportH" value="1200" min="0" step="any"></label>
+        <label class="xm-unit">Unit
+          <select class="xm-input" id="exportUnit">
+            <option value="px">px</option><option value="in">in</option><option value="cm">cm</option><option value="mm">mm</option>
+          </select>
+        </label>
+      </div>
+      <div class="xm-row xm-row2">
+        <label class="xm-type">File type
+          <select class="xm-input" id="exportType">
+            <option value="jpeg">JPG</option>
+            <option value="png" selected>PNG</option>
+            <option value="tiff">TIFF</option>
+            <option value="webp">WebP</option>
+          </select>
+        </label>
+        <label class="xm-check">
+          <span>Show crop frame</span>
+          <input type="checkbox" id="cropToggle" role="switch" checked>
+          <span class="xm-switch" aria-hidden="true"></span>
+        </label>
+      </div>
+      <button class="editor-btn" id="exportBtn">Download</button>
+      <div id="exportStatus"></div>
+    </div>
+    <button id="exportToggle" aria-haspopup="true">Export image</button>
+  </div>
+  <div class="hint" id="stageHint">Drag background to orbit · scroll to zoom</div>
+</main>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const stage = $('stage');
+  const world = $('world');
+  const gizmoEl = $('gizmo');
+  const gizmoGhostEl = $('gizmoGhost');
+  const gizmoWorld = $('gizmoWorld');
+  const outlineCanvas = $('outlineCanvas');
+  const lightPad = $('lightPad');
+  const lightDot = $('lightDot');
+
+  // Camera/scene state (rotX/Y/Z orbit, zoom) is global. Everything that
+  // describes one book's own shape — dimensions, curve, images, page-edge
+  // style — lives on that book's `s` object. The accessors defined below
+  // make state.pageW, state.anchors, etc. read and write whichever book
+  // is currently ACTIVE (the one whose tab is showing), so all of the
+  // existing geometry and UI code keeps working unchanged, per book.
+  const state = { lightingOn:true, rotX:340, rotY:325, rotZ:0, scale:1, userZoomed:false };
+  state.books = {};       // id -> { id, name, x,y,z, rotX,rotY,rotZ, widget, s:{settings}, el:{dom} }
+  state.bookOrder = [];   // tab order
+  state.activeId = null;  // book whose tab/menu is showing
+  state.selectedBook = null; // book with the outline + gizmo (null = none)
+  state.light = { azimuth:-35, elevation:55, intensity:55, ambient:40 };
+
+  const newFaceContent = () => ({
+    front: { color:'#fbdcd6', label:'Front Cover', img:null },
+    back:  { color:'#d6e5fb', label:'Back Cover', img:null },
+    spine: { color:'#d6fbe0', label:'Spine', img:null },
+    left:  { color:'#fbe4c2', label:'Left', img:null },
+    right: { color:'#fbd6ec', label:'Right', img:null }
+  });
+
+  // -------- profile curve: multi-segment bezier, same model as before.
+  // anchors[0] is the spine (locked to x=0), anchors[last] is the outer
+  // edge (locked to x=1). This is what shapes the 4 red edges. --------
+  const DEFAULT_ANCHORS = () => ([
+    { x:0, y:0, outX:0.33, outY:0 },
+    { x:1, y:0, inX:0.67,  inY:0.2 }
+  ]);
+
+  const PER_BOOK_KEYS = ['pageW','pageH','spineWidth','slant','closeBook','faceContent','pageEdgeColor','pageEdgeGilded','anchors'];
+  PER_BOOK_KEYS.forEach(k => Object.defineProperty(state, k, {
+    enumerable:true,
+    get(){ return state.books[state.activeId].s[k]; },
+    set(v){ state.books[state.activeId].s[k] = v; }
+  }));
+
+  function bezierAt(t,P0,C1,C2,P3){
+    const mt=1-t;
+    const x = mt*mt*mt*P0.x + 3*mt*mt*t*C1.x + 3*mt*t*t*C2.x + t*t*t*P3.x;
+    const y = mt*mt*mt*P0.y + 3*mt*mt*t*C1.y + 3*mt*t*t*C2.y + t*t*t*P3.y;
+    return {x,y};
+  }
+  function evalCurveAt(tGlobal){
+    const segCount = state.anchors.length - 1;
+    let segT = tGlobal * segCount;
+    let segIdx = Math.floor(segT);
+    if(segIdx >= segCount) segIdx = segCount - 1;
+    if(segIdx < 0) segIdx = 0;
+    const localT = segT - segIdx;
+    const P0 = state.anchors[segIdx], P3 = state.anchors[segIdx+1];
+    const C1 = {x:P0.outX, y:P0.outY}, C2 = {x:P3.inX, y:P3.inY};
+    return bezierAt(localT, P0, C1, C2, P3);
+  }
+  // Yellow uses the SAME anchor/handle structure as blue (true bezier,
+  // same handle count) with every Y-value shifted uniformly, except the
+  // very last anchor's own (x,y) position — that one stays exactly
+  // where blue's does, since lime's fixed corner is defined from blue's
+  // unshifted endpoint. A separate blend/ease function grafted onto a
+  // uniform shift reads as two different curves; this keeps it as one.
+  function evalCurveAtShifted(tGlobal, shiftY){
+    const segCount = state.anchors.length - 1;
+    let segT = tGlobal * segCount;
+    let segIdx = Math.floor(segT);
+    if(segIdx >= segCount) segIdx = segCount - 1;
+    if(segIdx < 0) segIdx = 0;
+    const localT = segT - segIdx;
+    const lastIdx = state.anchors.length - 1;
+    const shift = (anchor, isLast) => isLast ? {x:anchor.x, y:anchor.y} : {x:anchor.x, y:anchor.y-shiftY};
+    const P0raw = state.anchors[segIdx], P3raw = state.anchors[segIdx+1];
+    const P0 = shift(P0raw, segIdx===lastIdx);
+    const P3 = shift(P3raw, segIdx+1===lastIdx);
+    const C1 = {x:P0raw.outX, y:P0raw.outY-shiftY};
+    const C2 = {x:P3raw.inX, y:P3raw.inY-shiftY};
+    return bezierAt(localT, P0, C1, C2, P3);
+  }
+
+  // The curve's true arc length in NORMALIZED units (x:0..1, y:curl) —
+  // a straight, flat curve has length exactly 1; any curling makes the
+  // path longer, same as bending a strip of paper without stretching it
+  // covers less straight-line distance for the same physical length.
+  // This is what lets us find a single scale factor that keeps the
+  // REAL arc length always equal to the page width, regardless of how
+  // much curl is dialed in — a curled page gets narrower (in its flat
+  // footprint) rather than longer, exactly like real paper.
+  function curveNormArcLength(N, ampFactor){
+    if(ampFactor == null) ampFactor = 1;
+    let len = 0;
+    let prev = evalCurveAt(0);
+    prev = {x:prev.x, y:prev.y*ampFactor};
+    for(let i=1;i<=N;i++){
+      const t = i/N;
+      const raw = evalCurveAt(t);
+      const p = {x:raw.x, y:raw.y*ampFactor};
+      len += Math.hypot(p.x-prev.x, p.y-prev.y);
+      prev = p;
+    }
+    return len;
+  }
+
+  // Read-only closeness check between two curves — used only to trigger
+  // a visual warning, never to alter the geometry itself. Point-to-
+  // SEGMENT distance (not just point-to-point) is what correctly finds
+  // the true closest approach even when it falls between sample points.
+  function pointToSegDist(p, a, b){
+    const abx=b.x-a.x, abz=b.z-a.z;
+    const abLenSq = abx*abx+abz*abz;
+    let t = abLenSq>0 ? ((p.x-a.x)*abx+(p.z-a.z)*abz)/abLenSq : 0;
+    t = Math.max(0, Math.min(1, t));
+    const cx=a.x+abx*t, cz=a.z+abz*t;
+    return Math.hypot(p.x-cx, p.z-cz);
+  }
+  function curvesMinDistance(ptsA, ptsB){
+    let min = Infinity;
+    for(const p of ptsA){
+      for(let i=0;i<ptsB.length-1;i++){
+        const d = pointToSegDist(p, ptsB[i], ptsB[i+1]);
+        if(d<min) min=d;
+      }
+    }
+    for(const p of ptsB){
+      for(let i=0;i<ptsA.length-1;i++){
+        const d = pointToSegDist(p, ptsA[i], ptsA[i+1]);
+        if(d<min) min=d;
+      }
+    }
+    return min;
+  }
+  function sampleFacePoints(S, baseZ, xOffset, N){
+    const pts = [];
+    for(let i=0;i<=N;i++){
+      const t = i/N;
+      const p = evalCurveAt(t);
+      pts.push({ x: p.x*S+xOffset, z: baseZ+p.y*S });
+    }
+    return pts;
+  }
+
+  // Derives the fully-saturated version of a hex color (same hue,
+  // S=100%, a mid lightness for readability) — used so each label
+  // automatically matches the hue of the page it's printed on.
+
+  function hexToFullSat(hex){
+    const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    let h = 0;
+    const d = max-min;
+    if(d !== 0){
+      if(max===r) h = ((g-b)/d) % 6;
+      else if(max===g) h = (b-r)/d + 2;
+      else h = (r-g)/d + 4;
+      h *= 60;
+      if(h<0) h += 360;
+    }
+    const l = 0.42; const s = 1;
+    const c = (1-Math.abs(2*l-1))*s;
+    const x = c*(1-Math.abs((h/60)%2-1));
+    const m = l - c/2;
+    let rr,gg,bb;
+    if(h<60){ rr=c;gg=x;bb=0; } else if(h<120){ rr=x;gg=c;bb=0; } else if(h<180){ rr=0;gg=c;bb=x; }
+    else if(h<240){ rr=0;gg=x;bb=c; } else if(h<300){ rr=x;gg=0;bb=c; } else { rr=c;gg=0;bb=x; }
+    const toHex = v => Math.round((v+m)*255).toString(16).padStart(2,'0');
+    return '#'+toHex(rr)+toHex(gg)+toHex(bb);
+  }
+
+  // Draws a placeholder texture (background color + label) onto a
+  // canvas and returns it as a data URL — this becomes the face's
+  // actual image texture, so the text warps across the curved strips
+  // exactly like an uploaded image would, rather than sitting as a
+  // separate flat overlay. mirror pre-flips the canvas draw itself
+  // (not a CSS transform after the fact), since the left/back pages
+  // sit inside a parent that mirrors ALL rendered pixels, including
+  // any text — baking the mirror into the source image is what
+  // actually cancels that out correctly.
+  function makePlaceholderImage(bgColor, text, w, h, vertical, mirror){
+    const SCALE = Math.min(2, 1200/Math.max(w,h)); // supersample for crisper text, but cap the texture size
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(w*SCALE); canvas.height = Math.round(h*SCALE);
+    const ctx = canvas.getContext('2d');
+    ctx.scale(SCALE, SCALE);
+    if(mirror){ ctx.translate(w,0); ctx.scale(-1,1); }
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = hexToFullSat(bgColor);
+    let fs = Math.max(14, (vertical?w:h)*0.13) * (vertical?2:1); // spine label is drawn at double size
+    ctx.font = `italic 500 ${fs}px 'Lexend', sans-serif`;
+    if(text){
+      // keep the label inside the face: shrink long labels (e.g. "Front Cover") to fit
+      { const avail = (vertical?h:w)*0.8, tw = ctx.measureText(text).width;
+        if(tw > avail){ fs = Math.max(8, fs*avail/tw); ctx.font = `italic 500 ${fs}px 'Lexend', sans-serif`; } }
+      // Measure the text's ACTUAL rendered bounding box and center that
+      // directly, rather than trusting textAlign/textBaseline's
+      // font-metric-based centering — a decorative display font's
+      // baseline metrics don't always match where it visually looks
+      // centered, especially combined with a synthetic italic slant.
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      const m = ctx.measureText(text);
+      ctx.save();
+      ctx.translate(w/2, h/2);
+      if(vertical) ctx.rotate(-Math.PI/2);
+      // Draw offset so the MEASURED bounding box (not the font's
+      // nominal baseline box) lands centered on the origin.
+      const drawX = (m.actualBoundingBoxLeft - m.actualBoundingBoxRight) / 2;
+      const drawY = (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
+      ctx.fillText(text, drawX, drawY);
+      ctx.restore();
+    }
+    return canvas.toDataURL();
+  }
+  // Deterministic pseudo-random in [0,1) from an integer seed — used
+  // instead of Math.random() so the page-edge texture stays visually
+  // stable across re-renders (Math.random would reshuffle the whole
+  // texture on every layoutCube call, even for unrelated changes).
+  function seededRandom(seed){
+    const x = Math.sin(seed*12.9898)*43758.5453;
+    return x - Math.floor(x);
+  }
+  function shadeHex(hex, amt){
+    const r = Math.min(255,Math.max(0, parseInt(hex.slice(1,3),16)+amt));
+    const g = Math.min(255,Math.max(0, parseInt(hex.slice(3,5),16)+amt));
+    const b = Math.min(255,Math.max(0, parseInt(hex.slice(5,7),16)+amt));
+    const toHex = v => Math.round(v).toString(16).padStart(2,'0');
+    return '#'+toHex(r)+toHex(g)+toHex(b);
+  }
+
+  // A flat, canvas-baked stripe pattern simulating a stack of
+  // individual page edges — drawn once into a 2D image rather than as
+  // separate 3D line geometry, so it reads as a texture on the
+  // surface rather than an overlaid shape with its own depth/gaps.
+  // horizontal=true: stripes run left-right, repeating top-to-bottom
+  // (used for top/bottom faces, repeating front-to-back).
+  // horizontal=false: stripes run top-to-bottom, repeating left-right
+  // (used for the fore-edge, repeating spine-to-outer).
+  function makeBlendStripeTexture(baseColor, gilded, w, h, steps, horizontal, seedOffset){
+    const fracs = bandFracs(Math.max(steps,1), seedOffset||0);
+    seedOffset = seedOffset || 0;
+    const SCALE = Math.min(2, 1200/Math.max(w,h));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1,Math.round(w*SCALE)); canvas.height = Math.max(1,Math.round(h*SCALE));
+    const ctx = canvas.getContext('2d');
+    const stripeCount = Math.max(steps, 1);
+    const shades = computeBlendShades(baseColor, gilded, stripeCount, seedOffset);
+    let prev = 0;
+    for(let s=0; s<stripeCount; s++){
+      const end = fracs[s];
+      ctx.fillStyle = shades[s];
+      if(horizontal) ctx.fillRect(0, prev*h*SCALE, w*SCALE, (end-prev)*h*SCALE+1);
+      else ctx.fillRect(prev*w*SCALE, 0, (end-prev)*w*SCALE+1, h*SCALE);
+      prev = end;
+    }
+    return canvas.toDataURL();
+  }
+
+  // Mirrors an already-loaded image horizontally, for uploaded images
+  // that land on the mirrored (left/back) side of the book.
+  function mirrorImageDataURL(img, w, h){
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.translate(w,0); ctx.scale(-1,1);
+    ctx.drawImage(img, 0, 0, w, h);
+    return canvas.toDataURL();
+  }
+
+  function buildXZSegmentTransform(p0, dx, dz, len){
+    const ux=dx/len, uz=dz/len;
+    return `translate3d(${p0.x}px,${p0.y}px,${p0.z}px) matrix3d(${ux},0,${uz},0, 0,1,0,0, ${-uz},0,${ux},0, 0,0,0,1)`;
+  }
+
+  // ---- lighting: 3x3 rotation matrices + vector helpers ----
+  // Used to turn each face's own local surface normal into a live
+  // view-space direction as the book/camera actually rotate, so
+  // per-face brightness (applyShading, defined near the lighting
+  // controls) responds to real geometry instead of a fixed 2D overlay.
+  function rotXMat(deg){ const a=deg*Math.PI/180,c=Math.cos(a),s=Math.sin(a); return [[1,0,0],[0,c,-s],[0,s,c]]; }
+  function rotYMat(deg){ const a=deg*Math.PI/180,c=Math.cos(a),s=Math.sin(a); return [[c,0,s],[0,1,0],[-s,0,c]]; }
+  function rotZMat(deg){ const a=deg*Math.PI/180,c=Math.cos(a),s=Math.sin(a); return [[c,-s,0],[s,c,0],[0,0,1]]; }
+  function matMulMat3(a,b){
+    const r=[[0,0,0],[0,0,0],[0,0,0]];
+    for(let i=0;i<3;i++) for(let j=0;j<3;j++){ let s=0; for(let k=0;k<3;k++) s+=a[i][k]*b[k][j]; r[i][j]=s; }
+    return r;
+  }
+  function matMulVec3(m,v){
+    return [ m[0][0]*v[0]+m[0][1]*v[1]+m[0][2]*v[2], m[1][0]*v[0]+m[1][1]*v[1]+m[1][2]*v[2], m[2][0]*v[0]+m[2][1]*v[1]+m[2][2]*v[2] ];
+  }
+  function normalize3(v){ const len=Math.hypot(v[0],v[1],v[2])||1; return [v[0]/len,v[1]/len,v[2]/len]; }
+
+  // Tags an element with its own local surface normal, pre-correcting
+  // for that page's fixed hinge rotation (cube/pageLeftWrap's own
+  // rotateY(±closeBook)) and, for the left page, the scaleX(-1) mirror
+  // pageLeftWrap renders through — both are static per-build (known
+  // right here), unlike the book's own gizmo rotation and the camera
+  // orbit, which change live and get applied later in applyShading.
+  // Corrects a face's local normal for that page's static hinge rotation
+  // (cube/pageLeftWrap's own rotateY(±closeBook)) and, for the left page,
+  // the scaleX(-1) mirror it renders through — both are fixed per build,
+  // unlike the book's gizmo rotation and the camera orbit, which change
+  // live and get applied later in applyShading. Returns [x,y,z].
+  function orientNormal(nx, ny, nz, pageKey){
+    if(pageKey === 'left') nx = -nx; // pageLeftWrap's scaleX(-1) applies before its rotateY
+    const rad = (pageKey === 'left' ? -state.closeBook : state.closeBook) * Math.PI/180;
+    const c = Math.cos(rad), s = Math.sin(rad);
+    return [nx*c + nz*s, ny, -nx*s + nz*c];
+  }
+  const fmtN = n => n.map(v => v.toFixed(4)).join(',');
+  // Flat faces (the top/bottom page-edge polygons) get one normal.
+  function tagFaceNormal(el, nx, ny, nz, pageKey){
+    const n = orientNormal(nx, ny, nz, pageKey);
+    el.dataset.nx = n[0].toFixed(4);
+    el.dataset.ny = n[1].toFixed(4);
+    el.dataset.nz = n[2].toFixed(4);
+  }
+
+
+  // Band boundaries (0..1 across the page stack), shared by the top, bottom
+  // and fore-edge faces so every stripe lines up around the whole edge.
+  function bandFracs(steps, seedOffset){
+    const f = [];
+    for(let s=0; s<steps; s++){
+      let fr = (s+1)/steps;
+      if(s < steps-1) fr += (seededRandom(s*7.91+seedOffset) - 0.5) * (0.7/steps);
+      f.push(fr);
+    }
+    return f;
+  }
+  function computeBlendShades(color, gilded, steps, seedOffset){
+    seedOffset = seedOffset || 0;
+    const shades = [];
+    for(let s=0; s<steps; s++){
+      shades.push(gilded
+        ? shadeHex('#c99a3a', (seededRandom(s*3.17+seedOffset)-0.5)*55)
+        : shadeHex(color, (seededRandom(s*3.17+seedOffset)-0.5)*50));
+    }
+    return shades;
+  }
+  // Interpolated stripe bands that follow the actual curve shape
+  // between curveA and curveB (same Illustrator Object>Blend idea as
+  // the main backing fill), each built as its own flat clip-path div
+  // rather than as separate 3D line geometry — so the bands curve to
+  // match the top/bottom edges' own bowed shape, without the gap/dash
+  // issues that came from building them as actual 3D line elements.
+  let __svgClipIdCounter = 0;
+  // Builds one SVG element containing a polygon-shaped fill — either a
+  // solid color or a custom image clipped to that exact polygon via
+  // SVG's own native <clipPath> (not the CSS clip-path property, which
+  // has proven unreliable combined with this file's 3D transform
+  // hierarchy — SVG clipping is a completely separate mechanism with
+  // no dependency on that). Positioned with the same static matrix3d
+  // used successfully elsewhere for flat XZ-plane placement.
+
+  // Builds the solid backing fill plus all interpolated stripe bands
+  // for one face (top or bottom) as a single SVG, with one shared
+  // clipPath — built from the main fill's own true boundary, which
+  // already correctly traces the spine's actual curve — applied to a
+  // group containing everything. This guarantees the combined visible
+  // area never extends past the true, curved face shape, regardless of
+  // whether any individual band's own edge is a plain straight
+  // interpolation rather than the spine's own curve.
+  function buildClippedPageEdgeFace(container, curveA, curveB, y, backingColor, spineArcPts, shades, steps, seedOffset, pageKey, normalSign){
+    seedOffset = seedOffset || 0;
+    const middle = spineArcPts ? spineArcPts.slice(1) : [curveB[curveB.length-1]];
+    const mainBoundary = curveA
+      .concat(middle)
+      .concat(curveB.slice(0, -1).slice().reverse());
+
+    const interp = (frac) => curveA.map((p,i) => ({
+      x: p.x + (curveB[i].x-p.x)*frac,
+      z: p.z + (curveB[i].z-p.z)*frac
+    }));
+    const bands = [];
+    let prevCurve = interp(0);
+    // Interior band boundaries get a small seeded jitter (max amplitude
+    // stays under half a step's width, so ordering — and therefore
+    // non-overlap — is always preserved) so the two page halves, which
+    // pass different seedOffsets, don't land on the exact same band
+    // widths and read as an obvious mirror image of each other when
+    // the book is closed. The very last boundary (s===steps-1) is left
+    // exactly at frac=1 since that's what has to match curveB exactly
+    // for the outer edge to splice cleanly with the spine arc.
+    const fracsShared = bandFracs(steps, seedOffset);
+    for(let s=0; s<steps; s++){
+      const frac = fracsShared[s];
+      const nextCurve = interp(frac);
+      bands.push({ pts: prevCurve.concat(nextCurve.slice().reverse()), color: shades[s] });
+      prevCurve = nextCurve;
+    }
+
+    const allPts = mainBoundary.concat(bands.flatMap(b=>b.pts));
+    const minX = Math.min(...allPts.map(p=>p.x)), maxX = Math.max(...allPts.map(p=>p.x));
+    const minZ = Math.min(...allPts.map(p=>p.z)), maxZ = Math.max(...allPts.map(p=>p.z));
+    const w = Math.max(1, maxX-minX), h2 = Math.max(1, maxZ-minZ);
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('width', w);
+    svg.setAttribute('height', h2);
+    svg.setAttribute('viewBox', `0 0 ${w} ${h2}`);
+    svg.style.position = 'absolute';
+    svg.style.top = '0'; svg.style.left = '0';
+    svg.style.overflow = 'visible';
+    svg.style.transformOrigin = '0% 0%';
+    svg.style.transform = `translate3d(${minX}px,${y}px,${minZ}px) matrix3d(1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1)`;
+    tagFaceNormal(svg, 0, normalSign || 1, 0, pageKey);
+
+    const toStr = (pts) => pts.map(p => `${p.x-minX},${p.z-minZ}`).join(' ');
+    const clipId = 'svgClip' + (__svgClipIdCounter++);
+    const defs = document.createElementNS(svgNS, 'defs');
+    const clipPath = document.createElementNS(svgNS, 'clipPath');
+    clipPath.setAttribute('id', clipId);
+    const clipPoly = document.createElementNS(svgNS, 'polygon');
+    clipPoly.setAttribute('points', toStr(mainBoundary));
+    clipPath.appendChild(clipPoly);
+    defs.appendChild(clipPath);
+    svg.appendChild(defs);
+
+    const g = document.createElementNS(svgNS, 'g');
+    g.setAttribute('clip-path', `url(#${clipId})`);
+    const mainPoly = document.createElementNS(svgNS, 'polygon');
+    mainPoly.setAttribute('points', toStr(mainBoundary));
+    mainPoly.setAttribute('fill', backingColor);
+    g.appendChild(mainPoly);
+    bands.forEach(b => {
+      const poly = document.createElementNS(svgNS, 'polygon');
+      poly.setAttribute('points', toStr(b.pts));
+      poly.setAttribute('fill', b.color);
+      g.appendChild(poly);
+    });
+    // Shading layers (driven by applyShading): a multiply rect for
+    // shadows, a warm normal-blend rect for highlights.
+    const rectS = document.createElementNS(svgNS, 'rect');
+    const rectG = document.createElementNS(svgNS, 'rect');
+    [rectS, rectG].forEach(r=>{
+      r.setAttribute('x', -5); r.setAttribute('y', -5);
+      r.setAttribute('width', w+10); r.setAttribute('height', h2+10);
+      g.appendChild(r);
+    });
+    rectS.setAttribute('fill', '#fff'); rectS.style.mixBlendMode = 'multiply';
+    rectG.setAttribute('fill', '#fff0d7'); rectG.setAttribute('fill-opacity', '0');
+    if(state.pageEdgeGilded){
+      // Gilt edges: a diagonal streak gradient whose strength follows the
+      // light's reflection (see applyShading), over a darker multiply base.
+      svg.dataset.gild = '1';
+      const gid = 'gildGrad' + (__svgClipIdCounter++);
+      const lg = document.createElementNS(svgNS, 'linearGradient');
+      lg.setAttribute('id', gid); lg.setAttribute('x1','0'); lg.setAttribute('y1','0'); lg.setAttribute('x2','1'); lg.setAttribute('y2','1');
+      [['0','#ffcf4d','.25'],['.5','#ffdf6e','1'],['1','#f5b324','.25']].forEach(([o,c,a])=>{
+        const st = document.createElementNS(svgNS, 'stop');
+        st.setAttribute('offset', o); st.setAttribute('stop-color', c); st.setAttribute('stop-opacity', a);
+        lg.appendChild(st);
+      });
+      defs.appendChild(lg);
+      rectG.setAttribute('fill', `url(#${gid})`);
+    }
+    svg.__rects = [rectS, rectG];
+    svg.appendChild(g);
+    container.appendChild(svg);
+  }
+
+  // Fills the face bounded by two curves (same XZ path, different Y)
+  // with a series of small flat quad strips — each strip spans the
+  // full page height and follows one segment of the curve, so the
+  // whole face approximates the curved surface. bottomPts/topPts come
+  // straight from buildCurvedRedEdge's own return value, so the fill
+  // always matches the visible curve exactly, sample for sample.
+  // Huge data: URLs inside a style value get re-parsed every time that style
+  // is recalculated; short blob: URLs don't. Converted once per image.
+  let __ogCounter = 0;
+  function buildFaceFill(container, bottomPts, h, color, imgData, pageWpx, pageHpx, uOffset, pageKey, centroid){
+    const ogId = ++__ogCounter;
+    uOffset = uOffset || 0;
+    const segN = [];
+    for(let i=0;i<bottomPts.length-1;i++){
+      const ddx=bottomPts[i+1].x-bottomPts[i].x, ddz=bottomPts[i+1].z-bottomPts[i].z;
+      const l=Math.hypot(ddx,ddz)||0.01; segN.push([-ddz/l,0,ddx/l]);
+    }
+    // The tangent-derived normal can point either into or out of the page
+    // slab depending on which way each face's curve happens to be
+    // traversed (the back cover and fore-edge were coming out inverted).
+    // Orient the whole face once so its normals point AWAY from the
+    // slab's centre.
+    if(centroid){
+      let side = 0;
+      for(let i=0;i<segN.length;i++){
+        const mx = (bottomPts[i].x+bottomPts[i+1].x)/2 - centroid.x;
+        const mz = (bottomPts[i].z+bottomPts[i+1].z)/2 - centroid.z;
+        side += mx*segN[i][0] + mz*segN[i][2];
+      }
+      if(side < 0) segN.forEach(n=>{ n[0] = -n[0]; n[2] = -n[2]; });
+    }
+    const avgN = (a,b)=>{ const v=[a[0]+b[0],0,a[2]+b[2]]; const l=Math.hypot(v[0],v[2]); return l<1e-6 ? a : [v[0]/l,0,v[2]/l]; };
+    for(let i=0;i<bottomPts.length-1;i++){
+      const p0 = bottomPts[i], p1 = bottomPts[i+1];
+      const dx=p1.x-p0.x, dz=p1.z-p0.z;
+      const len = Math.hypot(dx,dz) || 0.01;
+      const isLast = i === bottomPts.length-2;
+      const el = document.createElement('div');
+      el.className = 'face-strip';
+      el.dataset.og = ogId;
+      el.style.width = (len + (isLast ? 0 : 0.6))+'px';
+      el.style.height = h+'px';
+      el.style.transformOrigin = '0% 0%';
+      el.style.transform = buildXZSegmentTransform(p0, dx, dz, len);
+      // Smooth shading: each strip records the surface normal at BOTH of
+      // its ends (the average of itself and its neighbour at each shared
+      // joint), and applyShading fades a gradient between the two. A
+      // single normal per strip is what made individual facets visible.
+      const nL = i > 0 ? avgN(segN[i-1], segN[i]) : segN[i];
+      const nR = i < segN.length-1 ? avgN(segN[i], segN[i+1]) : segN[i];
+      el.dataset.nl = fmtN(orientNormal(nL[0], nL[1], nL[2], pageKey));
+      el.dataset.nr = fmtN(orientNormal(nR[0], nR[1], nR[2], pageKey));
+      if(imgData){
+        // p0.u/p1.u is this sample's position along the FLAT/printed
+        // page — using it (not 3D arc-length) keeps the image mapped
+        // to the page's own printed layout regardless of how much it
+        // curls. But each strip's own CSS width is set to its actual
+        // geometric length (for correct 3D shape), which generally
+        // does NOT equal its own u-range — those only match if the
+        // curve's speed is perfectly uniform. A single shared,
+        // unscaled background-size assumes they always match, so on
+        // any curve where they don't (worse at sharper handles), each
+        // strip's own window into the texture drifts out of alignment
+        // with its neighbors', leaving slivers of the source image
+        // never shown by any strip. Scaling this strip's own
+        // background-size so its own u-range exactly fills its own
+        // width fixes that regardless of curve shape.
+        const p0u = bottomPts[i].u, p1u = bottomPts[i+1].u;
+        const uWidth = Math.abs(p1u-p0u) || 0.01;
+        const localScale = len/uWidth;
+        const bw = pageWpx*localScale, bx = -(p0.u+uOffset)*localScale;
+        el.__img = { url: imgData, size:[bw, pageHpx], pos:[bx, 0] };
+        el.style.backgroundImage = `url(${imgData})`;
+        el.style.backgroundSize = `${bw}px ${pageHpx}px`;
+        el.style.backgroundPosition = `${bx}px 0px`;
+      } else {
+        el.style.backgroundColor = color;
+      }
+      // Shading layers: separate child elements, so changing the lighting
+      // never touches the (large) texture declaration on the strip itself.
+      const shadeEl = document.createElement('div'); shadeEl.className = 'shade';
+      const glintEl = document.createElement('div'); glintEl.className = 'glint';
+      el.appendChild(shadeEl); el.appendChild(glintEl);
+      el.__shade = shadeEl; el.__glint = glintEl;
+      container.appendChild(el);
+    }
+  }
+  // A gentle bowed connector between two points in the XZ-plane (Y
+  // fixed), instead of one straight segment — bows outward along the
+  // perpendicular to the p0-p1 line, peaking at the midpoint.
+  function buildBowedXZ(container, p0, p1, spineL, color){
+    // Horizontal tangent at p0 (needed for smoothness — a zero-Z tangent
+    // is the only kind that stays its own exact opposite when mirrored).
+    // At p1, the tangent is BLENDED halfway between horizontal and
+    // vertical — a full horizontal-to-vertical rotation makes this one
+    // half alone look like a full quarter circle, so combined with the
+    // mirrored page's matching half it reads as a HALF circle overall.
+    // Splitting the rotation in half here (each half contributing ~45°)
+    // is what makes the combined, whole visible spine read as an actual
+    // quarter circle. Verified this still collapses to an exact
+    // straight line at dx=0 — both the fully-horizontal and
+    // fully-vertical versions do independently, and they share the same
+    // X there, so any blend between them does too.
+    const N = 32;
+    const KAPPA = 0.5522847498;
+    const MIX = 0.5;
+    const P1 = { x: p0.x + (p1.x-p0.x)*KAPPA, z: p0.z };
+    const P2h = { x: p1.x + (p0.x-p1.x)*KAPPA, z: p1.z };
+    const P2v = { x: p1.x, z: p1.z - (p1.z-p0.z)*KAPPA };
+    const P2 = { x: P2h.x*(1-MIX)+P2v.x*MIX, z: P2h.z*(1-MIX)+P2v.z*MIX };
+    const pts = [];
+    let cumLen = 0;
+    let prevX = p0.x, prevZ = p0.z;
+    const rawU = [];
+    for(let i=0;i<=N;i++){
+      const t = i/N, mt = 1-t;
+      const x = mt*mt*mt*p0.x + 3*mt*mt*t*P1.x + 3*mt*t*t*P2.x + t*t*t*p1.x;
+      const z = mt*mt*mt*p0.z + 3*mt*mt*t*P1.z + 3*mt*t*t*P2.z + t*t*t*p1.z;
+      if(i>0) cumLen += Math.hypot(x-prevX, z-prevZ);
+      rawU.push(cumLen);
+      prevX = x; prevZ = z;
+      pts.push({ x, y: p0.y, z, u: 0 }); // u filled in below once total length is known
+    }
+    // Use the RAW cumulative arc-length directly as u — critically, this
+    // must match the strip widths buildFaceFill actually renders at
+    // (which are also raw Math.hypot segment lengths). Previously this
+    // was rescaled to [0, state.spineWidth], but the arc's own true
+    // geometric length rarely equals that exactly — verified via direct
+    // simulation that this mismatch (e.g. true length 24.36 vs assumed
+    // 35) was what pushed text visibly off-center: the background-image
+    // and the strips it's mapped across were sized inconsistently.
+    const totalLen = cumLen || 1;
+    for(let i=0;i<=N;i++){
+      pts[i].u = rawU[i];
+    }
+    pts.totalLen = totalLen; // caller uses this as the matching background-size width
+    return pts;
+  }
+
+  // Builds one of the 4 red (spine-to-edge) edges as a chain of segments
+  // following the profile curve, instead of one straight bar. y is fixed
+  // (top or bottom of the box), baseZ is the flat front/back position the
+  // curve bows away from. xOffset shifts the whole edge sideways — used
+  // by slant to move an entire face (its red AND blue edges together) as
+  // one rigid unit, not to reshape the curve itself.
+  function buildCurvedRedEdge(container, w, y, baseZ, curlScale, xOffset, color, shiftY){
+    const N = 15;
+    const pts = [];
+    for(let i=0;i<=N;i++){
+      const t = i/N;
+      const p = shiftY ? evalCurveAtShifted(t, shiftY) : evalCurveAt(t);
+      pts.push({ x: p.x*w + xOffset, y: y, z: baseZ + p.y*curlScale, u: t*state.pageW });
+    }
+    return pts;
+  }
+
+  // Positions a text label flat against a curved face, anchored at the
+  // curve's own middle sample (so it follows the face's local
+  // direction there) and centered horizontally, offset toward the top.
+  // Wireframe box: 12 edges between 8 corners, built from explicit
+  // points rather than face panels — no shared-center pivot subtleties
+  // to get wrong, and each edge is independently addressable, which is
+  // exactly what's needed to later replace specific edges with a curve.
+  // Builds one page's full wireframe (front/back faces + connectors)
+  // into the given container. Both pages use this same function — page 2
+  // is just page 1's geometry viewed through a scaleX(-1) wrapper.
+  function buildPageGeometry(container, w, h, halfD, backZ, spineL, pageKey){
+    container.innerHTML = '';
+    container.style.height = h+'px';
+
+    // Single uniform scale for both X and curl (Z), chosen so the
+    // curve's REAL arc length always equals w exactly — a straight
+    // curve (normArcLength=1) gives S=w as before, but any curling
+    // makes normArcLength>1, so S shrinks and the page's flat footprint
+    // narrows rather than the path getting longer than the page itself.
+    const openness = 1 - state.closeBook/90; // 1=fully open, 0=fully closed
+    const normLen = curveNormArcLength(48, openness);
+    const S = w / normLen;
+    // The container's width has to be S, not the raw page width — the
+    // outer (purple) edge actually sits at local X=S once curled, and
+    // the close-book hinge pivots off "100%" of this container's own
+    // width. Leaving it at w meant that pivot no longer matched where
+    // purple really was whenever S<w, which is what let the spine end
+    // appear to shift instead of only the outer edge moving.
+    container.style.width = S+'px';
+
+    // The curve's actual Z-offset at each end — matching these into the
+    // corner points is what keeps green/teal/white/grey (and the outer
+    // corners) attached to the curve as its endpoint anchors are dragged
+    // up/down, instead of staying fixed while the curve moves away from
+    // them.
+    const spineX = evalCurveAt(0).x * S, outerX = evalCurveAt(1).x * S;
+
+    // idealSafeDist is the target minimum separation between front and
+    // back curves — by the triangle inequality this can exceed what
+    // lime/brown's own straight-line (zero-curl) distance would allow,
+    // which is why separation is achieved by shifting the back curve
+    // as a whole (computeShiftY below) rather than scaling amplitude.
+    const idealSafeDist = state.spineWidth/2;
+    const curlScale = S * openness; // profile curve amplitude shrinks to zero as the book closes — a closed book has no reason for its pages to bow
+    // separation is now handled entirely by locally bending the back
+    // curve away from the front curve, not by scaling amplitude.
+    const N_PUSH = 24; // matches buildCurvedRedEdge's own sample count
+
+    function frontPolyline(baseZ, xOffset){
+      const pts = [];
+      for(let i=0;i<=N_PUSH;i++){
+        const t = i/N_PUSH;
+        const p = evalCurveAt(t);
+        pts.push({x: p.x*S+xOffset, z: baseZ+p.y*curlScale});
+      }
+      return pts;
+    }
+    function segDist(p,a,b){
+      const abx=b.x-a.x, abz=b.z-a.z;
+      const abLenSq=abx*abx+abz*abz;
+      let tt = abLenSq>0 ? ((p.x-a.x)*abx+(p.z-a.z)*abz)/abLenSq : 0;
+      tt=Math.max(0,Math.min(1,tt));
+      return Math.hypot(p.x-(a.x+abx*tt), p.z-(a.z+abz*tt));
+    }
+    function distToPolyline(p, poly){
+      let m=Infinity;
+      for(let i=0;i<poly.length-1;i++){ const d=segDist(p,poly[i],poly[i+1]); if(d<m)m=d; }
+      return m;
+    }
+    // For each point on the back curve, push it away from the front
+    // curve (in -Z) only as much as needed to clear idealSafeDist —
+    // angling the back curve locally wherever it gets too close, rather
+    // than uniformly scaling the whole curve down. The t=1 sample
+    // (index N_PUSH, the outer/lime side) is force-locked to zero push
+    // so the curve's own endpoint always matches lime's fixed,
+    const frontPolyTop = frontPolyline(halfD, 0);
+
+    function computeShiftY(baseZ, xOffset){
+      const EXCLUDE_LAST = 2; // last couple samples are inherently bounded near lime's fixed corner
+      function minDistForShift(shiftY, upTo){
+        let m = Infinity;
+        for(let i=0;i<=upTo;i++){
+          const t = i/N_PUSH;
+          const p = evalCurveAtShifted(t, shiftY);
+          const x = p.x*S + xOffset;
+          const z = baseZ + p.y*curlScale;
+          const d = distToPolyline({x,z}, frontPolyTop);
+          if(d < m) m = d;
+        }
+        return m;
+      }
+      const upTo = N_PUSH - EXCLUDE_LAST;
+      let lo=0, hi=1, guard=0;
+      while(minDistForShift(hi, upTo) < idealSafeDist && guard<30){ hi*=2; guard++; }
+      for(let iter=0; iter<50; iter++){
+        const mid=(lo+hi)/2;
+        if(minDistForShift(mid, upTo) >= idealSafeDist) hi=mid; else lo=mid;
+      }
+      return hi;
+    }
+
+    const shiftY = Math.abs(state.slant) > 1e-6 ? computeShiftY(backZ, state.slant) : 0;
+
+    const spineZFront = evalCurveAt(0).y * curlScale; // matches blue's own curve exactly — never shifted
+    const spineZBack = evalCurveAtShifted(0, shiftY).y * curlScale; // back corner — this is what makes grey's length actually flex
+    const outerZ = evalCurveAt(1).y * curlScale; // never shifted — locked to lime's own value (evalCurveAtShifted also never touches the last anchor)
+
+    const c = {
+      fbl:{x:spineX,y:0,z:halfD+spineZFront},  fbr:{x:outerX,y:0,z:halfD+outerZ},
+      ftl:{x:spineX,y:h,z:halfD+spineZFront},  ftr:{x:outerX,y:h,z:halfD+outerZ},
+      bbl:{x:spineX+state.slant,y:0,z:backZ+spineZBack}, bbr:{x:outerX+state.slant,y:0,z:backZ+outerZ},
+      btl:{x:spineX+state.slant,y:h,z:backZ+spineZBack}, btr:{x:outerX+state.slant,y:h,z:backZ+outerZ}
+    };
+
+
+
+    const slabCentroid = {
+      x: Object.values(c).reduce((a,p)=>a+p.x,0)/8,
+      z: Object.values(c).reduce((a,p)=>a+p.z,0)/8
+    };
+    const redPts    = buildCurvedRedEdge(container, S, 0, halfD, curlScale, 0, null);
+    const bluePts   = buildCurvedRedEdge(container, S, h, halfD, curlScale, 0, null);
+    const orangePts = buildCurvedRedEdge(container, S, 0, backZ, curlScale, state.slant, null, shiftY);
+    const yellowPts = buildCurvedRedEdge(container, S, h, backZ, curlScale, state.slant, null, shiftY);
+
+    // Front face (halfD, red/blue) is the inside page facing the
+    // reader; back face (backZ, orange/yellow) is the outer cover.
+    const pageIsLeft = pageKey === 'left';
+    const insideMirror = pageIsLeft; // parent's scaleX(-1) only, inside faces the camera normally
+    const coverMirror = !pageIsLeft; // cover faces away from the camera (backward-facing), independent of page side — cancels with the page mirror on the left page
+    const insideKey = pageKey === 'right' ? 'left' : 'right'; // swapped: pageKey='right' (cube) visually renders screen-left at the default angle
+    const coverKey = pageKey === 'right' ? 'front' : 'back';
+    const insideContent = state.faceContent[insideKey];
+    const coverContent = state.faceContent[coverKey];
+    const insideImg = insideContent.img ? (insideMirror ? insideContent.imgMirrored : insideContent.img) : makePlaceholderImage(insideContent.color, insideContent.label, state.pageW, h, false, insideMirror);
+    const coverImg = coverContent.img ? (coverMirror ? coverContent.imgMirrored : coverContent.img) : makePlaceholderImage(coverContent.color, coverContent.label, state.pageW, h, false, coverMirror);
+
+    // Spine arcs — computed before the top/bottom faces below, since
+    // those need to trace this exact curve at their outer edge rather
+    // than cutting a straight line across it.
+    const brownPts = buildBowedXZ(container, c.fbr, c.bbr, spineL, null); // brown, bowed
+    const limePts = buildBowedXZ(container, c.ftr, c.btr, spineL, null); // lime, bowed
+
+    buildFaceFill(container, redPts, h, insideContent.color, insideImg, state.pageW, h, 0, pageKey, slabCentroid);
+    buildFaceFill(container, orangePts, h, coverContent.color, coverImg, state.pageW, h, 0, pageKey, slabCentroid);
+
+    // Top and bottom faces — Illustrator Object>Blend style: a single
+    // flat polygon connecting blue-to-yellow (top) and red-to-orange
+    // (bottom), since these two curves don't share an XZ path the way
+    // front/back faces' own top-vs-bottom pairs do. At the outer
+    // (spine) edge, bluePts[last]/redPts[last] exactly equal
+    // c.ftr/c.fbr and yellowPts[last]/orangePts[last] exactly equal
+    // c.btr/c.bbr (the curve's last anchor is never shifted — verified
+    // by construction), so the matching spine arc splices in with no
+    // gap, making the face follow the spine's actual curve instead of
+    // a straight line across it.
+    const pageEdgeBacking = state.pageEdgeGilded ? '#c99a3a' : state.pageEdgeColor;
+    const BLEND_STEPS = 24;
+    const pageSeedOffset = pageKey === 'left' ? 733 : 0;
+    const blendShades = computeBlendShades(state.pageEdgeColor, state.pageEdgeGilded, BLEND_STEPS, pageSeedOffset);
+    buildClippedPageEdgeFace(container, bluePts, yellowPts, h, pageEdgeBacking, limePts, blendShades, BLEND_STEPS, pageSeedOffset, pageKey, 1);
+    buildClippedPageEdgeFace(container, redPts, orangePts, 0, pageEdgeBacking, brownPts, blendShades, BLEND_STEPS, pageSeedOffset, pageKey, -1);
+
+    // Fore-edge (the third remaining empty face, opposite the spine)
+    {
+      const foreEdgeLen = Math.hypot(c.bbl.x-c.fbl.x, c.bbl.z-c.fbl.z);
+      const foreEdgePts = [
+        {x:c.fbl.x, y:c.fbl.y, z:c.fbl.z, u:0},
+        {x:c.bbl.x, y:c.bbl.y, z:c.bbl.z, u:foreEdgeLen}
+      ];
+      const foreEdgeTex = makeBlendStripeTexture(pageEdgeBacking, state.pageEdgeGilded, foreEdgeLen, h, 24, false, pageSeedOffset);
+      buildFaceFill(container, foreEdgePts, h, pageEdgeBacking, foreEdgeTex, foreEdgeLen, h, 0, pageKey, slabCentroid);
+      if(state.pageEdgeGilded && container.lastElementChild) container.lastElementChild.dataset.gild = '1';
+    }
+
+    const spineContent = state.faceContent.spine;
+    // Verified numerically (simulating the actual CSS transform chain,
+    // including transform-origin) that both pages' spine arcs share
+    // their t=0 endpoint at the EXACT SAME world position — that's the
+    // true pivot the book hinges on, and therefore the true middle of
+    // the whole visible spine. Centering text at t=0.5 of just one
+    // arc's own length was the real bug — it placed the center halfway
+    // between that shared pivot and the arc's own far end, which reads
+    // as "off to the side" toward whichever cover that arc belongs to.
+    const combinedW = state.spineWidth * 2;
+    let spineImg;
+    if(spineContent.img){
+      spineImg = insideMirror ? spineContent.imgMirrored : spineContent.img;
+    } else {
+      const combined = makePlaceholderImage(spineContent.color, spineContent.label, combinedW, h, true, false);
+      spineImg = insideMirror ? makePlaceholderImage(spineContent.color, spineContent.label, combinedW, h, true, true) : combined;
+    }
+    // Both pages read their own second half of their own (differently
+    // sourced) combined image — this puts the label's true center
+    // exactly at u=0, the shared pivot point both arcs meet at.
+    buildFaceFill(container, brownPts, h, spineContent.color, spineImg, combinedW, h, state.spineWidth, pageKey, slabCentroid);
+
+    c.S = S;
+    return c;
+  }
+
+  function layoutBook(b){
+    const prev = state.activeId;
+    state.activeId = b.id;
+    try{ layoutBookInner(b); } finally { state.activeId = prev; }
+    if(state.selectedBook === b.id) scheduleOutline();
+  }
+  function layoutBookInner(b){
+    const { cube, cube2, pageLeftWrap, spineGroup } = b.el;
+    const w = state.pageW, h = state.pageH;
+    const d = Math.max(4, state.spineWidth);
+    const halfH = h/2, halfD = d/4; // front face offset — stays fixed
+
+    // Slant driven directly by openness — simple and linear. The
+    // back-face depth (dz) is what's solved for, via binary search, to
+    // make the horizontal-tangent bezier arc (see buildBowedXZ) hit the
+    // spine-width length target exactly at this slant. This is what
+    // gives genuine smoothness at purple: a bezier with BOTH handles'
+    // Z pinned to their own endpoint's Z has a tangent at p0 with zero
+    // Z-component always — and only a zero-Z tangent stays its own
+    // exact opposite when mirrored (mirroring only negates X), which is
+    // the actual mathematical condition for the two halves to blend
+    // without a kink. It also collapses to an exact straight line when
+    // slant=0 (verified algebraically: every control point shares the
+    // same X in that case). maxSlant is kept well under the target
+    // length so dz has real room to stay positive throughout, rather
+    // than collapsing toward zero (which would flatten the whole back
+    // face) as slant approaches its max.
+    const openness = 1 - state.closeBook/90;
+    const SPINE_L = state.spineWidth/2; // fixed arc length per half
+    const maxSlant = SPINE_L * 0.9;
+    const naturalSlantMag = maxSlant * openness;
+
+    const KAPPA = 0.5522847498;
+    const MIX = 0.5; // blend between horizontal (0) and vertical (1) tangent at p1
+    function bezierLen(dxVal, dzVal, N=32){
+      const P1x = dxVal*KAPPA;
+      const P2x = dxVal*((1-KAPPA)*(1-MIX) + MIX);
+      const P2z = -dzVal*((1-MIX) + (1-KAPPA)*MIX);
+      let len = 0, px = 0, pz = 0;
+      for(let i=1;i<=N;i++){
+        const t = i/N, mt = 1-t;
+        const x = 3*mt*mt*t*P1x + 3*mt*t*t*P2x + t*t*t*dxVal;
+        const z = 3*mt*t*t*P2z + t*t*t*(-dzVal);
+        len += Math.hypot(x-px, z-pz);
+        px = x; pz = z;
+      }
+      return len;
+    }
+    function solveBackDz(dxMag, targetLen){
+      if(dxMag < 1e-6) return targetLen;
+      let lo = 0.001, hi = targetLen;
+      for(let iter=0; iter<40; iter++){
+        const mid = (lo+hi)/2;
+        if(bezierLen(-dxMag, mid) < targetLen) lo = mid; else hi = mid;
+      }
+      return (lo+hi)/2;
+    }
+
+    // Spine parameters are LOCKED to the exact perfected values, with no
+    // search or adjustment of any kind — every attempt at adjusting
+    // either slant or length (independently, jointly, or with length
+    // alone while holding slant fixed) was verified numerically to
+    // still shift the dx:dz ratio away from the tuned quarter-circle
+    // proportions, distorting the spine's look. Separation is instead
+    // guaranteed by locally bending the back curve away from the front
+    // curve (computed per-point in buildPageGeometry) — only where
+    // actually needed, never touching the spine's own geometry.
+    const bestSlantMag = naturalSlantMag;
+    const dx = -bestSlantMag;
+    state.slant = dx;
+
+    let backDz = solveBackDz(bestSlantMag, SPINE_L);
+    // Back face's actual Z position — was a fixed -halfD; now derived
+    // so it sits at exactly -halfD when closed (backDz=SPINE_L=2*halfD
+    // there) and moves closer to the front face as the book opens.
+    const backZ = halfD - backDz;
+
+    const c1 = buildPageGeometry(cube, w, h, halfD, backZ, SPINE_L, 'right');
+    const c2 = buildPageGeometry(cube2, w, h, halfD, backZ, SPINE_L, 'left');
+
+    // Close book: both pages hinge around the shared purple line (world
+    // X=0). Page 2's geometry is mirrored by its wrapper, which flips the
+    // EFFECTIVE direction of any rotation layered on top of it — so the
+    // two pages need opposite rotateY signs to close symmetrically
+    // toward each other instead of swinging together as one rigid unit.
+    const closeDeg = state.closeBook;
+
+    // Page 1 sits with its OUTER/purple edge (local X=w) at world X=0,
+    // extending back to X=-w (its spine). The -w here is what re-centers
+    // the pair once page 2 is added on the other side of that shared
+    // edge, below.
+    //
+    // The pivot has to be purple's EXACT 3D position, not just its X.
+    // transform-origin's Z component defaults to 0, but purple actually
+    // sits at Z=halfD(+curl) — so without specifying that Z explicitly,
+    // the "pivot" was really a point purple doesn't occupy, and purple
+    // swung under rotation instead of staying fixed. Pulling purple's
+    // real Z straight from the corner data fixes that.
+    //
+    // Also explicitly pin cube's own width to S — transform-origin's
+    // "100%" is relative to the element's actual rendered width, and
+    // without an explicit width a position:relative element with only
+    // position:absolute children has an ambiguous/effectively-zero
+    // intrinsic width, which would silently put the pivot at the wrong
+    // X entirely. pageLeftWrap already does this for page 2 below.
+    cube.style.width = c1.S+'px';
+    cube.style.transformOrigin = `100% 50% ${c1.fbr.z}px`;
+    cube.style.transform = `translate3d(-${c1.S}px,-${halfH}px,0px) rotateY(${closeDeg}deg)`;
+
+    // Page 2 mirrors across X=w (its OWN local outer/purple edge) — so
+    // both pages' purple edges coincide exactly, with page 2's spine
+    // landing on the opposite side. Same Z-pivot fix as page 1.
+    pageLeftWrap.style.width = c2.S+'px';
+    pageLeftWrap.style.height = h+'px';
+    pageLeftWrap.style.transformOrigin = `100% 50% ${c2.fbr.z}px`;
+    pageLeftWrap.style.transform = `translate3d(-${c2.S}px,0px,0px) rotateY(${-closeDeg}deg) scaleX(-1)`;
+    cube2.style.transform = `translate3d(0px,-${halfH}px,0px)`;
+
+    spineGroup.innerHTML = '';
+  }
+  function relayout(b){
+    layoutBook(b);
+    applyWorldTransform();
+    applyBookTransform(b.id);
+    refreshGizmoIfSelected();
+  }
+  function layoutCube(){ relayout(activeBook()); }
+  function layoutAll(){
+    allBooks().forEach(layoutBook);
+    applyWorldTransform();
+    allBooks().forEach(b=>applyBookTransform(b.id));
+    refreshGizmoIfSelected();
+  }
+
+  function wrapDeg(v){ return ((v % 360) + 360) % 360; }
+  const allBooks = () => state.bookOrder.map(id => state.books[id]);
+  const activeBook = () => state.books[state.activeId];
+
+  // The camera orbit/zoom transform is mirrored onto three parallel
+  // scenes (the real one, the dimmed gizmo overlay, the outline copy) so
+  // they always project identically.
+  // uniform 3D scale (so depth shrinks with the scene) followed by the orbit
+  // rotation, then a shift that keeps the whole row of books centred
+  function camString(){
+    return `scale3d(${state.scale},${state.scale},${state.scale}) rotateX(${state.rotX}deg) rotateY(${state.rotY}deg) rotateZ(${state.rotZ}deg) translate3d(${-(state.cx||0)}px,${-(state.cy||0)}px,0px)`;
+  }
+  function setSceneTransform(){
+    const t = camString();
+    world.style.transform = t;
+    gizmoWorld.style.transform = t;
+    drawOutline();
+    if(typeof syncZoomUI === 'function') syncZoomUI();
+  }
+
+  // ---- zoom slider (log scale 2%..160%) ----
+  const ZMIN = 0.02, ZMAX = 1.6;
+  const zoomAmt = $('zoomAmt'), zoomVal = $('zoomVal');
+  const scaleToPos = sc => Math.round(1000*Math.log(Math.max(ZMIN,Math.min(ZMAX,sc))/ZMIN)/Math.log(ZMAX/ZMIN));
+  const posToScale = p => ZMIN*Math.pow(ZMAX/ZMIN, p/1000);
+  function syncZoomUI(){
+    if(!zoomAmt) return;
+    if(document.activeElement !== zoomAmt) zoomAmt.value = scaleToPos(state.scale);
+    if(document.activeElement !== zoomVal) zoomVal.value = Math.round(state.scale*100);
+  }
+  if(zoomAmt){
+    zoomAmt.addEventListener('input', ()=>{ state.userZoomed = true; state.scale = posToScale(+zoomAmt.value); setSceneTransform(); zoomVal.value = Math.round(state.scale*100); });
+    const commitZoomVal = ()=>{ const v = parseFloat(zoomVal.value); if(!isFinite(v)) return; state.userZoomed = true; state.scale = Math.max(ZMIN, Math.min(ZMAX, v/100)); setSceneTransform(); };
+    zoomVal.addEventListener('input', commitZoomVal);
+    zoomVal.addEventListener('change', ()=>{ commitZoomVal(); zoomVal.value = Math.round(state.scale*100); });
+  }
+
+  function applyWorldTransform(){
+    if(!state.userZoomed && allBooks().length){
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      allBooks().forEach(b=>{
+        x0 = Math.min(x0, b.x - b.s.pageW); x1 = Math.max(x1, b.x + b.s.pageW);
+        y0 = Math.min(y0, b.y - b.s.pageH/2); y1 = Math.max(y1, b.y + b.s.pageH/2);
+      });
+      state.cx = (x0+x1)/2; state.cy = (y0+y1)/2;
+      const bound = Math.max(x1-x0, y1-y0);
+      const availW = stage.clientWidth - 120;
+      const availH = stage.clientHeight - 160;
+      const fit = Math.min(availW/(bound*1.6), availH/(bound*1.6), 1.6);
+      state.scale = Math.max(fit, 0.02);
+    }
+    setSceneTransform();
+    applyShading();
+  }
+
+  // ---- book position/rotation, selection, and manipulation gizmo ----
+  function bookTransformString(b){
+    return `translate3d(${b.x}px,${b.y}px,${b.z}px) rotateX(${b.rotX}deg) rotateY(${b.rotY}deg) rotateZ(${b.rotZ}deg)`;
+  }
+  function applyBookTransform(id){
+    const b = state.books[id];
+    if(!b) return;
+    const t = bookTransformString(b);
+    b.el.group.style.transform = t;
+    if(state.selectedBook === id){
+      gizmoEl.style.transform = t;
+      gizmoGhostEl.style.transform = t;
+      drawOutline();
+    }
+    applyShading();
+  }
+
+  // ---- selection outline that follows the book's real silhouette ----
+  // Instead of an SVG filter (very slow: it re-rasterizes and dilates the
+  // whole stage every frame), the outline is drawn on a 2D canvas. At
+  // layout time each face (strip / page-edge polygon) records its matrix
+  // relative to the book and its corner points; every frame those are
+  // pushed through (camera x book x face) with the same perspective the
+  // CSS uses, then each projected polygon is filled AND stroked in
+  // orange. The union of the strokes is the silhouette grown by the
+  // stroke radius; the real book, drawn above, hides everything inside
+  // it so only the rim shows. A few hundred small polygons per frame.
+  const OUTLINE_PX = 3;          // rim thickness outside the book
+  const PERSPECTIVE = 1600;      // must match .scene{perspective}
+  let outlineRaf = 0, outlineFaces = null;
+  function nodeMatrix(el){
+    const cs = getComputedStyle(el);
+    let m = new DOMMatrix().translate(parseFloat(cs.left)||0, parseFloat(cs.top)||0);
+    if(cs.transform && cs.transform !== 'none'){
+      const o = cs.transformOrigin.split(' ').map(parseFloat);
+      const ox = o[0]||0, oy = o[1]||0, oz = o[2]||0;
+      m = m.translate(ox,oy,oz).multiply(new DOMMatrix(cs.transform)).translate(-ox,-oy,-oz);
+    }
+    return m;
+  }
+  function captureOutlineFaces(b){
+    const group = b.el.group, faces = [], groups = {};
+    group.querySelectorAll('.face-strip, svg[data-nx]').forEach(el=>{
+      let m = nodeMatrix(el);
+      for(let p = el.parentElement; p && p !== group; p = p.parentElement) m = nodeMatrix(p).multiply(m);
+      if(el.tagName.toLowerCase() === 'svg'){
+        const poly = el.querySelector('g > polygon');
+        if(!poly) return;
+        const n = poly.getAttribute('points').trim().split(/[\s,]+/).map(Number);
+        const pts = [];
+        for(let i=0;i+1<n.length;i+=2){ const q = m.transformPoint(new DOMPoint(n[i], n[i+1], 0, 1)); pts.push([q.x,q.y,q.z]); }
+        faces.push(pts);
+      } else {
+        // strips of one face are chained into a single polygon (top edge
+        // forward, bottom edge back) so the outline draws a handful of
+        // shapes instead of hundreds
+        const w = parseFloat(el.style.width)||0, h = parseFloat(el.style.height)||0;
+        const T = (x,y)=>{ const q = m.transformPoint(new DOMPoint(x,y,0,1)); return [q.x,q.y,q.z]; };
+        const g = groups[el.dataset.og] || (groups[el.dataset.og] = { top:[], bot:[] });
+        g.top.push(T(0,0)); g.bot.push(T(0,h)); g.lastTop = T(w,0); g.lastBot = T(w,h);
+      }
+    });
+    Object.values(groups).forEach(g=>{
+      faces.push(g.top.concat([g.lastTop, g.lastBot], g.bot.slice().reverse()));
+    });
+    return faces;
+  }
+  function scheduleOutline(){
+    if(outlineRaf) return;
+    outlineRaf = requestAnimationFrame(()=>{ outlineRaf = 0; rebuildOutline(); });
+  }
+  function rebuildOutline(){
+    const b = state.selectedBook && state.books[state.selectedBook];
+    outlineFaces = b ? captureOutlineFaces(b) : null;
+    drawOutline();
+  }
+  let drawRaf = 0, outlineDirty = null;
+  function drawOutline(){
+    if(drawRaf) return;
+    drawRaf = requestAnimationFrame(()=>{ drawRaf = 0; drawOutlineNow(); });
+  }
+  function drawOutlineNow(){
+    const b = state.selectedBook && state.books[state.selectedBook];
+    if(!b || !outlineFaces){ outlineCanvas.style.display = 'none'; outlineDirty = null; return; }
+    const W = stage.clientWidth, H = stage.clientHeight, dpr = window.devicePixelRatio || 1;
+    if(outlineCanvas.width !== Math.round(W*dpr) || outlineCanvas.height !== Math.round(H*dpr)){
+      outlineCanvas.width = Math.round(W*dpr); outlineCanvas.height = Math.round(H*dpr); outlineDirty = null;
+    }
+    outlineCanvas.style.display = 'block';
+    const ctx = outlineCanvas.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    if(outlineDirty) ctx.clearRect(outlineDirty[0]-2,outlineDirty[1]-2,outlineDirty[2]+4,outlineDirty[3]+4); else ctx.clearRect(0,0,W,H);
+    let bx0=1e9,by0=1e9,bx1=-1e9,by1=-1e9;
+    const cam = new DOMMatrix(camString())
+      .multiply(new DOMMatrix(bookTransformString(b)));
+    const cx = W/2, cy = H/2;
+    ctx.fillStyle = ctx.strokeStyle = '#fc5a18';
+    ctx.lineWidth = OUTLINE_PX*2;
+    ctx.lineJoin = 'bevel';
+    ctx.beginPath();
+    const m = cam;
+    const a11=m.m11,a12=m.m12,a13=m.m13,a21=m.m21,a22=m.m22,a23=m.m23,a31=m.m31,a32=m.m32,a33=m.m33,tx=m.m41,ty=m.m42,tz=m.m43;
+    outlineFaces.forEach(pts=>{
+      for(let i=0;i<pts.length;i++){
+        const x=pts[i][0], y=pts[i][1], z=pts[i][2];
+        const qx=a11*x+a21*y+a31*z+tx, qy=a12*x+a22*y+a32*z+ty, qz=a13*x+a23*y+a33*z+tz;
+        const k = PERSPECTIVE/(PERSPECTIVE - qz);
+        const sx = cx + qx*k, sy = cy + qy*k;
+        if(sx<bx0)bx0=sx; if(sx>bx1)bx1=sx; if(sy<by0)by0=sy; if(sy>by1)by1=sy;
+        if(i) ctx.lineTo(sx,sy); else ctx.moveTo(sx,sy);
+      }
+      ctx.closePath();
+    });
+    ctx.fill(); ctx.stroke();
+    const pad = OUTLINE_PX + 4;
+    outlineDirty = [bx0-pad, by0-pad, bx1-bx0+2*pad, by1-by0+2*pad];
+  }
+
+  function selectBook(id){
+    if(state.selectedBook === id) return;
+    state.selectedBook = id;
+    setActiveBook(id);
+    applyBookTransform(id);
+    buildGizmo(id);
+    rebuildOutline();
+  }
+  function deselectBook(){
+    if(!state.selectedBook) return;
+    state.selectedBook = null;
+    gizmoEl.innerHTML = '';
+    gizmoGhostEl.innerHTML = '';
+    rebuildOutline();
+  }
+  function toggleWidget(id){
+    const b = state.books[id];
+    b.widget = b.widget === 'rotate' ? 'move' : 'rotate';
+    buildGizmo(id);
+  }
+  // Called after a relayout so the gizmo's size (derived from the
+  // book's page size) and the outline copy stay in step.
+  function refreshGizmoIfSelected(){
+    if(state.selectedBook){ buildGizmo(state.selectedBook); scheduleOutline(); }
+  }
+
+  const GIZMO_COLOR = { x:'#e64545', y:'#4fbf6b', z:'#4fa3e6' };
+  const svgNS2 = 'http://www.w3.org/2000/svg';
+  function svgEl(tag, attrs){
+    const el = document.createElementNS(svgNS2, tag);
+    for(const k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+
+  // Gizmos are built twice: a solid, depth-tested copy inside the real
+  // scene (parts in front of the book read at full strength), and an
+  // interactive, dimmed copy in an overlay scene above everything (so
+  // parts that pass behind the book stay visible and still grabbable).
+  function buildGizmoRing(container, axis, R, color, interactive){
+    const rot = axis==='x' ? 'rotateY(90deg)' : axis==='y' ? 'rotateX(90deg)' : '';
+    const wrap = document.createElement('div');
+    wrap.className = 'gizmo-axis gizmo-ring';
+    wrap.dataset.axis = axis;
+    wrap.style.left = (-R)+'px'; wrap.style.top = (-R)+'px';
+    wrap.style.width = (R*2)+'px'; wrap.style.height = (R*2)+'px';
+    wrap.style.transformOrigin = '50% 50%';
+    wrap.style.transform = rot;
+    const svg = svgEl('svg', { width:R*2, height:R*2, viewBox:`0 0 ${R*2} ${R*2}` });
+    svg.style.left = '0px'; svg.style.top = '0px';
+    if(interactive){
+      svg.appendChild(svgEl('circle', { cx:R, cy:R, r:R-3, fill:'none', stroke:'transparent', 'stroke-width':160, class:'gizmo-hit' }));
+    }
+    svg.appendChild(svgEl('circle', { cx:R, cy:R, r:R-3, fill:'none', stroke:color, 'stroke-width':30, opacity:interactive ? 0.55 : 0.95, class:'gizmo-visible', style:'pointer-events:none' }));
+    wrap.appendChild(svg);
+    container.appendChild(wrap);
+  }
+
+  function buildGizmoArrow(container, axis, len, color, interactive){
+    const rot = axis==='x' ? '' : axis==='y' ? 'rotateZ(90deg)' : 'rotateY(-90deg)';
+    const wrap = document.createElement('div');
+    wrap.className = 'gizmo-axis gizmo-arrow';
+    wrap.dataset.axis = axis;
+    wrap.style.left = '0px'; wrap.style.top = (-10)+'px';
+    wrap.style.width = (len+18)+'px'; wrap.style.height = '20px';
+    wrap.style.transformOrigin = '0% 50%';
+    wrap.style.transform = rot;
+    const svg = svgEl('svg', { width:len+18, height:20, viewBox:`0 0 ${len+18} 20` });
+    svg.style.left = '0px'; svg.style.top = '0px';
+    const op = interactive ? 0.45 : 1;
+    if(interactive){
+      svg.appendChild(svgEl('line', { x1:0, y1:10, x2:len+6, y2:10, stroke:'transparent', 'stroke-width':180, class:'gizmo-hit' }));
+    }
+    svg.appendChild(svgEl('line', { x1:0, y1:10, x2:len, y2:10, stroke:color, 'stroke-width':40, 'stroke-linecap':'round', opacity:op, style:'pointer-events:none' }));
+    svg.appendChild(svgEl('polygon', { points:`${len},-50 ${len+110},10 ${len},70`, fill:color, opacity:op, class:'gizmo-visible' }));
+    wrap.appendChild(svg);
+    container.appendChild(wrap);
+  }
+
+  function buildGizmo(id){
+    gizmoEl.innerHTML = '';
+    gizmoGhostEl.innerHTML = '';
+    const b = state.books[id];
+    if(!b) return;
+    const R = Math.max(55, Math.hypot(b.s.pageW, b.s.pageH) * 0.3);
+    [[gizmoEl, false], [gizmoGhostEl, true]].forEach(([c, inter])=>{
+      if(b.widget === 'rotate'){
+        buildGizmoRing(c, 'x', R, GIZMO_COLOR.x, inter);
+        buildGizmoRing(c, 'y', R, GIZMO_COLOR.y, inter);
+        buildGizmoRing(c, 'z', R, GIZMO_COLOR.z, inter);
+      } else {
+        buildGizmoArrow(c, 'x', R*1.35, GIZMO_COLOR.x, inter);
+        buildGizmoArrow(c, 'y', R*1.35, GIZMO_COLOR.y, inter);
+        buildGizmoArrow(c, 'z', R*1.35, GIZMO_COLOR.z, inter);
+      }
+      c.style.transform = bookTransformString(b);
+    });
+  }
+
+  // ---- collapsible side panel ----
+  (function(){
+    const btn = document.getElementById('sideToggle');
+    btn.addEventListener('click', ()=>{
+      document.body.classList.toggle('side-collapsed');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>window.dispatchEvent(new Event('resize'))));
+    });
+    // keep the collapse button on the same horizontal line as the "+ Add spine" button
+    const side = document.getElementById('sidebar');
+    function alignToggle(){
+      const row = document.querySelector('.image-upload-row[data-key="spine"]');
+      if(!row || !row.offsetParent) return;
+      const r = row.getBoundingClientRect();
+      btn.style.top = (r.top + side.scrollTop + r.height/2).toFixed(1) + 'px';
+    }
+    window.__alignToggle = alignToggle;
+    alignToggle();
+    window.addEventListener('resize', alignToggle);
+    window.addEventListener('load', alignToggle);
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(alignToggle);
+    if(window.ResizeObserver){ const ro = new ResizeObserver(alignToggle); ['.brand','#bookTabs'].forEach(q=>{ const el=document.querySelector(q); if(el) ro.observe(el); }); }
+  })();
+
+  // ---- lighting ----
+  function drawLightRings(nx, ny){
+    const svg = document.getElementById('lightRings'); if(!svg) return;
+    const nz = Math.sqrt(Math.max(0, 1-nx*nx-ny*ny));
+    const L=[nx,ny,nz];
+    let u = Math.abs(nz)<.9 ? [0,0,1] : [1,0,0];
+    const cr=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+    const nm=a=>{const l=Math.hypot(...a);return a.map(x=>x/l)};
+    u = nm(cr(L,u)); const v = cr(L,u);
+    let d='', th=0, gap=0.9;
+    while(true){
+      th += gap; gap *= 1.17; if(th>=178) break;
+      const t=th*Math.PI/180, c=Math.cos(t), sn=Math.sin(t);
+      let pen=false;
+      for(let i=0;i<=72;i++){
+        const f=i/72*2*Math.PI, cf=Math.cos(f), sf=Math.sin(f);
+        const x=c*L[0]+sn*(cf*u[0]+sf*v[0]), y=c*L[1]+sn*(cf*u[1]+sf*v[1]), z=c*L[2]+sn*(cf*u[2]+sf*v[2]);
+        if(z<0){ pen=false; continue; }
+        d += (pen?'L':'M')+x.toFixed(3)+' '+y.toFixed(3); pen=true;
+      }
+    }
+    let path = svg.firstChild;
+    if(!path){ path=document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('fill','none'); path.setAttribute('stroke-width','1'); path.setAttribute('vector-effect','non-scaling-stroke'); svg.appendChild(path); }
+    path.setAttribute('d',d);
+  }
+  function applyLighting(){
+    const L = state.light;
+    const az = L.azimuth * Math.PI/180, el = L.elevation * Math.PI/180;
+    const spread = 1 - Math.max(0, Math.min(1, L.elevation/90));
+    lightDot.style.left = (50 + Math.cos(az) * spread * 50)+'%';
+    lightDot.style.top = (50 + Math.sin(az) * spread * 50)+'%';
+    lightPad.style.setProperty('--lx', lightDot.style.left); lightPad.style.setProperty('--ly', lightDot.style.top);
+    drawLightRings(Math.cos(az)*spread, Math.sin(az)*spread);
+    applyShading();
+  }
+
+  // ---- real per-face shading, smoothed ----
+  // Every curved-surface strip carries the surface normal at BOTH of its
+  // ends (data-nl / data-nr — each the average of the strip and its
+  // neighbour at the shared joint). Brightness is computed at each end
+  // and the strip's .shade child fades between the two with a gradient,
+  // so adjacent strips meet at identical brightness and the individual
+  // facets disappear. Flat top/bottom polygons keep one brightness.
+  // Shadows MULTIPLY by a tinted colour (like Multiply in a photo
+  // editor) instead of blending toward black, so shaded areas pick up the
+  // shadow colour while keeping their own hue. The tint is scaled so its
+  // luminance equals the computed brightness, i.e. the same darkness a
+  // grey shadow would give. Highlights are a faint warm wash on top.
+  const SHADOW_STRENGTH = 0.9, LIGHT_WRAP = 0.6;
+  let shadowRgb = [0x5b,0x4a,0x9e];
+  function setShadowColor(hex){
+    shadowRgb = [1,3,5].map(i => parseInt(hex.slice(i,i+2),16));
+  }
+  const lum = c => (0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2]) / 255;
+  function shadowTint(b){
+    if(b >= 1) return 'rgb(255,255,255)';
+    const L = Math.min(0.9, lum(shadowRgb));
+    const k = Math.min(1.4, (1-b)*SHADOW_STRENGTH/(1-L)); // eased so lit and shaded faces sit closer together
+    const ch = shadowRgb.map(v => Math.round(255*Math.max(0, 1 - k*(1 - v/255))));
+    return `rgb(${ch[0]},${ch[1]},${ch[2]})`;
+  }
+  const glintAlpha = b => b > 1 ? Math.min(0.3, (b-1)*0.45) : 0;
+  const glintColor = b => `rgba(255,240,215,${glintAlpha(b).toFixed(3)})`;
+  // Changing a strip's shading makes the browser repaint it, which is by
+  // far the most expensive thing a frame can do — so while the camera or a
+  // book is being dragged, the lighting refreshes about 10x a second
+  // (the movement itself stays at full frame rate) and snaps exact on release.
+  let shadeRaf = 0, shadeTimer = 0, lastShadeAt = 0;
+  const SHADE_MIN_MS = 100;
+  function runShade(){ shadeRaf = 0; shadeTimer = 0; lastShadeAt = performance.now(); applyShadingNow(); }
+  function applyShading(){
+    if(shadeRaf || shadeTimer) return;
+    const wait = SHADE_MIN_MS - (performance.now() - lastShadeAt);
+    if(wait <= 0) shadeRaf = requestAnimationFrame(runShade);
+    else shadeTimer = setTimeout(()=>{ shadeTimer = 0; shadeRaf = requestAnimationFrame(runShade); }, wait);
+  }
+  function applyShadingSoon(){ if(shadeTimer){ clearTimeout(shadeTimer); shadeTimer = 0; } if(!shadeRaf) shadeRaf = requestAnimationFrame(runShade); }
+  function applyShadingNow(){
+    const worldM = matMulMat3(matMulMat3(rotXMat(state.rotX), rotYMat(state.rotY)), rotZMat(state.rotZ));
+    const L = state.light;
+    const az = L.azimuth*Math.PI/180, el = L.elevation*Math.PI/180;
+    const lightDir = normalize3([Math.cos(el)*Math.cos(az), Math.cos(el)*Math.sin(az), Math.sin(el)]);
+    const intensity = L.intensity/100, ambient = L.ambient/100;
+    const ambientFloor = 0.4 + 0.5*ambient;
+    const halfV = normalize3([lightDir[0], lightDir[1], lightDir[2]+1]); // half-vector toward a viewer on +z
+
+    allBooks().forEach(b=>{
+      const bookM = matMulMat3(matMulMat3(rotXMat(b.rotX), rotYMat(b.rotY)), rotZMat(b.rotZ));
+      const M = matMulMat3(worldM, bookM);
+      // Brightness is relative to the best-lit face possible (which stays
+      // exactly the base colour, as in Multiply), so Intensity sets how far
+      // everything else falls into shadow — 0 = flat, no shading at all —
+      // and Ambient sets how deep the darkest shadow can go. The light
+      // "wraps" a little past the terminator so faces side-on to the light
+      // don't fall off a cliff.
+      const peak = ambientFloor + intensity*1.1;
+      const bright = n => {
+        const nv = normalize3(matMulVec3(M, n));
+        const dot = nv[0]*lightDir[0] + nv[1]*lightDir[1] + nv[2]*lightDir[2];
+        const lit = Math.max(0, (dot + LIGHT_WRAP)/(1 + LIGHT_WRAP));
+        return (ambientFloor + lit*intensity*1.1) / peak;
+      };
+      const g = b.el.group;
+      // Gilt surfaces behave like polished metal: darker in shadow, with a
+      // Blinn-Phong specular streak that flares where the surface mirrors
+      // the light toward the viewer, so it moves as the light, book or
+      // camera move.
+      const nCam = n => normalize3(matMulVec3(M, n));
+      const gildAlpha = n => {
+        const d = Math.max(0, nCam(n).reduce((a,v,i)=>a+v*halfV[i],0));
+        return Math.min(0.95, 1.2*Math.pow(d,20) + 0.45*Math.pow(d,4) + 0.12*Math.pow(d,1.5));
+      };
+      g.querySelectorAll('[data-nx]').forEach(e=>{
+        const n = e.__n || (e.__n = [+e.dataset.nx, +e.dataset.ny, +e.dataset.nz]);
+        let br = bright(n), ga = glintAlpha(br);
+        if(e.dataset.gild){ br *= 0.8; ga = gildAlpha(n); }
+        if(!state.lightingOn){ br = 1; ga = 0; }
+        if(e.__rects){
+          e.__tintS = shadowTint(br); e.__glintA = ga; e.__gild = !!e.dataset.gild;
+          e.__rects[0].setAttribute('fill', e.__tintS);
+          e.__rects[1].setAttribute('fill-opacity', ga.toFixed(3));
+        }
+      });
+      g.querySelectorAll('[data-nl]').forEach(e=>{
+        const nl = e.__nl || (e.__nl = e.dataset.nl.split(',').map(Number));
+        const nr = e.__nr || (e.__nr = e.dataset.nr.split(',').map(Number));
+        // strips clearly facing away from the camera are hidden behind the
+        // near side anyway, so skip drawing them (big saving per frame)
+        const away = (nCam(nl)[2] + nCam(nr)[2]) * 0.5 < -0.12;
+        if(e.__away !== away){ e.__away = away; e.style.visibility = away ? 'hidden' : ''; }
+        let bl = bright(nl), brr = bright(nr), angle = '90deg';
+        if(e.dataset.gild){
+          bl *= 0.8; brr *= 0.8;
+          const a = gildAlpha(nl);
+          e.__glintStops = [[0,`rgba(255,207,77,${(a*0.3).toFixed(3)})`],[0.35,`rgba(255,226,120,${(a*0.8).toFixed(3)})`],[0.5,`rgba(255,246,196,${a.toFixed(3)})`],[0.65,`rgba(255,226,120,${(a*0.8).toFixed(3)})`],[1,`rgba(245,179,36,${(a*0.3).toFixed(3)})`]];
+          angle = '105deg';
+        } else {
+          e.__glintStops = [[0,glintColor(bl)],[1,glintColor(brr)]];
+        }
+        if(!state.lightingOn){
+          bl = brr = 1;
+          e.__glintStops = [[0,'rgba(255,255,255,0)'],[1,'rgba(255,255,255,0)']];
+        }
+        e.__tint = [shadowTint(bl), shadowTint(brr)];
+        if(e.__shade){ const v = `linear-gradient(90deg, ${e.__tint[0]}, ${e.__tint[1]})`; if(e.__shadeV !== v){ e.__shadeV = v; e.__shade.style.background = v; } }
+        if(e.__glint){ const v = `linear-gradient(${angle}, ${e.__glintStops.map(([o,c])=>`${c} ${o*100}%`).join(', ')})`; if(e.__glintV !== v){ e.__glintV = v; e.__glint.style.background = v; } }
+      });
+    });
+  }
+
+  // ---- books: creation, tabs ----
+  function defaultSettings(){
+    return {
+      pageW:1000, pageH:1618, spineWidth:175, slant:0, closeBook:0,
+      faceContent:newFaceContent(), pageEdgeColor:'#f0e6d2', pageEdgeGilded:false,
+      anchors:DEFAULT_ANCHORS()
+    };
+  }
+  let bookCounter = 0;
+  function mk(cls){ const d = document.createElement('div'); d.className = cls; return d; }
+  function createBook(opts){
+    const n = ++bookCounter;
+    const id = 'book'+n;
+    const group = mk('book-group');
+    group.dataset.bookId = id;
+    const pageRight = mk('page-right'), cube = mk('cube');
+    const pageLeftWrap = mk('page-left-wrap'), cube2 = mk('cube2');
+    const spineGroup = mk('spine-group');
+    pageRight.appendChild(cube);
+    pageLeftWrap.appendChild(cube2);
+    group.append(pageRight, pageLeftWrap, spineGroup);
+    world.appendChild(group);
+    const b = {
+      id, name: opts.name || ('Book '+n),
+      x: opts.x||0, y: opts.y||0, z: 0, rotX:0, rotY:0, rotZ:0, widget:'rotate',
+      s: opts.s || defaultSettings(),
+      el: { group, pageLeftWrap, cube, cube2, spineGroup }
+    };
+    state.books[id] = b;
+    state.bookOrder.push(id);
+    return b;
+  }
+
+  // New books start blank (no images, closed flat, no rotation) but copy
+  // the dimensions, curve and page-edge style of the book whose tab is
+  // showing, and are placed beside the existing books.
+  function addBook(){
+    const src = activeBook();
+    const s = defaultSettings();
+    s.pageW = src.s.pageW; s.pageH = src.s.pageH; s.spineWidth = src.s.spineWidth;
+    s.anchors = JSON.parse(JSON.stringify(src.s.anchors));
+    s.pageEdgeColor = src.s.pageEdgeColor; s.pageEdgeGilded = src.s.pageEdgeGilded;
+    // same row as the selected book, just to the right of the right-most
+    // book (a spread is two pages wide, centred on the book's x)
+    let right = -Infinity;
+    allBooks().forEach(b=>{ right = Math.max(right, b.x + b.s.pageW); });
+    const b = createBook({ s, x: right + s.pageW + 160, y: src.y });
+    state.userZoomed = false;
+    layoutBook(b);
+    selectBook(b.id);
+    applyWorldTransform();
+  }
+
+  function markActiveTab(){
+    const bar = $('bookTabs');
+    let svg = bar.querySelector('#tabLine');
+    if(!svg){ svg = document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.id = 'tabLine'; bar.appendChild(svg); }
+    const at = bar.querySelector('.book-tab.active');
+    const W = bar.clientWidth + 24, yb = bar.clientHeight - 0.5, R = 8, OFF = 24;
+    let d = `M0 ${yb} H${W}`;
+    if(at){
+      const br = bar.getBoundingClientRect(), tr = at.getBoundingClientRect();
+      const al = tr.left - br.left + OFF + 0.5, ar = tr.right - br.left + OFF - 0.5, yt = tr.top - br.top + 0.5;
+      d = `M0 ${yb} H${al-R} A${R} ${R} 0 0 0 ${al} ${yb-R} V${yt+R} A${R} ${R} 0 0 1 ${al+R} ${yt} H${ar-R} A${R} ${R} 0 0 1 ${ar} ${yt+R} V${yb-R} A${R} ${R} 0 0 0 ${ar+R} ${yb} H${W}`;
+    }
+    svg.setAttribute('width', W); svg.setAttribute('height', bar.clientHeight);
+    svg.innerHTML = `<defs><filter id="tabGlowF" filterUnits="userSpaceOnUse" x="-12" y="-12" width="${W+24}" height="${bar.clientHeight+24}"><feGaussianBlur stdDeviation="3"/></filter></defs><g fill="none" stroke="rgb(138,219,248)" stroke-linejoin="round"><path d="${d}" stroke-width="3" stroke-opacity=".4" filter="url(#tabGlowF)"/><path d="${d}" stroke-width="1" stroke-opacity=".42"/></g>`;
+  }
+  window.addEventListener('resize', ()=>markActiveTab());
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>markActiveTab());
+  function renderTabs(){
+    const bar = $('bookTabs');
+    bar.innerHTML = '';
+    state.bookOrder.forEach(id=>{
+      const b = state.books[id];
+      const t = document.createElement('div');
+      t.className = 'book-tab' + (id === state.activeId ? ' active' : '');
+      t.textContent = b.name;
+      t.title = 'Double-click to rename';
+      t.addEventListener('click', ()=>{
+        if(t.querySelector('input')) return;
+        selectBook(id);
+      });
+      t.addEventListener('dblclick', ()=> startRename(t, id));
+      bar.appendChild(t);
+    });
+    const add = document.createElement('div');
+    add.className = 'book-tab add-tab';
+    add.textContent = '+ Add book';
+    add.addEventListener('click', addBook);
+    bar.appendChild(add);
+    markActiveTab();
+  }
+  function startRename(tab, id){
+    const b = state.books[id];
+    const input = document.createElement('input');
+    input.className = 'book-tab-input';
+    input.value = b.name;
+    input.maxLength = 24;
+    tab.textContent = '';
+    tab.appendChild(input);
+    markActiveTab(); input.addEventListener('input', markActiveTab);
+    input.focus(); input.select();
+    let done = false;
+    const finish = commit => {
+      if(done) return; done = true;
+      if(commit){ const v = input.value.trim(); if(v) b.name = v; }
+      renderTabs();
+    };
+    input.addEventListener('keydown', e=>{
+      if(e.key === 'Enter') finish(true);
+      else if(e.key === 'Escape') finish(false);
+      e.stopPropagation();
+    });
+    input.addEventListener('blur', ()=> finish(true));
+    input.addEventListener('click', e=> e.stopPropagation());
+  }
+
+  function setActiveBook(id){
+    if(state.activeId === id) return;
+    state.activeId = id;
+    renderTabs();
+    syncUI();
+  }
+
+  // Pushes the active book's settings into every control in its menu.
+  function syncUI(){
+    updateDimWarn();
+    closeBookCtl.set(state.closeBook/0.9);
+    syncBookRotUI();
+    document.querySelectorAll('.image-upload-row').forEach(row=>{
+      const has = !!state.faceContent[row.dataset.key].img;
+      row.querySelector('.image-remove-btn').style.display = has ? 'inline-block' : 'none';
+      row.querySelector('input[type=file]').value = '';
+    });
+    drawEditor();
+    pageEdgeCp.setHex(state.pageEdgeColor);
+    refreshGildBtn();
+  }
+  function syncBookRotUI(){
+    const b = activeBook();
+    bookRotCtl.x.set(b.rotX); bookRotCtl.y.set(b.rotY); bookRotCtl.z.set(b.rotZ);
+  }
+
+  // The first book exists before any control binds, since bindMeasure
+  // reads state.pageW (the active book's) immediately.
+  state.activeId = createBook({ name:'Book 1' }).id;
+
+  // ---- book size comes from the uploaded images ----
+  // Pages/covers (front, back, left, right): the book uses the LARGEST width
+  // and height among them (1000x1618 by default); smaller images sit centred
+  // on a transparent page. The spine image keeps its own aspect ratio but is
+  // scaled so its height matches the pages (default spine width: 175).
+  const PAGE_KEYS = ['front','back','left','right'];
+  function composeFace(key){
+    const f = state.faceContent[key];
+    if(!f.src){ f.img = null; f.imgMirrored = null; return; }
+    const W = state.pageW, H = state.pageH;
+    if(f.nw === W && f.nh === H){
+      f.img = f.src; f.imgMirrored = mirrorImageDataURL(f.el, W, H);
+      return;
+    }
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    c.getContext('2d').drawImage(f.el, Math.round((W-f.nw)/2), Math.round((H-f.nh)/2));
+    f.img = c.toDataURL();
+    f.imgMirrored = mirrorImageDataURL(c, W, H);
+  }
+  function updateDimWarn(){
+    const sizes = new Set();
+    PAGE_KEYS.forEach(k=>{ const f=state.faceContent[k]; if(f.src) sizes.add(f.nw+'x'+f.nh); });
+    $('dimWarn').style.display = sizes.size > 1 ? 'block' : 'none';
+  }
+  function recomputeDims(){
+    let mw = 0, mh = 0;
+    PAGE_KEYS.forEach(k=>{ const f=state.faceContent[k]; if(f.src){ mw=Math.max(mw,f.nw); mh=Math.max(mh,f.nh); } });
+    state.pageW = mw || 1000; state.pageH = mh || 1618;
+    const sp = state.faceContent.spine;
+    state.spineWidth = sp.src ? Math.max(1, Math.round(sp.nw * state.pageH / sp.nh)) : 175;
+    PAGE_KEYS.forEach(composeFace);
+    updateDimWarn();
+  }
+
+  // -------- custom images per surface --------
+  document.querySelectorAll('.image-upload-row').forEach(row => {
+    const key = row.dataset.key;
+    const labelBtn = row.querySelector('.image-upload-label-btn');
+    const removeBtn = row.querySelector('.image-remove-btn');
+    const fileInput = row.querySelector('input[type=file]');
+
+    labelBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files && fileInput.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const f = state.faceContent[key];
+          f.src = reader.result; f.el = img; f.nw = img.naturalWidth; f.nh = img.naturalHeight;
+          if(key === 'spine'){
+            f.img = f.src; f.imgMirrored = mirrorImageDataURL(img, f.nw, f.nh);
+          }
+          removeBtn.style.display = 'inline-block';
+          recomputeDims();
+          layoutCube();
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    removeBtn.addEventListener('click', () => {
+      const f = state.faceContent[key];
+      f.src = null; f.el = null; f.img = null; f.imgMirrored = null;
+      fileInput.value = '';
+      removeBtn.style.display = 'none';
+      recomputeDims();
+      layoutCube();
+    });
+  });
+
+  // Click-drag scrubbing on any number input: dragging up and/or right
+  // increases the value, down/left decreases it. A plain click (no real
+  // movement) still focuses the field normally so you can type an exact
+  // number — only motion past a small threshold engages the scrub.
+  function makeScrubbable(el, sensitivity){
+    let down=false, moved=false, startX=0, startY=0, startVal=0;
+    el.addEventListener('mousedown', e=>{
+      down=true; moved=false;
+      startX=e.clientX; startY=e.clientY;
+      startVal=parseFloat(el.value)||0;
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e=>{
+      if(!down) return;
+      const dx=e.clientX-startX, dy=e.clientY-startY;
+      if(!moved && Math.hypot(dx,dy)>3){ moved=true; el.blur(); }
+      if(moved){
+        const delta = (dx - dy) * sensitivity;
+        el.value = Math.round((startVal+delta)*100)/100;
+        el.dispatchEvent(new Event('change'));
+      }
+    });
+    window.addEventListener('mouseup', ()=>{
+      if(down && !moved){ el.focus(); el.select(); }
+      down=false;
+    });
+  }
+  document.querySelectorAll('.measure-input, .val-input').forEach(el=> makeScrubbable(el, 0.5));
+  // keep the value + unit centred in the pill (fallback for browsers without field-sizing)
+  {
+    const mc = document.createElement('canvas').getContext('2d');
+    const fitVals = ()=> document.querySelectorAll('.val-input').forEach(el=>{
+      const cs = getComputedStyle(el); mc.font = cs.fontSize+' '+cs.fontFamily;
+      const w = Math.ceil(mc.measureText(String(el.value||'0')).width)+1;
+      el.style.fieldSizing = 'fixed'; el.style.flex = '0 0 auto';
+      if(el.style.width !== w+'px') el.style.width = w+'px';
+    });
+    fitVals(); setInterval(fitVals, 150);
+    document.addEventListener('input', fitVals, true);
+  }
+
+  function bindDegreeControl(sliderId, inputId, onChange, wrap){
+    const slider = $(sliderId), input = $(inputId);
+    if(!slider || !input) return { set(){} };
+    const min = +slider.min, max = +slider.max;
+    function show(v){ v = Math.round(v); slider.value = v; input.value = v; }
+    function apply(v){
+      if(wrap){
+        // Landing exactly on the max (e.g. dragging the slider all the
+        // way up) stays at the max instead of snapping to the minimum;
+        // anything past it still wraps around.
+        if(v !== max){
+          const range = max - min;
+          v = ((v - min) % range + range) % range + min;
+        }
+      } else {
+        v = Math.max(min, Math.min(max, v));
+      }
+      v = Math.round(v);
+      show(v);
+      onChange(v);
+    }
+    slider.addEventListener('input', e=> apply(+e.target.value));
+    input.addEventListener('change', e=> apply(+e.target.value || 0));
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter') input.blur(); });
+    return { set: show };
+  }
+  const closeBookCtl = bindDegreeControl('closeBookAmt','closeBookVal', v=>{ state.closeBook=v*0.9; layoutCube(); });
+  const bookRotCtl = {
+    x: bindDegreeControl('bookRotXAmt','bookRotXVal', v=>{ activeBook().rotX=v; applyBookTransform(state.activeId); }, true),
+    y: bindDegreeControl('bookRotYAmt','bookRotYVal', v=>{ activeBook().rotY=v; applyBookTransform(state.activeId); }, true),
+    z: bindDegreeControl('bookRotZAmt','bookRotZVal', v=>{ activeBook().rotZ=v; applyBookTransform(state.activeId); }, true)
+  };
+  bindDegreeControl('rotXAmt','rotXVal', v=>{ state.rotX=v; applyWorldTransform(); }, true);
+  bindDegreeControl('rotYAmt','rotYVal', v=>{ state.rotY=v; applyWorldTransform(); }, true);
+  bindDegreeControl('rotZAmt','rotZVal', v=>{ state.rotZ=v; applyWorldTransform(); }, true);
+
+  // -------- inline, collapsible color picker (HSV square + hue + RGB + hex) --------
+  function hsvToRgb(h, s, v){
+    const f = n => { const k = (n + h/60) % 6; return v - v*s*Math.max(0, Math.min(k, 4-k, 1)); };
+    return [Math.round(f(5)*255), Math.round(f(3)*255), Math.round(f(1)*255)];
+  }
+  function rgbToHsv(r, g, b, prevH){
+    r/=255; g/=255; b/=255;
+    const mx = Math.max(r,g,b), mn = Math.min(r,g,b), d = mx-mn;
+    let h = prevH || 0;
+    if(d > 1e-6){
+      if(mx === r) h = 60*(((g-b)/d + 6) % 6);
+      else if(mx === g) h = 60*((b-r)/d + 2);
+      else h = 60*((r-g)/d + 4);
+    }
+    return { h, s: mx === 0 ? 0 : d/mx, v: mx };
+  }
+  const HEX_RE = /^#[0-9a-fA-F]{6}$/;
+  const rgbToHex = (r,g,b) => '#' + [r,g,b].map(x => Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,'0')).join('');
+  const hexToRgb = hex => [1,3,5].map(i => parseInt(hex.slice(i,i+2),16));
+
+  const colorPickers = [];
+  function createColorPicker(root, onChange){
+    const extra = root.querySelector('.cp-extra');
+    root.insertAdjacentHTML('afterbegin',
+      `<div class="cp-head"><button type="button" class="cp-swatch" title="Pick a color"></button></div>
+       <div class="cp-body">
+         <div class="cp-sv-wrap"><canvas class="cp-sv" width="280" height="150"></canvas><div class="cp-dot"></div></div>
+         <input type="range" class="cp-hue" min="0" max="360" step="1">
+         <div class="cp-rgb">
+           <label class="cp-hexlab">#<input type="text" class="cp-hex" maxlength="7" spellcheck="false" aria-label="Hex color"></label>
+           <label>R<input type="number" class="cp-num" min="0" max="255"></label>
+           <label>G<input type="number" class="cp-num" min="0" max="255"></label>
+           <label>B<input type="number" class="cp-num" min="0" max="255"></label>
+         </div>
+       </div>`);
+    if(root.dataset.label){
+      const lab = document.createElement('span'); lab.className = 'cp-label'; lab.textContent = root.dataset.label;
+      root.querySelector('.cp-head').prepend(lab);
+    }
+    if(extra) root.querySelector('.cp-head').appendChild(extra);
+    const swatch = root.querySelector('.cp-swatch'), hexIn = root.querySelector('.cp-hex');
+    const svWrap = root.querySelector('.cp-sv-wrap');
+    const canvas = root.querySelector('.cp-sv'), ctx = canvas.getContext('2d');
+    const dot = root.querySelector('.cp-dot'), hueIn = root.querySelector('.cp-hue');
+    const nums = [...root.querySelectorAll('.cp-num')];
+
+    let hex = root.dataset.hex || '#ffffff';
+    let hsv = rgbToHsv(...hexToRgb(hex), 0);
+
+    function drawSV(){
+      const [r,g,b] = hsvToRgb(hsv.h, 1, 1);
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      let gr = ctx.createLinearGradient(0,0,canvas.width,0);
+      gr.addColorStop(0,'#fff'); gr.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.fillStyle = gr; ctx.fillRect(0,0,canvas.width,canvas.height);
+      gr = ctx.createLinearGradient(0,0,0,canvas.height);
+      gr.addColorStop(0,'rgba(0,0,0,0)'); gr.addColorStop(1,'#000');
+      ctx.fillStyle = gr; ctx.fillRect(0,0,canvas.width,canvas.height);
+    }
+    function paint(skipHex){
+      swatch.style.background = hex;
+      { const [r,g,b]=hexToRgb(hex); swatch.dataset.tone = (0.299*r+0.587*g+0.114*b) > 150 ? 'light' : 'dark'; }
+      if(!skipHex) hexIn.value = hex.slice(1).toUpperCase();
+      const rgb = hexToRgb(hex);
+      nums.forEach((n,i)=>{ if(document.activeElement !== n) n.value = rgb[i]; });
+      dot.style.left = (hsv.s*100)+'%';
+      dot.style.top = ((1-hsv.v)*100)+'%';
+      hueIn.value = Math.round(hsv.h);
+      drawSV();
+    }
+    function commit(fire, skipHex){
+      paint(skipHex);
+      if(fire) onChange(hex);
+    }
+    function fromHsv(){ hex = rgbToHex(...hsvToRgb(hsv.h, hsv.s, hsv.v)); commit(true); }
+    function fromRgb(r,g,b, skipHex){
+      hex = rgbToHex(r,g,b);
+      hsv = rgbToHsv(...hexToRgb(hex), hsv.h);
+      commit(true, skipHex);
+    }
+
+    // saturation/value square
+    function svAt(e){
+      const r = svWrap.getBoundingClientRect();
+      hsv.s = Math.max(0, Math.min(1, (e.clientX - r.left)/r.width));
+      hsv.v = 1 - Math.max(0, Math.min(1, (e.clientY - r.top)/r.height));
+      fromHsv();
+    }
+    svWrap.addEventListener('pointerdown', e=>{
+      svWrap.setPointerCapture(e.pointerId);
+      svWrap.__drag = true; svAt(e); e.preventDefault();
+    });
+    svWrap.addEventListener('pointermove', e=>{ if(svWrap.__drag) svAt(e); });
+    const endDrag = () => { svWrap.__drag = false; };
+    svWrap.addEventListener('pointerup', endDrag);
+    svWrap.addEventListener('pointercancel', endDrag);
+
+    hueIn.addEventListener('input', ()=>{ hsv.h = +hueIn.value; fromHsv(); });
+    nums.forEach(n => n.addEventListener('input', ()=>{
+      const v = nums.map(x => Math.max(0, Math.min(255, parseInt(x.value,10) || 0)));
+      fromRgb(v[0], v[1], v[2], false);
+    }));
+    nums.forEach(n => n.addEventListener('blur', ()=> paint(false)));
+
+    hexIn.addEventListener('input', ()=>{
+      let v = hexIn.value.trim();
+      if(v[0] !== '#') v = '#'+v;
+      if(v.length === 4) v = '#' + v[1]+v[1]+v[2]+v[2]+v[3]+v[3];
+      if(HEX_RE.test(v)){ const rgb = hexToRgb(v); fromRgb(rgb[0], rgb[1], rgb[2], true); }
+    });
+    hexIn.addEventListener('change', ()=> paint(false));
+    hexIn.addEventListener('keydown', e=>{ if(e.key === 'Enter') hexIn.blur(); });
+
+    const flip = () => {
+      root.classList.toggle('open');
+      if(root.classList.contains('open')){
+        drawSV();
+        // bring the opened picker fully into view
+        requestAnimationFrame(()=>{ const body = root.querySelector('.cp-body'); if(body) body.scrollIntoView({block:'nearest', behavior:'smooth'}); });
+      }
+    };
+    swatch.addEventListener('click', flip);
+
+    const api = {
+      root,
+      isOpen: () => root.classList.contains('open'),
+      close: () => root.classList.remove('open'),
+      getHex: () => hex,
+      setHex(h){ // programmatic: updates the UI only, never fires onChange
+        hex = h; hsv = rgbToHsv(...hexToRgb(h), hsv.h); paint(false);
+      }
+    };
+    colorPickers.push(api);
+    paint(false);
+    return api;
+  }
+  // Any click outside an open picker closes it. Listening for the completed
+  // click (not the press) keeps the sidebar from reflowing mid-click when
+  // a tall picker collapses; capture phase so the stage can't swallow it.
+  document.addEventListener('click', e=>{
+    colorPickers.forEach(p=>{ if(p.isOpen() && !p.root.contains(e.target)) p.close(); });
+  }, true);
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape') colorPickers.forEach(p=> p.close());
+  });
+
+  // -------- background: solid color or uploaded image (global) --------
+  const stageBg = $('stageBg');
+  const bgUploadBtn = $('bgUploadBtn');
+  const bgImageInput = $('bgImageInput');
+  const bgResetBtn = $('bgResetBtn');
+  const bgStatus = $('bgStatus');
+  const setBgStatus = name => { if(name){ $('bgFileName').textContent = name; bgStatus.style.display = 'flex'; } else { bgStatus.style.display = 'none'; } };
+
+  function applyBgColor(hex){
+    stageBg.style.backgroundImage = '';
+    stageBg.style.backgroundColor = hex;
+  }
+  const bgCp = createColorPicker($('bgCp'), hex => {
+    applyBgColor(hex); updateHintTone();
+    setBgStatus(null);
+  });
+  // The hint text sits straight on the background, so pick dark or light
+  // text from how bright the background (colour or image, at its opacity)
+  // ends up over the page's navy.
+  function updateHintTone(){
+    const hint = $('stageHint');
+    const op = parseFloat(stageBg.style.opacity === '' ? 1 : stageBg.style.opacity);
+    const finish = (r,g,b)=>{
+      const base = [8,45,75];
+      const m = [r,g,b].map((v,i)=> v*op + base[i]*(1-op));
+      const lum = (0.299*m[0] + 0.587*m[1] + 0.114*m[2]);
+      hint.style.color = lum > 140 ? '#082d4b' : '#d9f2fc';
+      document.documentElement.style.setProperty('--bgfade', `rgb(${m.map(Math.round).join(',')})`);
+    };
+    const m = /url\(["']?(.*?)["']?\)\s*$/.exec(stageBg.style.backgroundImage || '');
+    if(m){
+      const im = new Image();
+      im.onload = ()=>{ const c=document.createElement('canvas'); c.width=c.height=1; const x=c.getContext('2d'); x.drawImage(im,0,0,1,1); const d=x.getImageData(0,0,1,1).data; finish(d[0],d[1],d[2]); };
+      im.src = m[1];
+    } else {
+      const hex = bgCp.getHex(); finish(parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16));
+    }
+  }
+  applyBgColor(bgCp.getHex());
+  stageBg.style.opacity = 1;
+  updateHintTone();
+
+  bgUploadBtn.addEventListener('click', () => bgImageInput.click());
+  bgImageInput.addEventListener('change', () => {
+    const file = bgImageInput.files && bgImageInput.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      stageBg.style.backgroundImage = `url(${reader.result})`;
+      stageBg.style.backgroundColor = '';
+      setBgStatus(file.name);
+      updateHintTone();
+    };
+    reader.readAsDataURL(file);
+  });
+  bgResetBtn.addEventListener('click', () => {
+    bgImageInput.value = '';
+    applyBgColor(bgCp.getHex());
+    setBgStatus(null);
+    updateHintTone();
+  });
+  bindDegreeControl('bgOpacityAmt','bgOpacityVal', v=>{ stageBg.style.opacity = v/100; updateHintTone(); });
+
+  // -------- page edge color + gilding (per book) --------
+  const gildToggleBtn = $('gildToggleBtn');
+  let peRaf = 0;
+  const pageEdgeCp = createColorPicker($('pageEdgeCp'), hex => {
+    const b = activeBook();
+    b.s.pageEdgeColor = hex;
+    if(peRaf) return;
+    peRaf = requestAnimationFrame(()=>{ peRaf = 0; relayout(b); });
+  });
+  function refreshGildBtn(){
+    gildToggleBtn.textContent = state.pageEdgeGilded ? 'Gilded ✓' : 'Gild';
+    gildToggleBtn.style.opacity = '1';
+  }
+  gildToggleBtn.addEventListener('click', () => {
+    state.pageEdgeGilded = !state.pageEdgeGilded;
+    refreshGildBtn();
+    layoutCube();
+  });
+  refreshGildBtn();
+
+
+  // ---- PNG export ----
+  // CSS 3D can't be rasterized by the browser into a canvas, so the export
+  // re-renders the scene itself: every face is pushed through the same
+  // camera x book x face matrices and perspective as the live view,
+  // back-faces are culled (the face normals point outward, so for these
+  // closed slabs that is exact visibility), the rest are painted far to
+  // near with their textures, and the same multiply shadow tints are
+  // applied. The background is drawn at its current opacity, so a
+  // transparent background exports as real transparency.
+  const exportW = $('exportW'), exportH = $('exportH');
+  const cropFrame = $('cropFrame'), cropToggle = $('cropToggle');
+  const exportBtn = $('exportBtn'), exportStatus = $('exportStatus');
+  $('exportDock').appendChild($('stageHint'));
+  const exportDock = $('exportDock'), exportToggle = $('exportToggle'), exportType = $('exportType');
+  exportDock.addEventListener('mousedown', e=> e.stopPropagation());
+  exportDock.addEventListener('wheel', e=> e.stopPropagation(), {passive:true});
+  exportDock.addEventListener('touchstart', e=> e.stopPropagation(), {passive:true});
+  exportToggle.addEventListener('click', ()=>{ exportDock.classList.toggle('open'); updateCropFrame(); });
+  // click anywhere else closes the drop-up
+  document.addEventListener('click', e=>{
+    if(exportDock.classList.contains('open') && !exportDock.contains(e.target) && !cropFrame.contains(e.target) && !cropDragging){
+      exportDock.classList.remove('open'); updateCropFrame();
+    }
+  }, true);
+  const clampDim = v => Math.max(16, Math.min(8000, Math.round(+v || 0) || 1600));
+  // physical units are converted at 300 dpi
+  const exportUnit = $('exportUnit');
+  const UNIT_PX = { px:1, in:300, cm:300/2.54, mm:300/25.4 };
+  let curW = 1600, curH = 1200;
+  const fmtDim = px => { const u = exportUnit.value; const v = px/UNIT_PX[u]; return u==='px' ? String(Math.round(v)) : String(+v.toFixed(2)); };
+  function setFields(){ exportW.value = fmtDim(curW); exportH.value = fmtDim(curH); }
+  const crop = { x:0, y:0, w:0, h:0, s:1 };
+  function fitCrop(){
+    const SW = stage.clientWidth, SH = stage.clientHeight;
+    const s = Math.min((SW-60)/curW, (SH-60)/curH);
+    crop.s = s; crop.w = curW*s; crop.h = curH*s; crop.x = (SW-crop.w)/2; crop.y = (SH-crop.h)/2;
+  }
+  function cropRect(){ return { x:crop.x, y:crop.y, w:crop.w, h:crop.h, W:curW, H:curH }; }
+  function applyCrop(){
+    cropFrame.style.left = crop.x+'px'; cropFrame.style.top = crop.y+'px';
+    cropFrame.style.width = crop.w+'px'; cropFrame.style.height = crop.h+'px';
+  }
+  let cropDragging = false;
+  function updateCropFrame(){
+    const on = cropToggle.checked && exportDock.classList.contains('open');
+    cropFrame.style.display = 'block';
+    cropFrame.style.opacity = on ? '1' : '0';
+    cropFrame.classList.toggle('on', on);
+    if(!on || cropDragging) return;
+    fitCrop(); applyCrop();
+  }
+  exportW.addEventListener('change', ()=>{ curW = clampDim((parseFloat(exportW.value)||0) * UNIT_PX[exportUnit.value]); setFields(); updateCropFrame(); });
+  exportH.addEventListener('change', ()=>{ curH = clampDim((parseFloat(exportH.value)||0) * UNIT_PX[exportUnit.value]); setFields(); updateCropFrame(); });
+  exportUnit.addEventListener('change', setFields);
+  setFields();
+  // drag the crop-frame handles to crop; the size fields follow live
+  cropFrame.querySelectorAll('.ch').forEach(h=>{
+    h.addEventListener('pointerdown', e=>{
+      e.preventDefault(); e.stopPropagation();
+      const d = h.dataset.d, start = { ...crop }, px0 = e.clientX, py0 = e.clientY;
+      const SW = stage.clientWidth, SH = stage.clientHeight;
+      const minS = 16*crop.s, maxS = 8000*crop.s;
+      cropDragging = true; h.classList.add('drag'); h.setPointerCapture(e.pointerId);
+      const move = ev=>{
+        const dx = ev.clientX-px0, dy = ev.clientY-py0;
+        let l = start.x, t = start.y, r = start.x+start.w, b = start.y+start.h;
+        if(d.includes('w')) l = Math.max(0, Math.min(r-minS, Math.max(r-maxS, l+dx)));
+        if(d.includes('e')) r = Math.min(SW, Math.max(l+minS, Math.min(l+maxS, r+dx)));
+        if(d.includes('n')) t = Math.max(0, Math.min(b-minS, Math.max(b-maxS, t+dy)));
+        if(d.includes('s')) b = Math.min(SH, Math.max(t+minS, Math.min(t+maxS, b+dy)));
+        crop.x = l; crop.y = t; crop.w = r-l; crop.h = b-t;
+        curW = clampDim(crop.w/crop.s); curH = clampDim(crop.h/crop.s);
+        setFields(); applyCrop();
+      };
+      const up = ()=>{
+        cropDragging = false; h.classList.remove('drag');
+        h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up);
+      };
+      h.addEventListener('pointermove', move); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
+    });
+  });
+  // drag the frame outline to move the whole crop around the view
+  cropFrame.querySelectorAll('.ce').forEach(h=>{
+    h.addEventListener('pointerdown', e=>{
+      e.preventDefault(); e.stopPropagation();
+      const start = { ...crop }, px0 = e.clientX, py0 = e.clientY;
+      const SW = stage.clientWidth, SH = stage.clientHeight;
+      cropDragging = true; h.setPointerCapture(e.pointerId);
+      const move = ev=>{
+        crop.x = Math.max(0, Math.min(SW-crop.w, start.x + ev.clientX-px0));
+        crop.y = Math.max(0, Math.min(SH-crop.h, start.y + ev.clientY-py0));
+        applyCrop();
+      };
+      const up = ()=>{ cropDragging = false; h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up); };
+      h.addEventListener('pointermove', move); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
+    });
+  });
+  cropToggle.addEventListener('change', updateCropFrame);
+  window.addEventListener('resize', updateCropFrame);
+
+  // custom sidebar scrollbar thumb (native one is hidden so no track band shows)
+  {
+    const sb = $('sidebar'), th = $('sbThumb');
+    const upd = ()=>{
+      const ch = sb.clientHeight, sh = sb.scrollHeight;
+      if(sh <= ch+1){ th.style.display='none'; return; }
+      th.style.display='block';
+      const h = Math.max(36, ch*ch/sh), t = sb.scrollTop/(sh-ch)*(ch-h);
+      th.style.height = h+'px'; th.style.top = (t+0)+'px';
+    };
+    sb.addEventListener('scroll', upd, {passive:true});
+    window.addEventListener('resize', upd);
+    if(window.ResizeObserver){ const ro = new ResizeObserver(upd); ro.observe(sb); Array.from(sb.children).forEach(c=>ro.observe(c)); }
+    setInterval(upd, 400); upd();
+    th.addEventListener('pointerdown', e=>{
+      e.preventDefault(); th.setPointerCapture(e.pointerId); th.classList.add('drag');
+      const y0 = e.clientY, st0 = sb.scrollTop;
+      const move = ev=>{ const ch = sb.clientHeight, sh = sb.scrollHeight, h = th.offsetHeight; sb.scrollTop = st0 + (ev.clientY-y0)*(sh-ch)/Math.max(1,(ch-h)); };
+      const up = ()=>{ th.classList.remove('drag'); th.removeEventListener('pointermove', move); th.removeEventListener('pointerup', up); th.removeEventListener('pointercancel', up); };
+      th.addEventListener('pointermove', move); th.addEventListener('pointerup', up); th.addEventListener('pointercancel', up);
+    });
+  }
+
+  const imgCache = new Map();
+  function loadImg(src){
+    let p = imgCache.get(src);
+    if(!p){
+      p = new Promise((res, rej)=>{ const im = new Image(); im.onload = ()=>res(im); im.onerror = rej; im.src = src; });
+      imgCache.set(src, p);
+    }
+    return p;
+  }
+  function captureFaces(b){
+    const group = b.el.group, faces = [];
+    group.querySelectorAll('.face-strip, svg[data-nx]').forEach(el=>{
+      let m = nodeMatrix(el);
+      for(let p = el.parentElement; p && p !== group; p = p.parentElement) m = nodeMatrix(p).multiply(m);
+      if(el.tagName.toLowerCase() === 'svg'){
+        const polys = [...el.querySelectorAll('g > polygon')].map(pg=>{
+          const n = pg.getAttribute('points').trim().split(/[\s,]+/).map(Number), pts = [];
+          for(let i=0;i+1<n.length;i+=2) pts.push([n[i], n[i+1]]);
+          return { pts, fill: pg.getAttribute('fill') };
+        });
+        if(!polys.length) return;
+        faces.push({ kind:'svg', el, m, polys, normal:[+el.dataset.nx, +el.dataset.ny, +el.dataset.nz] });
+      } else {
+        const nl = el.dataset.nl.split(',').map(Number), nr = el.dataset.nr.split(',').map(Number);
+        const bgi = el.__img;
+        faces.push({
+          kind:'strip', el, m, w:parseFloat(el.style.width)||0, h:parseFloat(el.style.height)||0,
+          normal:[nl[0]+nr[0], nl[1]+nr[1], nl[2]+nr[2]],
+          img: bgi ? bgi.url : null,
+          bgSize: bgi ? bgi.size : [],
+          bgPos: bgi ? bgi.pos : [],
+          color: el.style.backgroundColor
+        });
+      }
+    });
+    return faces;
+  }
+
+  // Minimal uncompressed 8-bit RGBA TIFF (alpha flagged as unassociated),
+  // since canvas.toBlob cannot produce TIFF.
+  function encodeTiff(canvas){
+    const w = canvas.width, h = canvas.height;
+    const px = canvas.getContext('2d').getImageData(0, 0, w, h).data;
+    const nEntries = 11, ifdSize = 2 + nEntries*12 + 4;
+    const bpsOff = 8 + ifdSize, dataOff = bpsOff + 8;
+    const buf = new ArrayBuffer(dataOff + px.length), dv = new DataView(buf);
+    let o = 0;
+    dv.setUint8(0,0x49); dv.setUint8(1,0x49); dv.setUint16(2,42,true); dv.setUint32(4,8,true); o = 8;
+    dv.setUint16(o,nEntries,true); o += 2;
+    const entry = (tag,type,count,val)=>{
+      dv.setUint16(o,tag,true); dv.setUint16(o+2,type,true); dv.setUint32(o+4,count,true);
+      if(type === 3 && count === 1) dv.setUint16(o+8,val,true); else dv.setUint32(o+8,val,true);
+      o += 12;
+    };
+    entry(256,4,1,w); entry(257,4,1,h); entry(258,3,4,bpsOff); entry(259,3,1,1); entry(262,3,1,2);
+    entry(273,4,1,dataOff); entry(277,3,1,4); entry(278,4,1,h); entry(279,4,1,px.length);
+    entry(284,3,1,1); entry(338,3,1,2);
+    dv.setUint32(o,0,true); o += 4;
+    for(let i=0;i<4;i++) dv.setUint16(bpsOff+i*2,8,true);
+    new Uint8Array(buf, dataOff).set(px);
+    return new Blob([buf], { type:'image/tiff' });
+  }
+
+  async function renderExport(){
+    applyShadingNow();
+    const r = cropRect();
+    const canvas = document.createElement('canvas');
+    canvas.width = r.W; canvas.height = r.H;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    const k = r.W / r.w;
+    const SW = stage.clientWidth, SH = stage.clientHeight, cx = SW/2, cy = SH/2;
+    const baseT = () => ctx.setTransform(k,0,0,k,-r.x*k,-r.y*k);
+
+    // background at its current opacity
+    baseT();
+    ctx.globalAlpha = parseFloat(stageBg.style.opacity === '' ? 1 : stageBg.style.opacity);
+    const bgImg = /url\(["']?(.*?)["']?\)\s*$/.exec(stageBg.style.backgroundImage || '');
+    if(bgImg){
+      const im = await loadImg(bgImg[1]);
+      const s = Math.max(SW/im.naturalWidth, SH/im.naturalHeight);
+      ctx.drawImage(im, (SW-im.naturalWidth*s)/2, (SH-im.naturalHeight*s)/2, im.naturalWidth*s, im.naturalHeight*s);
+    } else if(stageBg.style.backgroundColor){
+      ctx.fillStyle = stageBg.style.backgroundColor; ctx.fillRect(0,0,SW,SH);
+    }
+    ctx.globalAlpha = 1;
+
+    const cam = new DOMMatrix(camString());
+    const worldM = matMulMat3(matMulMat3(rotXMat(state.rotX), rotYMat(state.rotY)), rotZMat(state.rotZ));
+    const items = [];
+    for(const b of allBooks()){
+      const full0 = cam.multiply(new DOMMatrix(bookTransformString(b)));
+      const bookM = matMulMat3(matMulMat3(rotXMat(b.rotX), rotYMat(b.rotY)), rotZMat(b.rotZ));
+      const nM = matMulMat3(worldM, bookM);
+      for(const f of captureFaces(b)){
+        const m = full0.multiply(f.m);
+        const c = f.kind === 'strip' ? [f.w/2, f.h/2] : f.polys[0].pts.reduce((a,p)=>[a[0]+p[0]/f.polys[0].pts.length, a[1]+p[1]/f.polys[0].pts.length],[0,0]);
+        const p = m.transformPoint(new DOMPoint(c[0], c[1], 0, 1));
+        if(p.z >= PERSPECTIVE - 1) continue;
+        const n = matMulVec3(nM, f.normal);
+        if(n[0]*(0-p.x) + n[1]*(0-p.y) + n[2]*(PERSPECTIVE-p.z) <= 0) continue; // back-face
+        items.push({ f, m, z:p.z });
+      }
+    }
+    items.sort((a,b)=> a.z - b.z);
+
+    const proj = (m, x, y) => {
+      const q = m.transformPoint(new DOMPoint(x, y, 0, 1));
+      const s = PERSPECTIVE/(PERSPECTIVE - q.z);
+      return [cx + q.x*s, cy + q.y*s];
+    };
+    const path = pts => { ctx.beginPath(); pts.forEach((q,i)=> i ? ctx.lineTo(q[0],q[1]) : ctx.moveTo(q[0],q[1])); ctx.closePath(); };
+    const NV = 8;
+    for(const it of items){
+      const f = it.f, m = it.m;
+      if(f.kind === 'strip'){
+        const im = f.img ? await loadImg(f.img) : null;
+        const tint = f.el.__tint, gl = f.el.__glintStops;
+        for(let j=0;j<NV;j++){
+          const v0 = f.h*j/NV, v1 = Math.min(f.h, f.h*(j+1)/NV + 0.8);
+          const S00 = proj(m,0,v0), S10 = proj(m,f.w,v0), S01 = proj(m,0,v1), S11 = proj(m,f.w,v1);
+          baseT(); ctx.save();
+          path([S00,S10,S11,S01]); ctx.clip();
+          const dv = v1 - v0 || 1;
+          const a = (S10[0]-S00[0])/f.w, b = (S10[1]-S00[1])/f.w;
+          const c = (S01[0]-S00[0])/dv,  d = (S01[1]-S00[1])/dv;
+          ctx.transform(a, b, c, d, S00[0]-c*v0, S00[1]-d*v0);
+          if(im) ctx.drawImage(im, f.bgPos[0]||0, f.bgPos[1]||0, f.bgSize[0]||im.naturalWidth, f.bgSize[1]||im.naturalHeight);
+          else { ctx.fillStyle = f.color || '#ccc'; ctx.fillRect(0, v0-1, f.w, dv+2); }
+          if(tint){
+            const g = ctx.createLinearGradient(0,0,f.w,0); g.addColorStop(0,tint[0]); g.addColorStop(1,tint[1]);
+            ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = g; ctx.fillRect(-1, v0-1, f.w+2, dv+2);
+            ctx.globalCompositeOperation = 'source-over';
+          }
+          if(gl){
+            const g = ctx.createLinearGradient(0,0,f.w,0); gl.forEach(([o,c])=>g.addColorStop(o,c));
+            ctx.fillStyle = g; ctx.fillRect(-1, v0-1, f.w+2, dv+2);
+          }
+          ctx.restore();
+        }
+      } else {
+        const P = f.polys.map(p => ({ pts:p.pts.map(q=>proj(m,q[0],q[1])), fill:p.fill }));
+        baseT(); ctx.save();
+        path(P[0].pts); ctx.clip();
+        ctx.lineWidth = 0.6; ctx.lineJoin = 'bevel';
+        P.forEach(p=>{ path(p.pts); ctx.fillStyle = ctx.strokeStyle = p.fill; ctx.fill(); ctx.stroke(); });
+        if(f.el.__tintS){
+          path(P[0].pts);
+          ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = f.el.__tintS; ctx.fill();
+          ctx.globalCompositeOperation = 'source-over';
+        }
+        if(f.el.__glintA > 0.002){
+          path(P[0].pts);
+          if(f.el.__gild){
+            const xs = P[0].pts.map(q=>q[0]), ys = P[0].pts.map(q=>q[1]);
+            const g = ctx.createLinearGradient(Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys));
+            const a = f.el.__glintA;
+            g.addColorStop(0,`rgba(255,207,77,${a*.25})`); g.addColorStop(.5,`rgba(255,223,110,${a})`); g.addColorStop(1,`rgba(245,179,36,${a*.25})`);
+            ctx.fillStyle = g;
+          } else ctx.fillStyle = `rgba(255,240,215,${f.el.__glintA})`;
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+    return canvas;
+  }
+
+  exportBtn.addEventListener('click', async ()=>{
+    exportBtn.disabled = true; exportStatus.textContent = 'Rendering…';
+    try{
+      const canvas = await renderExport();
+      const type = exportType.value; // png | jpeg | webp
+      let outCanvas = canvas;
+      if(type === 'jpeg'){ // JPG has no alpha: flatten onto white
+        outCanvas = document.createElement('canvas'); outCanvas.width = canvas.width; outCanvas.height = canvas.height;
+        const c2 = outCanvas.getContext('2d'); c2.fillStyle = '#fff'; c2.fillRect(0,0,outCanvas.width,outCanvas.height); c2.drawImage(canvas,0,0);
+      }
+      const blob = type === 'tiff' ? encodeTiff(outCanvas) : await new Promise(res => outCanvas.toBlob(res, 'image/'+type, 0.92));
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `book-mockup-${canvas.width}x${canvas.height}.${type === 'jpeg' ? 'jpg' : type === 'tiff' ? 'tif' : type}`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+      exportStatus.textContent = `Saved ${canvas.width} × ${canvas.height} ${type === 'jpeg' ? 'JPG' : type === 'tiff' ? 'TIFF' : type.toUpperCase()}`;
+    }catch(err){
+      console.error(err); exportStatus.textContent = 'Export failed — see console';
+    }
+    exportBtn.disabled = false;
+  });
+  window.__renderExport = renderExport; // handy for testing
+  updateCropFrame();
+
+  // ---- unified stage interaction ----
+  // One mousedown handler distinguishes four things by where the click
+  // landed: a gizmo ring (rotate that axis), a gizmo arrow (translate
+  // that axis), the book body itself (free move on drag, or select /
+  // toggle widget on a plain click), or empty background (camera
+  // orbit, same as before — and a plain click there deselects).
+  let dragMode = null; // 'orbit' | 'moveBook' | 'rotateAxis' | 'translateAxis'
+  let dragAxis = null, dragBookId = null;
+  let dragStartX = 0, dragStartY = 0, dragMoved = false;
+  let lastX = 0, lastY = 0;
+
+  function bookIdFromTarget(target){
+    const bg = target.closest && target.closest('.book-group');
+    return bg ? bg.dataset.bookId : null;
+  }
+
+  stage.addEventListener('mousedown', e=>{
+    const ringWrap = e.target.closest('.gizmo-ring');
+    const arrowWrap = e.target.closest('.gizmo-arrow');
+    const bookHit = bookIdFromTarget(e.target);
+
+    dragStartX = e.clientX; dragStartY = e.clientY;
+    lastX = e.clientX; lastY = e.clientY;
+    dragMoved = false;
+
+    if(ringWrap && state.selectedBook){
+      dragMode = 'rotateAxis'; dragAxis = ringWrap.dataset.axis; dragBookId = state.selectedBook;
+      e.stopPropagation(); e.preventDefault();
+      return;
+    }
+    if(arrowWrap && state.selectedBook){
+      dragMode = 'translateAxis'; dragAxis = arrowWrap.dataset.axis; dragBookId = state.selectedBook;
+      e.stopPropagation(); e.preventDefault();
+      return;
+    }
+    if(bookHit){
+      dragMode = 'moveBook'; dragBookId = bookHit;
+      e.stopPropagation();
+      return;
+    }
+    dragMode = 'orbit';
+    stage.classList.add('dragging');
+  });
+
+  window.addEventListener('mousemove', e=>{
+    if(!dragMode) return;
+    const dx = e.clientX-lastX, dy = e.clientY-lastY;
+    const totalDx = e.clientX-dragStartX, totalDy = e.clientY-dragStartY;
+    if(!dragMoved && Math.hypot(totalDx,totalDy) > 3) dragMoved = true;
+    lastX = e.clientX; lastY = e.clientY;
+
+    if(dragMode === 'orbit'){
+      state.rotY = wrapDeg(state.rotY + dx*0.35);
+      state.rotX = wrapDeg(state.rotX - dy*0.25);
+      applyWorldTransform();
+      $('rotXAmt').value = Math.round(state.rotX); $('rotXVal').value = Math.round(state.rotX);
+      $('rotYAmt').value = Math.round(state.rotY); $('rotYVal').value = Math.round(state.rotY);
+      return;
+    }
+    if(!dragMoved) return; // book interactions only kick in once it's a real drag, not a click
+    const b = state.books[dragBookId];
+    if(!b) return;
+    if(dragMode === 'moveBook'){
+      b.x += dx / state.scale;
+      b.y += dy / state.scale;
+      applyBookTransform(dragBookId);
+    } else if(dragMode === 'rotateAxis'){
+      const delta = (dx - dy) * 0.6;
+      if(dragAxis==='x') b.rotX = wrapDeg(b.rotX + delta);
+      else if(dragAxis==='y') b.rotY = wrapDeg(b.rotY + delta);
+      else if(dragAxis==='z') b.rotZ = wrapDeg(b.rotZ + delta);
+      applyBookTransform(dragBookId);
+      if(dragBookId === state.activeId) syncBookRotUI();
+    } else if(dragMode === 'translateAxis'){
+      const delta = (dragAxis==='y' ? -dy : dx) / state.scale;
+      if(dragAxis==='x') b.x += delta;
+      else if(dragAxis==='y') b.y += delta;
+      else if(dragAxis==='z') b.z += delta;
+      applyBookTransform(dragBookId);
+    }
+  });
+
+  window.addEventListener('mouseup', ()=>{
+    if(dragMode === 'orbit'){
+      stage.classList.remove('dragging');
+      if(!dragMoved && state.selectedBook) deselectBook();
+    } else if(dragMode === 'moveBook' && !dragMoved){
+      // a plain click (no real drag) on the book: select it, or if it
+      // was already selected, toggle which widget is showing
+      if(state.selectedBook === dragBookId) toggleWidget(dragBookId);
+      else selectBook(dragBookId);
+    }
+    dragMode = null; dragAxis = null; dragBookId = null;
+    applyShadingSoon();
+  });
+
+  // Touch keeps simple camera-orbit behavior (book selection/move/
+  // gizmo dragging is mouse-only for now).
+  let touchDragging = false, touchLastX = 0, touchLastY = 0;
+  stage.addEventListener('touchstart', e=>{ touchDragging=true; touchLastX=e.touches[0].clientX; touchLastY=e.touches[0].clientY; }, {passive:true});
+  stage.addEventListener('touchmove', e=>{
+    if(!touchDragging) return;
+    const dx=e.touches[0].clientX-touchLastX, dy=e.touches[0].clientY-touchLastY;
+    touchLastX=e.touches[0].clientX; touchLastY=e.touches[0].clientY;
+    state.rotY = wrapDeg(state.rotY + dx*0.35);
+    state.rotX = wrapDeg(state.rotX - dy*0.25);
+    applyWorldTransform();
+    $('rotXAmt').value = Math.round(state.rotX); $('rotXVal').value = Math.round(state.rotX);
+    $('rotYAmt').value = Math.round(state.rotY); $('rotYVal').value = Math.round(state.rotY);
+  }, {passive:true});
+  window.addEventListener('touchend', ()=>{ touchDragging=false; });
+  stage.addEventListener('wheel', e=>{
+    e.preventDefault();
+    state.userZoomed = true;
+    state.scale = Math.max(0.02, Math.min(1.6, state.scale * Math.exp(-e.deltaY*0.0006)));
+    setSceneTransform();
+  }, {passive:false});
+
+  window.addEventListener('resize', applyWorldTransform);
+
+  // ---------------- 2D bezier editor (dynamic, multi-anchor) ----------------
+  const EW=380, EDGE_MARGIN=14;
+  const TOP_MIN=150, BOT_MIN=100, SIDE_MAX=300;
+  let topH = TOP_MIN, botH = BOT_MIN, EH = topH+botH, heightTween = null;
+  let curveDragTarget = null, selAnchor = null;
+  let baseY = topH;
+  const plotW = EW - EDGE_MARGIN*2;
+  const plotH = SIDE_MAX - EDGE_MARGIN;
+  function toEditorX(xNorm){ return EDGE_MARGIN + xNorm*plotW; }
+  function toEditorY(yNorm){ return baseY - yNorm*plotH; }
+  function fromEditorX(ex){ return (ex-EDGE_MARGIN)/plotW; }
+  function fromEditorY(ey){ return (baseY-ey)/plotH; }
+  function clampPx(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+  const editorSvg = $('editorSvg');
+  editorSvg.setAttribute('viewBox', `0 0 ${EW} ${EH}`);
+  // The box starts short and grows (never past SIDE_MAX above or below the
+  // baseline) when any anchor or handle needs more room. It only shrinks
+  // back — with a slide — once no drag is active.
+  function needHeights(){
+    let up = 0, down = 0;
+    const eat = y => { if(y===undefined) return; up = Math.max(up, y); down = Math.max(down, -y); };
+    state.anchors.forEach(a=>{ eat(a.y); eat(a.outY); eat(a.inY); });
+    const pad = EDGE_MARGIN + 8;
+    return {
+      up:   Math.max(TOP_MIN, Math.min(SIDE_MAX, Math.ceil(up*plotH + pad))),
+      down: Math.max(BOT_MIN, Math.min(SIDE_MAX, Math.ceil(down*plotH + pad)))
+    };
+  }
+  function fitEditor(){
+    if(heightTween){ topH = heightTween.top; botH = heightTween.bot; }
+    else {
+      const n = needHeights();
+      if(curveDragTarget){ topH = Math.max(topH, n.up); botH = Math.max(botH, n.down); }
+      else { topH = n.up; botH = n.down; }
+    }
+    EH = topH + botH; baseY = topH;
+    editorSvg.setAttribute('viewBox', `0 0 ${EW} ${EH}`);
+  }
+  function animateEditorFit(){
+    const n = needHeights(), from = {top:topH, bot:botH}, t0 = performance.now(), D = 260;
+    if(from.top===n.up && from.bot===n.down){ heightTween=null; drawEditor(); return; }
+    const step = now=>{
+      let k = Math.min(1,(now-t0)/D); k = k<.5 ? 2*k*k : 1-Math.pow(-2*k+2,2)/2;
+      heightTween = { top: from.top+(n.up-from.top)*k, bot: from.bot+(n.down-from.bot)*k };
+      if(now-t0>=D) heightTween = null;
+      drawEditor();
+      if(heightTween) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  function curvePathD(){
+    let d = '';
+    for(let k=0;k<state.anchors.length-1;k++){
+      const P0=state.anchors[k], P3=state.anchors[k+1];
+      const ex0=toEditorX(P0.x), ey0=toEditorY(P0.y);
+      const ex1=toEditorX(P0.outX), ey1=toEditorY(P0.outY);
+      const ex2=toEditorX(P3.inX), ey2=toEditorY(P3.inY);
+      const ex3=toEditorX(P3.x), ey3=toEditorY(P3.y);
+      if(k===0) d += `M ${ex0} ${ey0} `;
+      d += `C ${ex1} ${ey1}, ${ex2} ${ey2}, ${ex3} ${ey3} `;
+    }
+    return d;
+  }
+
+  function gridSvg(){
+    const c='rgba(217,242,252,.09)', g='rgba(138,219,248,.09)';
+    const nx = Math.max(1, Math.round(EW/38)), ny = Math.max(1, Math.round(EH/38));
+    const sx = EW/nx, sy = EH/ny;
+    let solid='', dash=`M0 0H${EW}V${EH}H0Z`;
+    for(let i=1;i<nx;i++){ const l=`M${i*sx} 0V${EH}`; if(i%2===0) solid+=l; else dash+=l; }
+    for(let i=1;i<ny;i++){ const l=`M0 ${i*sy}H${EW}`; if(i%2===0) solid+=l; else dash+=l; }
+    const glow = `<g style="filter:blur(12.5px)"><path d="${solid}" fill="none" stroke="${g}" stroke-width="15" pointer-events="none"/><path d="${dash}" fill="none" stroke="${g}" stroke-width="15" stroke-dasharray="4 4" pointer-events="none"/></g>`;
+    return glow + `<path d="${solid}" fill="none" stroke="${c}" stroke-width="1" pointer-events="none"/><path d="${dash}" fill="none" stroke="${c}" stroke-width="1" stroke-dasharray="4 4" pointer-events="none"/>`;
+  }
+  function drawEditor(){
+    fitEditor();
+    let svg = gridSvg();
+    state.anchors.forEach((a,i)=>{
+      const ax=toEditorX(a.x), ay=toEditorY(a.y);
+      if(a.outX!==undefined){
+        const hx=toEditorX(a.outX), hy=toEditorY(a.outY);
+        svg += `<line x1="${ax}" y1="${ay}" x2="${hx}" y2="${hy}" stroke="rgba(138,219,248,.5)" stroke-width="2.4" stroke-dasharray="3 3"/>`;
+        svg += `<circle data-type="handle" data-handle="out" data-anchor-idx="${i}" cx="${hx}" cy="${hy}" r="6" fill="#8adbf8" stroke="#8adbf8" stroke-width="2" style="cursor:grab"/>`;
+      }
+      if(a.inX!==undefined){
+        const hx=toEditorX(a.inX), hy=toEditorY(a.inY);
+        svg += `<line x1="${ax}" y1="${ay}" x2="${hx}" y2="${hy}" stroke="rgba(138,219,248,.5)" stroke-width="2.4" stroke-dasharray="3 3"/>`;
+        svg += `<circle data-type="handle" data-handle="in" data-anchor-idx="${i}" cx="${hx}" cy="${hy}" r="6" fill="#8adbf8" stroke="#8adbf8" stroke-width="2" style="cursor:grab"/>`;
+      }
+    });
+    svg += `<path d="${curvePathD()}" fill="none" stroke="#c24a34" stroke-width="2.5" stroke-linecap="round"/>`;
+    state.anchors.forEach((a,i)=>{
+      const ax=toEditorX(a.x), ay=toEditorY(a.y);
+      const isEndpoint = i===0 || i===state.anchors.length-1;
+      svg += `<circle data-type="anchor" data-anchor-idx="${i}" cx="${ax}" cy="${ay}" r="${isEndpoint?5:6}" fill="#082d4b" stroke="#8adbf8" stroke-width="2" style="cursor:grab"/>`;
+    });
+    if(selAnchor!==null && state.anchors[selAnchor]){
+      const a=state.anchors[selAnchor];
+      svg += `<circle cx="${toEditorX(a.x)}" cy="${toEditorY(a.y)}" r="10" fill="none" stroke="#fc5a18" stroke-width="1" pointer-events="none"/>`;
+    }
+    editorSvg.innerHTML = svg;
+  }
+
+  function editorPointerPos(evt){
+    const rect = editorSvg.getBoundingClientRect();
+    const cx = (evt.touches? evt.touches[0].clientX : evt.clientX) - rect.left;
+    const cy = (evt.touches? evt.touches[0].clientY : evt.clientY) - rect.top;
+    return {
+      sx: clampPx(cx*(EW/rect.width), EDGE_MARGIN, EW-EDGE_MARGIN),
+      sy: cy*(EH/rect.height)
+    };
+  }
+
+  function editorDown(e){
+    const el = e.target;
+    if(!el.dataset || el.dataset.anchorIdx===undefined) return;
+    curveDragTarget = { idx:+el.dataset.anchorIdx, type: el.dataset.type, handle: el.dataset.handle };
+    if(el.dataset.type==='anchor'){ selAnchor = +el.dataset.anchorIdx; drawEditor(); }
+    e.preventDefault();
+  }
+  function editorMove(e){
+    if(!curveDragTarget) return;
+    e.preventDefault();
+    const {sx,sy} = editorPointerPos(e);
+    const xNorm = fromEditorX(sx), yNorm = Math.max(-1, Math.min(1, fromEditorY(sy)));
+    const a = state.anchors[curveDragTarget.idx];
+    if(curveDragTarget.type==='anchor'){
+      const isEndpoint = curveDragTarget.idx===0 || curveDragTarget.idx===state.anchors.length-1;
+      // Both endpoint anchors have a convergence limit — the spine
+      // (idx 0) is where purple's pages meet, and the outer edge
+      // (last idx) is where green's pages meet. Clamp the TARGET y here,
+      // before computing the delta, so carried handles never overshoot
+      // relative to where the anchor actually lands.
+      let targetY = yNorm;
+      if(curveDragTarget.idx===0 || curveDragTarget.idx===state.anchors.length-1){
+        const curlScale = state.pageW * 0.6;
+        const maxY = (state.spineWidth/2) / curlScale;
+        targetY = Math.max(-maxY, Math.min(maxY, yNorm));
+      }
+      const dx = (isEndpoint?a.x:xNorm) - a.x, dy = targetY - a.y;
+      if(!isEndpoint) a.x = xNorm;
+      a.y = targetY;
+      // Handles are stored as absolute positions, not offsets from the
+      // anchor — so if the anchor moves without them, the vector to each
+      // handle (and therefore the 180° angle between them) silently
+      // breaks. Carrying both handles by the same delta keeps them
+      // rigidly attached, so smoothness survives moving the anchor too.
+      if(a.outX!==undefined){ a.outX+=dx; a.outY+=dy; }
+      if(a.inX!==undefined){ a.inX+=dx; a.inY+=dy; }
+    } else if(curveDragTarget.handle==='out'){
+      a.outX=xNorm; a.outY=yNorm;
+      // Keep this a smooth point: rotate the incoming handle to stay
+      // exactly opposite the outgoing one, preserving its own length so
+      // only the angle locks, not the distance.
+      if(a.inX!==undefined){
+        const dx=a.outX-a.x, dy=a.outY-a.y;
+        const len=Math.hypot(dx,dy)||1;
+        const ux=dx/len, uy=dy/len;
+        const inLen=Math.hypot(a.inX-a.x, a.inY-a.y);
+        a.inX = a.x-ux*inLen; a.inY = a.y-uy*inLen;
+      }
+    } else {
+      a.inX=xNorm; a.inY=yNorm;
+      if(a.outX!==undefined){
+        const dx=a.inX-a.x, dy=a.inY-a.y;
+        const len=Math.hypot(dx,dy)||1;
+        const ux=dx/len, uy=dy/len;
+        const outLen=Math.hypot(a.outX-a.x, a.outY-a.y);
+        a.outX = a.x-ux*outLen; a.outY = a.y-uy*outLen;
+      }
+    }
+
+    drawEditor();
+    layoutCube();
+  }
+  function editorUp(){ const was=curveDragTarget; curveDragTarget=null; if(was) animateEditorFit(); }
+  editorSvg.addEventListener('mousedown', editorDown);
+  window.addEventListener('mousemove', editorMove);
+  window.addEventListener('mouseup', editorUp);
+  editorSvg.addEventListener('touchstart', editorDown, {passive:false});
+  window.addEventListener('touchmove', editorMove, {passive:false});
+  window.addEventListener('touchend', editorUp);
+
+  function lerp(a,b,t){ return {x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t}; }
+
+  // Adds a new anchor via exact De Casteljau subdivision of the LAST
+  // segment, at its midpoint — preserves the curve's shape exactly at
+  // the moment of insertion.
+  $('addAnchorBtn').addEventListener('click', ()=>{
+    const n = state.anchors.length;
+    const A = state.anchors[n-2], B = state.anchors[n-1];
+    const P0={x:A.x,y:A.y}, P1={x:A.outX,y:A.outY}, P2={x:B.inX,y:B.inY}, P3={x:B.x,y:B.y};
+    const t=0.5;
+    // Exact De Casteljau split: A/B's own handles get set from this so
+    // the curve's shape doesn't jump when the point is inserted.
+    const Q0=lerp(P0,P1,t), Q1=lerp(P1,P2,t), Q2=lerp(P2,P3,t);
+    const R0=lerp(Q0,Q1,t), R1=lerp(Q1,Q2,t);
+    const S=lerp(R0,R1,t);
+    A.outX=Q0.x; A.outY=Q0.y;
+    B.inX=R1.x; B.inY=R1.y;
+
+    // The new anchor itself, though, always gets a SMOOTH point: both
+    // handles placed on the curve's true tangent line at that point (its
+    // derivative at t=0.5), one on each side — i.e. exactly 180° apart —
+    // rather than the raw split points, which generally aren't collinear.
+    const d0x=P1.x-P0.x, d0y=P1.y-P0.y;
+    const d1x=P2.x-P1.x, d1y=P2.y-P1.y;
+    const d2x=P3.x-P2.x, d2y=P3.y-P2.y;
+    const tx = 0.75*d0x + 1.5*d1x + 0.75*d2x;
+    const ty = 0.75*d0y + 1.5*d1y + 0.75*d2y;
+    const tlen = Math.hypot(tx,ty) || 1;
+    const ux=tx/tlen, uy=ty/tlen;
+    const handleLen = (Math.hypot(S.x-R0.x,S.y-R0.y) + Math.hypot(Q2.x-S.x,Q2.y-S.y))/2;
+
+    const N = {
+      x:S.x, y:S.y,
+      inX: S.x-ux*handleLen, inY: S.y-uy*handleLen,
+      outX: S.x+ux*handleLen, outY: S.y+uy*handleLen
+    };
+    state.anchors.splice(n-1, 0, N);
+    drawEditor();
+    layoutCube();
+  });
+
+  $('resetCurveBtn').addEventListener('click', ()=>{
+    state.anchors = DEFAULT_ANCHORS();
+    selAnchor = null;
+    drawEditor();
+    animateEditorFit();
+    layoutCube();
+  });
+  $('delAnchorBtn').addEventListener('click', ()=>{
+    const n = state.anchors.length;
+    if(n<=2) return;
+    let idx = (selAnchor!==null && selAnchor>0 && selAnchor<n-1) ? selAnchor : n-2;
+    state.anchors.splice(idx,1);
+    selAnchor = null;
+    drawEditor();
+    animateEditorFit();
+    layoutCube();
+  });
+
+
+  // ---- lighting controls ----
+  let lightDragging = false;
+  function setLightFromPad(clientX, clientY){
+    const rect = lightPad.getBoundingClientRect();
+    const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+    const padR = rect.width/2;
+    const dx = clientX-cx, dy = clientY-cy;
+    const dist = Math.min(padR, Math.hypot(dx,dy));
+    state.light.azimuth = Math.atan2(dy,dx) * 180/Math.PI;
+    state.light.elevation = 90 * (1 - dist/padR);
+    applyLighting();
+  }
+  lightPad.addEventListener('mousedown', e=>{ lightDragging=true; setLightFromPad(e.clientX,e.clientY); e.preventDefault(); });
+  window.addEventListener('mousemove', e=>{ if(lightDragging) setLightFromPad(e.clientX,e.clientY); });
+  window.addEventListener('mouseup', ()=>{ lightDragging=false; });
+  bindDegreeControl('lightIntensityAmt','lightIntensityVal', v=>{ state.light.intensity=v; applyLighting(); });
+  bindDegreeControl('lightAmbientAmt','lightAmbientVal', v=>{ state.light.ambient=v; applyLighting(); });
+  $('lightingOn').addEventListener('change', e=>{ state.lightingOn = e.target.checked; applyShading(); });
+  const shadowCp = createColorPicker($('shadowCp'), hex => { setShadowColor(hex); applyShading(); });
+  setShadowColor(shadowCp.getHex());
+  { const head = $('shadowCp').querySelector('.cp-head');
+    const a = document.createElement('div'); a.className = 'lg-a';
+    const b = document.createElement('div'); b.className = 'lg-b';
+    a.append(head.querySelector('.cp-label'), head.querySelector('.cp-swatch'));
+    b.appendChild($('lightToggle'));
+    const top = document.createElement('div'); top.className = 'lg-top';
+    top.append(a, b);
+    document.querySelector('.light-sliders').prepend(top); }
+  // Shadow color sits exactly midway between "Light direction" and "Toggle lighting"
+  function eqLightSpacing(){
+    const ld = document.querySelector('.light-row > .field-group > .field-label'),
+          a = document.querySelector('.lg-a'), b = document.querySelector('.lg-b'), top = document.querySelector('.lg-top');
+    if(!ld || !a || !b || !top || !top.offsetParent) return;
+    a.style.marginLeft = '0px';
+    const r = document.createRange(); r.selectNodeContents(ld);
+    const ldRight = r.getBoundingClientRect().right,
+          aW = a.getBoundingClientRect().width,
+          bLeft = b.getBoundingClientRect().left,
+          topLeft = top.getBoundingClientRect().left,
+          gap = (bLeft - ldRight - aW) / 2;
+    a.style.marginLeft = Math.max(0, ldRight + gap - topLeft).toFixed(2) + 'px';
+  }
+  window.__eqLight = eqLightSpacing;
+  eqLightSpacing();
+  window.addEventListener('resize', eqLightSpacing);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(eqLightSpacing);
+  applyLighting();
+
+  renderTabs();
+  drawEditor();
+  applyLighting();
+  layoutAll();
+  syncUI();
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(() => layoutAll());
+  }
+  if(document.fonts && document.fonts.load){
+    document.fonts.load("italic 500 20px 'Lexend'").then(() => layoutAll()).catch(()=>{});
+  }
+})();
+</script>
+</body>
+</html>
